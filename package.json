@@ -21,9 +21,8 @@
   "author": "Jay Jackson",
   "license": "MIT",
   "dependencies": {
-    "discord-oauth2": "^2.7.1",
-    "fastify": "^3.20.1",
-    "node-fetch": "^2.6.1"
+    "node-fetch": "^2.6.1",
+    "puppeteer": "^10.2.0"
   },
   "devDependencies": {}
 }
