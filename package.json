@@ -1,0 +1,29 @@
+{
+  "name": "playit.gg",
+  "version": "0.0.1",
+  "description": "A JS Wrapper For https://playit.gg",
+  "private": false,
+  "main": "index.js",
+  "publishConfig": {
+    "access": "public"
+  },
+  "bin": {
+    "playit": "cli.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/TheBotlyNoob/playit.gg.git"
+  },
+  "keywords": [
+    "playit",
+    "gaming"
+  ],
+  "author": "Jay Jackson",
+  "license": "MIT",
+  "dependencies": {
+    "discord-oauth2": "^2.7.1",
+    "fastify": "^3.20.1",
+    "node-fetch": "^2.6.1"
+  },
+  "devDependencies": {}
+}
