@@ -6,8 +6,13 @@ const spawn = require('child_process').spawn;
 const fs = require('fs');
 
 class playit {
-  constructor(email = isRequired('email'), password = isRequired('password')) {
-    this.login(email, password);
+  constructor({ email, password, token }) {
+    return (async () => {
+      token
+        ? await this.loginWithToken(token)
+        : await this.login(email, password);
+      return this;
+    })();
   }
 
   async login(email = isRequired('email'), password = isRequired('password')) {
@@ -42,15 +47,38 @@ class playit {
     this.session = session;
   }
 
-  async createTunnel({ type = 'TCP', port = 80, session = this.session }) {
-    // {"id":null,"game":"custom-udp","local_port":1234,"local_ip":"127.0.0.1","local_proto":"Udp","agent_id":405688,"domain_id":null}
+  async createTunnel({
+    type = 'TCP',
+    port = isRequired('PORT'),
+    session = this.session
+  }) {
+    const api = 'https://api.playit.gg';
+    const res = await fetch(`${api}/account/tunnels`, {
+      method: 'POST',
+      body: JSON.stringify({
+        id: null,
+        game: `custom-${type.toLowerCase()}`,
+        local_port: port,
+        local_ip: '127.0.0.1',
+        local_proto: type.replace(/./g, (m, o) =>
+          o === 0 ? m.toUpperCase() : m.toLowerCase()
+        ),
+        agent_id: 405688,
+        domain_id: null
+      }),
+      headers: {
+        authorization: `session ${session}`
+      }
+    });
+
+    console.log(await res.json());
   }
 
   async claimUrl(url = isRequired('URL')) {
     console.log(url);
   }
 
-  async startPlayit(playitOpts = {}) {
+  async startPlayit(claim = true, playitOpts = { NO_BROWSER: true }) {
     playitOpts.NO_BROWSER = true;
 
     Object.entries(playitOpts).map(([opt, value]) =>
@@ -64,9 +92,12 @@ class playit {
         ? data.toString().match(/https:\/\/[0-9a-z\.\/]*/gi)[0]
         : ''
     );
+
     playit.on('exit', (code) => {
-      console.log(`Playit Exited With Code: ${code}`);
+      console.log(`PlayIt Exited With Code: ${code}`);
     });
+
+    if (claim === true) this.claimUrl();
   }
 }
 
