@@ -1,6 +1,6 @@
 {
   "name": "playit.gg",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "A JS Wrapper For https://playit.gg",
   "private": false,
   "main": "index.js",
@@ -21,8 +21,9 @@
   "author": "Jay Jackson",
   "license": "MIT",
   "dependencies": {
+    "chalk": "^4.1.2",
+    "exit-hook": "^2.2.1",
     "node-fetch": "^2.6.1",
     "puppeteer": "^10.2.0"
-  },
-  "devDependencies": {}
+  }
 }
