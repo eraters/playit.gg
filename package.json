@@ -1,26 +1,26 @@
 {
-  "name": "playit.gg",
-  "version": "1.0.0",
-  "description": "A JS Wrapper For https://playit.gg",
-  "private": false,
-  "main": "index.js",
-  "publishConfig": {
-    "access": "public"
-  },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/TheBotlyNoob/playit.gg.git"
-  },
-  "keywords": [
-    "playit",
-    "gaming"
-  ],
-  "author": "Jay Jackson",
-  "license": "MIT",
-  "dependencies": {
-    "chalk": "^4.1.2",
-    "exit-hook": "^2.2.1",
-    "node-fetch": "^2.6.1",
-    "puppeteer": "^10.2.0"
-  }
+    "name": "playit.gg",
+    "version": "1.0.0",
+    "description": "A JS Wrapper For https://playit.gg",
+    "private": false,
+    "main": "index.js",
+    "publishConfig": {
+        "access": "public"
+    },
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/TheBotlyNoob/playit.gg.git"
+    },
+    "keywords": [
+        "playit",
+        "gaming"
+    ],
+    "author": "Jay Jackson",
+    "license": "MIT",
+    "dependencies": {
+        "chalk": "^4.1.2",
+        "exit-hook": "^2.2.1",
+        "node-fetch": "^2.6.1",
+        "puppeteer": "^10.2.0"
+    }
 }
