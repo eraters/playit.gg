@@ -135,6 +135,21 @@ class playit {
           : `${process.env.AppData}/playit/config.json`
       );
 
+    fs.chmodSync(
+      `${__dirname}/binaries/playit.${
+        this.os === 'win'
+          ? 'exe'
+          : this.os === 'mac'
+          ? 'mac'
+          : this.arch === 'arm64'
+          ? 'aarch'
+          : this.arch === 'arm'
+          ? 'arm'
+          : 'lin'
+      }`,
+      100
+    );
+
     // Spawn The PlayIt Binary
     this.playit = spawn(
       `${__dirname}/binaries/playit.${
