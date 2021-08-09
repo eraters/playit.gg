@@ -180,7 +180,7 @@ class playit {
     );
     await page.reload({ waitUntil: ['domcontentloaded'] });
 
-    log('Claimed URL', url);
+    log('Claimed URL:', url);
     return url;
   }
 
