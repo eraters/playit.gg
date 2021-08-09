@@ -3,16 +3,13 @@
 'use strict';
 
 const fetch = require('node-fetch');
-const puppeteer = require('puppeteer');
 const spawn = require('child_process').spawn;
 const fs = require('fs');
 const log = require('./utils/log');
 const exitHook = require('exit-hook');
-const quit = require('./utils/quit');
 
 class playit {
-  constructor(opts) {
-    let { email, password, token } = opts || {};
+  constructor() {
     // On Exit, Stop PlayIt
     exitHook((_, callback) => {
       if (this.destroyed) callback;
@@ -31,21 +28,6 @@ class playit {
         throw new Error('Unsupported Architecture!');
       else this.arch = process.arch;
 
-      // Start Puppeteer
-      this.browser = await puppeteer.launch({
-        headless: true,
-        args: ['--no-sandbox', '--disable-setuid-sandbox']
-      });
-
-      // Login
-      token
-        ? await this.loginWithToken(token)
-        : email && password
-        ? await this.login(email, password)
-        : quit(
-            new Error('You Must Provide The Username And Password, Or A Token')
-          );
-
       // Start PlayIt
       await this.start();
       this.agent = JSON.parse(
@@ -55,86 +37,9 @@ class playit {
             : `${process.env.AppData}/playit/config.json`
         )
       );
+
       return this;
     })();
-  }
-
-  async loginWithToken(token = isRequired('token')) {
-    // Create A New Page
-    const page = await this.browser.newPage();
-    // Goto The Oauth URI
-    await page.goto(
-      'https://discord.com/login?redirect_to=%2Foauth2%2Fauthorize%3Fresponse_type%3Dtoken%26client_id%3D705634226527141919%26redirect_uri%3Dhttps%253A%252F%252Fplayit.gg%252Foauth%252Fdiscord%26scope%3Didentify'
-    );
-
-    await page.waitForSelector(
-      'input[name="password"], input[name="email"], button[type="submit"]'
-    );
-
-    // Login To Discord With A Token
-    await page.evaluate((token) => {
-      // Alteration of https://gist.github.com/m-Phoenix852/b47fffb0fd579bc210420cedbda30b61
-      setInterval(() => {
-        window.document.body.appendChild(
-          window.document.createElement('iframe')
-        ).contentWindow.localStorage.token = `"${token}"`;
-      }, 50);
-      setTimeout(() => {
-        window.location.reload();
-      }, 2500);
-    }, token);
-
-    await page.waitForSelector('button[type="button"]:nth-of-type(2)');
-    await page.click('button[type="button"]:nth-of-type(2)');
-
-    await page.waitForNavigation();
-
-    // Get The Session Token, Stored In The localStorage
-    const session = await page.evaluate(() =>
-      window.localStorage.getItem('session')
-    );
-
-    // Close The Page
-    await page.close();
-
-    this.session = session;
-
-    log('Logged Into PlayIt');
-  }
-
-  async login(email = isRequired('email'), password = isRequired('password')) {
-    // Create A New Page
-    const page = await this.browser.newPage();
-    // Goto The Oauth URI
-    await page.goto(
-      'https://discord.com/login?redirect_to=%2Foauth2%2Fauthorize%3Fresponse_type%3Dtoken%26client_id%3D705634226527141919%26redirect_uri%3Dhttps%253A%252F%252Fplayit.gg%252Foauth%252Fdiscord%26scope%3Didentify'
-    );
-
-    await page.waitForSelector(
-      'input[name="password"], input[name="email"], button[type="submit"]'
-    );
-
-    // Login To Discord With The Provided Email And Password
-    await page.type('input[name="email"]', email);
-    await page.type('input[name="password"]', password);
-    await page.click('button[type="submit"]');
-
-    await page.waitForSelector('button[type="button"]:nth-of-type(2)');
-    await page.click('button[type="button"]:nth-of-type(2)');
-
-    await page.waitForNavigation();
-
-    // Get The Session Token, Stored In The localStorage
-    const session = await page.evaluate(() =>
-      window.localStorage.getItem('session')
-    );
-
-    // Close The Page
-    await page.close();
-
-    this.session = session;
-
-    log('Logged Into PlayIt');
   }
 
   async createTunnel(opts) {
@@ -158,7 +63,7 @@ class playit {
               await (
                 await fetch(`${api}/account/agents`, {
                   headers: {
-                    authorization: `session ${this.session}`
+                    authorization: `agent ${this.agent.agent_key}`
                   }
                 })
               ).json()
@@ -166,7 +71,7 @@ class playit {
             domain_id: null
           }),
           headers: {
-            authorization: `session ${this.session}`
+            authorization: `agent ${this.agent.agent_key}`
           }
         })
       ).json()
@@ -177,7 +82,7 @@ class playit {
       await (
         await fetch(`${api}/account/tunnels`, {
           headers: {
-            authorization: `session ${this.session}`
+            authorization: `agent ${this.agent.agent_key}`
           }
         })
       ).json()
@@ -190,7 +95,7 @@ class playit {
         await (
           await fetch(`${api}/account/tunnels`, {
             headers: {
-              authorization: `session ${this.session}`
+              authorization: `agent ${this.agent.agent_key}`
             }
           })
         ).json()

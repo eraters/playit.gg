@@ -17,10 +17,7 @@ const Playit = require('playit.gg');
 
 (async () => {
   // Start PlayIt
-  const playit = await new playit({
-    email: '<Your Discord Email>',
-    password: '<Your Discord Password>'
-  }); // Or You Can Use { token: '<Your Token>' }
+  const playit = await new playit();
 
   // Create A PlayIt Tunnel
   await playit.createTunnel(); // Default Is TCP On Port 80
@@ -31,15 +28,9 @@ const Playit = require('playit.gg');
 
 > **_NOTE:_** All Items In This Class (Even The Constructor) Are Asyncronous
 
-### `playit(opts)`
+### `playit()`
 
-Start PlayIt, And Login With Provided Username And Password, Or Token
-
-|  Option  |                  Required                   |            Description            | Default |
-| :------: | :-----------------------------------------: | :-------------------------------: | :-----: |
-| password |       If You Don't Provide The Token        | Password For Your Discord Account |  None   |
-|  email   |       If You Don't Provide The Token        |  Email For Your Discord Account   |  None   |
-|  token   | If You Don't Provide The Email, Or Password |        Your Discord Token         |  None   |
+Start PlayIt.
 
 ### `playit.createTunnel(opts)`
 
@@ -49,23 +40,6 @@ Create A Tunnel With The Provided Network Protocall, And Port
 | :----: | :------: | :-----------------------------------------------------: | :-----: |
 | proto  |    No    | Network Protocall To Use, Can Either Be `UDP`, Or `TCP` |   TCP   |
 |  port  |    No    |                  Local Port To Expose                   |   80    |
-
-### `playit.login(opts)`
-
-Use This To Change The User Thats Logged In, With Your Discord Username, And Password
-
-|  Option  | Required |            Description            | Default |
-| :------: | :------: | :-------------------------------: | :-----: |
-|  email   |   Yes    |  Email For Your Discord Account   |  None   |
-| password |   Yes    | Password For Your Discord Account |  None   |
-
-### `playit.loginWithToken(opts)`
-
-Use This To Change The User Thats Logged In, With A Discord Token
-
-| Option | Required |    Description     | Default |
-| :----: | :------: | :----------------: | :-----: |
-| token  |   Yes    | Your Discord Token |  None   |
 
 ## Contribution
 
