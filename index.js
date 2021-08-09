@@ -183,7 +183,7 @@ class playit {
       ).json()
     ).tunnels.find((tunnel) => tunnel.id === tunnelId);
 
-    while (otherData.domain_id === null) {
+    while (otherData.domain_id === null || otherData.connect_address === null) {
       let time = new Date().getTime();
       while (new Date().getTime() < time + 1000);
       otherData = (
