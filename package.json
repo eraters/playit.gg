@@ -1,6 +1,6 @@
 {
   "name": "playit.gg",
-  "version": "0.0.5",
+  "version": "1.0.0",
   "description": "A JS Wrapper For https://playit.gg",
   "private": false,
   "main": "index.js",

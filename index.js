@@ -8,6 +8,7 @@ const spawn = require('child_process').spawn;
 const fs = require('fs');
 const log = require('./utils/log');
 const exitHook = require('exit-hook');
+const quit = require('./utils/quit');
 
 class playit {
   constructor(opts) {
@@ -34,7 +35,11 @@ class playit {
 
       token
         ? await this.loginWithToken(token)
-        : await this.login(email, password);
+        : email && password
+        ? await this.login(email, password)
+        : quit(
+            new Error('You Must Provide The Username And Password, Or A Token')
+          );
 
       await this.start();
       return this;
@@ -110,7 +115,7 @@ class playit {
   }
 
   async createTunnel(opts) {
-    let { type = 'TCP', port = 80, session = this.session } = opts || {};
+    let { proto = 'TCP', port = 80 } = opts || {};
 
     const api = 'https://api.playit.gg';
     const tunnelId = (
@@ -119,17 +124,17 @@ class playit {
           method: 'POST',
           body: JSON.stringify({
             id: null,
-            game: `custom-${type.toLowerCase()}`,
+            game: `custom-${proto.toLowerCase()}`,
             local_port: port,
             local_ip: '127.0.0.1',
-            local_proto: type.replace(/./g, (m, o) =>
+            local_proto: proto.replace(/./g, (m, o) =>
               o === 0 ? m.toUpperCase() : m.toLowerCase()
             ),
             agent_id: (
               await (
                 await fetch(`${api}/account/agents`, {
                   headers: {
-                    authorization: `session ${session}`
+                    authorization: `session ${this.session}`
                   }
                 })
               ).json()
@@ -137,7 +142,7 @@ class playit {
             domain_id: null
           }),
           headers: {
-            authorization: `session ${session}`
+            authorization: `session ${this.session}`
           }
         })
       ).json()
@@ -147,7 +152,7 @@ class playit {
       await (
         await fetch(`${api}/account/tunnels`, {
           headers: {
-            authorization: `session ${session}`
+            authorization: `session ${this.session}`
           }
         })
       ).json()
@@ -160,7 +165,7 @@ class playit {
         await (
           await fetch(`${api}/account/tunnels`, {
             headers: {
-              authorization: `session ${session}`
+              authorization: `session ${this.session}`
             }
           })
         ).json()

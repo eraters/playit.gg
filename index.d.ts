@@ -1,17 +1,17 @@
 declare module 'playit.gg';
 
 declare class playit {
-  constructor(opts: Object): Promise<playit>;
+  constructor(opts: Object);
 
-  private async start(opts: Object): Promise<String>;
+  private start(opts: Object): Promise<String>;
 
-  async stop(): Promise<void>;
+  stop(): Promise<void>;
 
-  async claimUrl(url: String): Promise<String>;
+  private claimUrl(url: String): Promise<String>;
 
-  async createTunnel(opts: Object): Promise<Object>;
+  createTunnel(opts: Object): Promise<Object>;
 
-  async login(email: String, password: String): Promise<void>;
+  login(email: String, password: String): Promise<void>;
 
-  async loginWithToken(token: String): Promise<void>;
+  loginWithToken(token: String): Promise<void>;
 }
