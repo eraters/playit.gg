@@ -49,14 +49,14 @@ Create A Tunnel With The Provided Network Protocall, And Port
 
 ### `playit.login(opts)`
 
-Use This To Change The User Thats Logged In, With You're Discord Username, And Password
+Use This To Change The User Thats Logged In, With Your Discord Username, And Password
 
 |  Option  | Required |            Description            | Default |
 | :------: | :------: | :-------------------------------: | :-----: |
 |  email   |   Yes    |  Email For Your Discord Account   |  None   |
 | password |   Yes    | Password For Your Discord Account |  None   |
 
-### `playit.loginWithToken`
+### `playit.loginWithToken(opts)`
 
 Use This To Change The User Thats Logged In, With A Discord Token
 

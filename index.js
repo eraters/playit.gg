@@ -54,6 +54,11 @@ class playit {
 
             // Start PlayIt
             await this.start();
+            this.agent = JSON.parse(fs.readFileSync(
+                this.os === 'lin' || this.os === 'mac'
+                ? `${require('os').homedir()}/.config/playit/config.json`
+                : `${process.env.AppData}/playit/config.json`
+            ))
             return this;
         })();
     }
@@ -98,7 +103,7 @@ class playit {
 
         this.session = session;
 
-        log('Logged In, Session Id:', session);
+        log('Logged In');
     }
 
     async login(
@@ -136,7 +141,7 @@ class playit {
 
         this.session = session;
 
-        log('Logged In, Session Id:', session);
+        log('Logged In');
     }
 
     async createTunnel(opts) {
@@ -164,9 +169,9 @@ class playit {
                                     },
                                 })
                             ).json()
-                        ).agents.filter(
-                            (agent) => agent.key === this.agent_key
-                        )[0].id,
+                        ).agents.find(
+                            (agent) => agent.key === this.agent.agent_key
+                        ).id,
                         domain_id: null,
                     }),
                     headers: {
@@ -185,9 +190,9 @@ class playit {
                     },
                 })
             ).json()
-        ).tunnels.filter((tunnel) => tunnel.id === tunnelId)[0];
+        ).tunnels.find((tunnel) => tunnel.id === tunnelId);
 
-        while (otherData.status === 'Provisioning') {
+        while (otherData.domain_id === null) {
             let time = new Date().getTime();
             while (new Date().getTime() < time + 1000);
             otherData = (
@@ -198,7 +203,7 @@ class playit {
                         },
                     })
                 ).json()
-            ).tunnels.filter((tunnel) => tunnel.id === tunnelId)[0];
+            ).tunnels.find((tunnel) => tunnel.id === tunnelId);
         }
 
         return otherData;
