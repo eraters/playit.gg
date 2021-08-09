@@ -63,3 +63,7 @@ Use This To Change The User Thats Logged In, With A Discord Token
 | Option | Required |    Description     | Default |
 | :----: | :------: | :----------------: | :-----: |
 | token  |   Yes    | Your Discord Token |  None   |
+
+## Contribution
+
+More Features Are Soon To Come, And PRs Are Welcome!
