@@ -5,21 +5,22 @@
   "private": false,
   "main": "index.js",
   "publishConfig": {
-      "access": "public"
+    "access": "public"
   },
   "repository": {
-      "type": "git",
-      "url": "https://github.com/TheBotlyNoob/playit.gg.git"
+    "type": "git",
+    "url": "https://github.com/TheBotlyNoob/playit.gg.git"
   },
   "keywords": [
-      "playit",
-      "gaming"
+    "playit",
+    "gaming"
   ],
   "author": "Jay Jackson",
   "license": "MIT",
   "dependencies": {
-      "exit-hook": "^2.2.1",
-      "node-fetch": "^2.6.1",
-      "puppeteer": "^10.2.0"
+    "chalk": "^4.1.2",
+    "exit-hook": "^2.2.1",
+    "node-fetch": "^2.6.1",
+    "puppeteer": "^10.2.0"
   }
 }

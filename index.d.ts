@@ -1,17 +1,17 @@
-declare module "playit.gg";
+declare module 'playit.gg';
 
 declare class playit {
-    constructor(opts: Object);
+  constructor(opts: Object);
 
-    private start(opts: Object): Promise<String>;
+  private start(opts: Object): Promise<String>;
 
-    stop(): Promise<void>;
+  stop(): Promise<void>;
 
-    private claimUrl(url: String): Promise<String>;
+  private claimUrl(url: String): Promise<String>;
 
-    createTunnel(opts: Object): Promise<Object>;
+  createTunnel(opts: Object): Promise<Object>;
 
-    login(email: String, password: String): Promise<void>;
+  login(email: String, password: String): Promise<void>;
 
-    loginWithToken(token: String): Promise<void>;
+  loginWithToken(token: String): Promise<void>;
 }
