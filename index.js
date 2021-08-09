@@ -220,7 +220,7 @@ class playit {
 
     // Put The Options Into A .env File
     Object.entries(playitOpts).map(([opt, value]) =>
-      fs.writeFileSync('.env', `${opt}=${value}`)
+      fs.writeFileSync(`${__dirname}/.env`, `${opt}=${value}`)
     );
 
     // If A Previous Config File Exists, Remove It
