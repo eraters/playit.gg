@@ -1,6 +1,6 @@
 # Playit.GG
 
-> A JavaScript Wrapper For [Playit.GG](https://playit.gg/)
+> An Unofficial JavaScript Wrapper For [Playit.GG](https://playit.gg/)
 
 ## Installation
 
