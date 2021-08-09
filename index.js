@@ -216,9 +216,9 @@ class playit {
     }
 
     async start(opts) {
-        let { claim = true } = opts || {};
+        let { claim = true, playitOpts = { NO_BROWSER: true } } = opts || {};
         this.started = true;
-        var url = '';
+        let url;
         playitOpts.NO_BROWSER = true;
 
         // Put The Options Into A .env File
@@ -290,8 +290,7 @@ class playit {
         this.playit.on('exit', () => {
             log(`PlayIt Exited`);
         });
-
-        while (!url);
+        
         return url;
     }
 
