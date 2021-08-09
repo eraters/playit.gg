@@ -95,6 +95,8 @@ class playit {
       ).tunnels.find((tunnel) => tunnel.id === tunnelId);
     }
 
+    log(`Created Tunnel, URL:`, otherData.connect_address);
+
     otherData.url = otherData.connect_address;
     return otherData;
   }
