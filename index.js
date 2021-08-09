@@ -13,8 +13,8 @@ class playit {
   constructor(opts) {
     let { email, password, token } = opts || {};
     exitHook((_, callback) => {
-      if (this.destroyed) return;
-      this.stop().then(() => callback());
+      if (this.destroyed) callback;
+      this.stop().then(() => callback);
     });
     return (async () => {
       this.os =
@@ -28,21 +28,55 @@ class playit {
       else this.arch = process.arch;
 
       this.browser = await puppeteer.launch({
-        headless: true,
+        headless: false,
         args: ['--no-sandbox', '--disable-setuid-sandbox']
       });
-
-      await this.start();
 
       token
         ? await this.loginWithToken(token)
         : await this.login(email, password);
+
+      await this.start();
       return this;
     })();
   }
 
   async loginWithToken(token = isRequired('token')) {
-    // TODO
+    const page = await this.browser.newPage();
+    await page.goto(
+      'https://discord.com/login?redirect_to=%2Foauth2%2Fauthorize%3Fresponse_type%3Dtoken%26client_id%3D705634226527141919%26redirect_uri%3Dhttps%253A%252F%252Fplayit.gg%252Foauth%252Fdiscord%26scope%3Didentify'
+    );
+
+    await page.waitForSelector(
+      'input[name="password"], input[name="email"], button[type="submit"]'
+    );
+
+    await page.evaluate((token) => {
+      // Alteration of https://gist.github.com/m-Phoenix852/b47fffb0fd579bc210420cedbda30b61
+      setInterval(() => {
+        window.document.body.appendChild(
+          window.document.createElement('iframe')
+        ).contentWindow.localStorage.token = `"${token}"`;
+      }, 50);
+      setTimeout(() => {
+        window.location.reload();
+      }, 2500);
+    }, token);
+
+    await page.waitForSelector('button[type="button"]:nth-of-type(2)');
+    await page.click('button[type="button"]:nth-of-type(2)');
+
+    await page.waitForNavigation();
+
+    const session = await page.evaluate(() =>
+      window.localStorage.getItem('session')
+    );
+
+    await page.close();
+
+    this.session = session;
+
+    log('Logged In, Session Id:', session);
   }
 
   async login(email = isRequired('email'), password = isRequired('password')) {
@@ -62,7 +96,7 @@ class playit {
     await page.waitForSelector('button[type="button"]:nth-of-type(2)');
     await page.click('button[type="button"]:nth-of-type(2)');
 
-    await page.waitForNavigation('networkidle2');
+    await page.waitForNavigation();
 
     const session = await page.evaluate(() =>
       window.localStorage.getItem('session')
@@ -99,18 +133,7 @@ class playit {
                   }
                 })
               ).json()
-            ).agents.filter(
-              (agent) =>
-                agent.key ===
-                JSON.parse(
-                  fs.readFileSync(
-                    this.os === 'lin' || this.os === 'mac'
-                      ? `${require('os').homedir()}/.config/playit/config.json`
-                      : `${process.env.AppData}/playit/config.json`,
-                    { encoding: 'utf8' }
-                  )
-                ).agent_key
-            )[0].id,
+            ).agents.filter((agent) => agent.key === this.agent_key)[0].id,
             domain_id: null
           }),
           headers: {
@@ -151,17 +174,20 @@ class playit {
     const page = await this.browser.newPage();
 
     await page.goto(url);
-    await page.waitForNavigation('networkidle2');
+    await page.waitForNavigation();
     await page.evaluate(() =>
       window.localStorage.setItem('session', this.session)
     );
-    await page.reload({ waitUntil: ['networkidle0', 'domcontentloaded'] });
+    await page.reload({ waitUntil: ['domcontentloaded'] });
+
+    log('Claimed URL', url);
+    return url;
   }
 
   async start(opts) {
-    let { claim = true, playitOpts = { NO_BROWSER: true } } = opts || {};
+    let { claim = true } = opts || {};
     this.started = true;
-    var url;
+    var url = '';
     playitOpts.NO_BROWSER = true;
 
     Object.entries(playitOpts).map(([opt, value]) =>
@@ -200,22 +226,30 @@ class playit {
     );
 
     if (claim === true)
-      this.playit.stderr.on('data', (data) =>
-        data.toString().match(/\bhttps:\/\/[0-9a-z\/]*/gi)
-          ? this.claimUrl(data.toString().match(/https:\/\/[0-9a-z\.\/]*/gi)[0])
-          : ''
+      url = await new Promise((resolve) =>
+        this.playit.stderr.on('data', (data) =>
+          data.toString().match(/\bhttps:\/\/[0-9a-z\/]*/gi)
+            ? resolve(
+                this.claimUrl(
+                  data.toString().match(/https:\/\/[0-9a-z\.\/]*/gi)[0]
+                )
+              )
+            : ''
+        )
       );
     else
-      this.playit.stderr.on('data', (data) =>
-        data.toString().match(/\bhttps:\/\/[0-9a-z\/]*/gi)
-          ? (url = data.toString().match(/https:\/\/[0-9a-z\.\/]*/gi)[0])
-          : ''
+      url = await new Promise((resolve) =>
+        this.playit.stderr.on('data', (data) =>
+          data.toString().match(/\bhttps:\/\/[0-9a-z\/]*/gi)
+            ? resolve(data.toString().match(/https:\/\/[0-9a-z\.\/]*/gi)[0])
+            : ''
+        )
       );
-    this.playit.on('exit', (code) => {
-      log(`PlayIt Exited With Code: ${code}`);
+    this.playit.on('exit', () => {
+      log(`PlayIt Exited`);
     });
 
-    while (!url && claim === false);
+    while (!url);
     return url;
   }
 
