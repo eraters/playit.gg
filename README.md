@@ -17,7 +17,7 @@ const Playit = require('playit.gg');
 
 (async () => {
   // Start PlayIt
-  const playit = await new playit();
+  const playit = await new playit({ email: '<Your Discord Email>', password: '<Your Discord Password>' }); // Or You Can Use { token: '<Your Token>' }
 
   // Create A PlayIt Tunnel
   await playit.createTunnel(); // Default Is TCP On Port 80
