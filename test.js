@@ -3,5 +3,5 @@ const PlayIt = require('.');
 (async () => {
   const playit = await new PlayIt();
 
-  console.log(await playit.createTunnel());
+  console.log((await playit.createTunnel()).url);
 })();

@@ -30,13 +30,6 @@ class playit {
 
       // Start PlayIt
       await this.start();
-      this.agent = JSON.parse(
-        fs.readFileSync(
-          this.os === 'lin' || this.os === 'mac'
-            ? `${require('os').homedir()}/.config/playit/config.json`
-            : `${process.env.AppData}/playit/config.json`
-        )
-      );
 
       return this;
     })();
@@ -107,11 +100,11 @@ class playit {
   }
 
   async claimUrl(url = isRequired('URL')) {
-    // Create A New Page
-    const page = await this.browser.newPage();
-
-    // Go To The Claim URL
-    await page.goto(url);
+    await fetch(url, {
+      headers: {
+        authorization: `agent ${this.agent.agent_key}`
+      }
+    });
 
     log('Claimed URL:', url);
     return url;
@@ -161,34 +154,29 @@ class playit {
       }
     );
 
-    // If The User Wants To Automagically Claim The URI Provided By PlayIt
-    // Then Claim The URI, And Return It
-    // Else, We Just Return The URI
-    if (claim === true)
-      url = await new Promise((resolve) =>
-        this.playit.stderr.on('data', (data) =>
-          data.toString().match(/\bhttps:\/\/[0-9a-z\/]*/gi)
-            ? resolve(
-                this.claimUrl(
-                  data.toString().match(/https:\/\/[0-9a-z\.\/]*/gi)[0]
-                )
-              )
-            : ''
-        )
-      );
-    else
-      url = await new Promise((resolve) =>
-        this.playit.stderr.on('data', (data) =>
-          data.toString().match(/\bhttps:\/\/[0-9a-z\/]*/gi)
-            ? resolve(data.toString().match(/https:\/\/[0-9a-z\.\/]*/gi)[0])
-            : ''
-        )
-      );
+    url = await new Promise((resolve) =>
+      this.playit.stderr.on('data', (data) =>
+        data.toString().match(/\bhttps:\/\/[0-9a-z\/]*/gi)
+          ? resolve(data.toString().match(/https:\/\/[0-9a-z\.\/]*/gi)[0])
+          : ''
+      )
+    );
+
     this.playit.on('exit', () => {
       log(`PlayIt Exited`);
     });
 
     log('Started PlayIt');
+
+    this.agent = JSON.parse(
+      fs.readFileSync(
+        this.os === 'lin' || this.os === 'mac'
+          ? `${require('os').homedir()}/.config/playit/config.json`
+          : `${process.env.AppData}/playit/config.json`
+      )
+    );
+
+    if (claim === true) this.claimUrl(url);
 
     return url;
   }
