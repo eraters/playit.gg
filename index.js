@@ -190,8 +190,6 @@ class playit {
 
   async stop() {
     this.destoyed = true;
-    // Close The Browser
-    await this.browser.close();
     // Kill The PlayIt Binary
     this.playit.kill('SIGINT');
     return;
