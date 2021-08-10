@@ -5,7 +5,6 @@
 const fetch = require('node-fetch');
 const spawn = require('child_process').spawn;
 const fs = require('fs');
-const log = require('./utils/log');
 const exitHook = require('exit-hook');
 
 class playit {
@@ -95,8 +94,6 @@ class playit {
       ).tunnels.find((tunnel) => tunnel.id === tunnelId);
     }
 
-    log(`Created Tunnel, URL:`, otherData.connect_address);
-
     otherData.url = otherData.connect_address;
     return otherData;
   }
@@ -108,7 +105,6 @@ class playit {
       }
     });
 
-    log('Claimed URL:', url);
     return url;
   }
 
@@ -179,12 +175,6 @@ class playit {
       )
     );
 
-    this.playit.on('exit', () => {
-      log(`PlayIt Exited`);
-    });
-
-    log('Started PlayIt');
-
     this.agent = JSON.parse(
       fs.readFileSync(
         this.os === 'lin' || this.os === 'mac'
@@ -204,7 +194,6 @@ class playit {
     await this.browser.close();
     // Kill The PlayIt Binary
     this.playit.kill('SIGINT');
-    log(`Stopped`);
     return;
   }
 }
