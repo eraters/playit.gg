@@ -35,33 +35,20 @@ class playit {
   }
 
   async disableTunnel(id) {
-    await (
-      await fetch(`https://api.playit.gg/account/tunnels/${id}/disable`, {
-        headers: {
-          authentication: `agent ${this.agent.agent_key}`
-        }
-      })
-    ).json();
+    await (await this.fetch(`/account/tunnels/${id}/disable`)).json();
   }
 
   async enableTunnel(id) {
-    await (
-      await fetch(`https://api.playit.gg/account/tunnels/${id}/enable`, {
-        headers: {
-          authentication: `agent ${this.agent.agent_key}`
-        }
-      })
-    ).json();
+    await (await this.fetch(`/account/tunnels/${id}/enable`)).json();
   }
 
   async createTunnel(opts) {
     let { proto = 'TCP', port = 80 } = opts || {};
 
-    const api = 'https://api.playit.gg';
     // Create The Tunnel, And Get The Id
     const tunnelId = (
       await (
-        await fetch(`${api}/account/tunnels`, {
+        await this.fetch('/account/tunnels', {
           method: 'POST',
           body: JSON.stringify({
             id: null,
@@ -72,45 +59,24 @@ class playit {
               o === 0 ? m.toUpperCase() : m.toLowerCase()
             ),
             agent_id: (
-              await (
-                await fetch(`${api}/account/agents`, {
-                  headers: {
-                    authorization: `agent ${this.agent.agent_key}`
-                  }
-                })
-              ).json()
+              await (await this.fetch('/account/agents')).json()
             ).agents.find((agent) => agent.key === this.agent.agent_key).id,
             domain_id: null
-          }),
-          headers: {
-            authorization: `agent ${this.agent.agent_key}`
-          }
+          })
         })
       ).json()
     ).id;
 
     // Get More Data About The Tunnel
     let otherData = (
-      await (
-        await fetch(`${api}/account/tunnels`, {
-          headers: {
-            authorization: `agent ${this.agent.agent_key}`
-          }
-        })
-      ).json()
+      await (await this.fetch('/account/tunnels')).json()
     ).tunnels.find((tunnel) => tunnel.id === tunnelId);
 
     while (otherData.domain_id === null || otherData.connect_address === null) {
       let time = new Date().getTime();
       while (new Date().getTime() < time + 1000);
       otherData = (
-        await (
-          await fetch(`${api}/account/tunnels`, {
-            headers: {
-              authorization: `agent ${this.agent.agent_key}`
-            }
-          })
-        ).json()
+        await (await this.fetch('/account/tunnels')).json()
       ).tunnels.find((tunnel) => tunnel.id === tunnelId);
     }
 
@@ -119,11 +85,7 @@ class playit {
   }
 
   async claimUrl(url = isRequired('URL')) {
-    await fetch(url, {
-      headers: {
-        authorization: `agent ${this.agent.agent_key}`
-      }
-    });
+    await this.fetch(url);
 
     return url;
   }
@@ -213,6 +175,24 @@ class playit {
     // Kill The PlayIt Binary
     this.playit.kill('SIGINT');
     return;
+  }
+
+  async fetch(url, data = {}) {
+    if (url.startsWith('https://') || url.startsWith('http://'))
+      return await fetch(url, {
+        ...data,
+        headers: { authorization: `agent ${this.agent.agent_key}` }
+      });
+    else if (url.startsWith('/'))
+      return await fetch(`https://api.playit.gg${url}`, {
+        ...data,
+        headers: { authorization: `agent ${(this, this.agent.agent_key)}` }
+      });
+    else
+      return await fetch(`https://api.playit.gg/${url}`, {
+        ...data,
+        headers: { authorization: `agent ${(this, this.agent.agent_key)}` }
+      });
   }
 }
 

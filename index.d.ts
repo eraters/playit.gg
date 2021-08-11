@@ -14,4 +14,6 @@ declare class playit {
   login(email: String, password: String): Promise<void>;
 
   loginWithToken(token: String): Promise<void>;
+
+  private fetch(url: String, data: Object): Promise<Object>;
 }
