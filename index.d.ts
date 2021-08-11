@@ -1,7 +1,7 @@
 declare module 'playit.gg';
 
 declare class playit {
-  constructor(opts: Object);
+  constructor(playitOpts: Object);
 
   private start(opts: Object): Promise<String>;
 

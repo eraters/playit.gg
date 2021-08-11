@@ -8,7 +8,7 @@ const fs = require('fs');
 const exitHook = require('exit-hook');
 
 class playit {
-  constructor() {
+  constructor(playitOpts = {}) {
     // On Exit, Stop PlayIt
     exitHook((_, callback) => {
       if (this.destroyed) callback;
@@ -28,7 +28,7 @@ class playit {
       else this.arch = process.arch;
 
       // Start PlayIt
-      await this.start();
+      await this.start({ claim: true, playitOpts });
 
       return this;
     })();
@@ -91,10 +91,9 @@ class playit {
   }
 
   async start(opts) {
-    let { claim = true, playitOpts = { NO_BROWSER: true } } = opts || {};
+    let { claim = true, playitOpts = {} } = opts || {};
     this.started = true;
     let url;
-    playitOpts.NO_BROWSER = true;
 
     // Put The Options Into A .env File
     Object.entries(playitOpts).map(([opt, value]) =>

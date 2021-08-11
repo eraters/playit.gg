@@ -28,9 +28,13 @@ const Playit = require('playit.gg');
 
 > **_NOTE:_** All Items In This Class (Even The Constructor) Are Asyncronous
 
-### `playit()`
+### `playit(playitOpts)`
 
 Start PlayIt.
+
+|   Option   | Required |            Description            | Default |
+| :--------: | :------: | :-------------------------------: | :-----: |
+| playitOpts |    No    | Options To Put In The `.env` File |  `{}`   |
 
 ### `playit.createTunnel(opts)`
 
@@ -38,8 +42,8 @@ Create A Tunnel With The Provided Network Protocall, And Port
 
 | Option | Required |                       Description                       | Default |
 | :----: | :------: | :-----------------------------------------------------: | :-----: |
-| proto  |    No    | Network Protocall To Use, Can Either Be `UDP`, Or `TCP` |   TCP   |
-|  port  |    No    |                  Local Port To Expose                   |   80    |
+| proto  |    No    | Network Protocall To Use, Can Either Be `UDP`, Or `TCP` |  `TCP`  |
+|  port  |    No    |                  Local Port To Expose                   |  `80`   |
 
 ## Contribution
 
