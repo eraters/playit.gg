@@ -93,11 +93,15 @@ class playit {
   async start(opts) {
     let { claim = true, playitOpts = {} } = opts || {};
     this.started = true;
+    playitOpts.NO_BROWSER = true;
     let url;
 
-    // Put The Options Into A .env File
+    // Remove The .env File
+    fs.rmSync(`${__dirname}/.env`);
+
+    // Put The Options Into The .env File
     Object.entries(playitOpts).map(([opt, value]) =>
-      fs.writeFileSync(`${__dirname}/.env`, `${opt}=${value}`)
+      fs.appendFileSync(`${__dirname}/.env`, `${opt}=${value}\n`)
     );
 
     // If A Previous Config File Exists, Remove It
