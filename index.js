@@ -34,6 +34,26 @@ class playit {
     })();
   }
 
+  async disableTunnel(id) {
+    await (
+      await fetch(`https://api.playit.gg/account/tunnels/${id}/disable`, {
+        headers: {
+          authentication: `agent ${this.agent.agent_key}`
+        }
+      })
+    ).json();
+  }
+
+  async enableTunnel(id) {
+    await (
+      await fetch(`https://api.playit.gg/account/tunnels/${id}/enable`, {
+        headers: {
+          authentication: `agent ${this.agent.agent_key}`
+        }
+      })
+    ).json();
+  }
+
   async createTunnel(opts) {
     let { proto = 'TCP', port = 80 } = opts || {};
 
