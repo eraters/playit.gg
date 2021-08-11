@@ -1,7 +1,7 @@
 declare module 'playit.gg';
 
 declare class playit {
-  constructor(playitOpts: Object);
+  constructor(playitOpts: Object, plugin: Function);
 
   private start(opts: Object): Promise<String>;
 

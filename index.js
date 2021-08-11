@@ -8,7 +8,7 @@ const fs = require('fs');
 const exitHook = require('exit-hook');
 
 class playit {
-  constructor(playitOpts = {}) {
+  constructor(playitOpts = {}, plugin = () => {}) {
     // On Exit, Stop PlayIt
     exitHook((_, callback) => {
       if (this.destroyed) callback;
@@ -29,6 +29,10 @@ class playit {
 
       // Start PlayIt
       await this.start({ claim: true, playitOpts });
+
+      this.tunnels = [];
+
+      this.plugin = plugin(this);
 
       return this;
     })();
@@ -81,6 +85,9 @@ class playit {
     }
 
     otherData.url = otherData.connect_address;
+
+    this.tunnels.push(otherData);
+
     return otherData;
   }
 
