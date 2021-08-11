@@ -189,7 +189,7 @@ class playit {
   }
 
   async stop() {
-    this.destoyed = true;
+    this.destroyed = true;
     // Kill The PlayIt Binary
     this.playit.kill('SIGINT');
     return;
