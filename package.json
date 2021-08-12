@@ -18,7 +18,7 @@
   "author": "Jay Jackson",
   "license": "MIT",
   "dependencies": {
-    "exit-hook": "^2.2.1",
+    "async-exit-hook": "^2.0.1",
     "node-fetch": "^2.6.1"
   }
 }

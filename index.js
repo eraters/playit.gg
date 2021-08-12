@@ -5,14 +5,14 @@
 const fetch = require('node-fetch');
 const spawn = require('child_process').spawn;
 const fs = require('fs');
-const exitHook = require('exit-hook');
+const exitHook = require('async-exit-hook');
 
 class playit {
   constructor(playitOpts = {}, plugin = () => {}) {
     // On Exit, Stop PlayIt
-    exitHook((_, callback) => {
-      if (this.destroyed) callback;
-      this.stop().then(() => callback);
+    exitHook((callback) => {
+      if (this.destroyed) callback();
+      this.stop().then(() => callback());
     });
     return (async () => {
       // Get Os
