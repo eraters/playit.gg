@@ -2,6 +2,22 @@
 
 > An Unofficial JavaScript Wrapper For [Playit.GG](https://playit.gg/)
 
+## For CS50x
+
+### Video Demo: **_TODO_**
+
+### Description: An Unofficial JavaScript Wrapper For [Playit.GG](https://playit.gg/)
+
+### Now, For The Files
+
+#### `index.js`
+
+This is the main file for this project, containing the class, and all of the functions
+
+#### `index.d.ts`
+
+This file contains the types for the [index file](#index.js)
+
 ## Installation
 
 To Install, Run:
