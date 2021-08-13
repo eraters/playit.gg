@@ -1,6 +1,9 @@
 declare module 'playit.gg';
 
 declare class playit {
+  tunnels: Array<Object>;
+  plugin: any;
+
   constructor(playitOpts: Object, plugin: Function);
 
   private start(opts: Object): Promise<String>;

@@ -8,6 +8,8 @@ const fs = require('fs');
 const exitHook = require('async-exit-hook');
 
 class playit {
+  tunnels = [];
+
   constructor(playitOpts = {}, plugin = () => {}) {
     // On Exit, Stop PlayIt
     exitHook((callback) => {
@@ -29,8 +31,6 @@ class playit {
 
       // Start PlayIt
       await this.start({ claim: true, playitOpts });
-
-      this.tunnels = [];
 
       this.plugin = plugin(this);
 
