@@ -1,7 +1,7 @@
 const PlayIt = require('.');
 
 (async () => {
-  const playit = await new PlayIt();
+  const playit = new PlayIt();
 
   const tunnel = await playit.createTunnel();
 

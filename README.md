@@ -2,6 +2,8 @@
 
 > An Unofficial JavaScript Wrapper For [Playit.GG](https://playit.gg/)
 
+# 4 paragraphs
+
 ## For CS50x
 
 ### Video Demo: **_TODO_**
@@ -17,6 +19,11 @@ This is the main file for this project, containing the class, and all of the fun
 #### `index.d.ts`
 
 This file contains the types for the [index file](#indexjs)
+
+### Description
+
+This project is a sort of JavaScript wrapper around [PlayIt.GG](https://playit.gg/) and its API.
+PlayIt is a
 
 ## Installation
 
@@ -42,7 +49,7 @@ const Playit = require('playit.gg');
 
 ## API
 
-> **_NOTE:_** All Items In This Class (Even The Constructor) Are Asyncronous
+> **_NOTE:_** All Items In This Class Are Asyncronous
 
 ### `playit(playitOpts)`
 

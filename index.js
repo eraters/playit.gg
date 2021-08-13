@@ -9,6 +9,20 @@ const exitHook = require('async-exit-hook');
 
 class playit {
   tunnels = [];
+  os =
+    process.platform === 'win32'
+      ? 'win'
+      : process.platform === 'darwin'
+      ? 'mac'
+      : 'lin';
+
+  arch = (() => {
+    if (!['x64', 'arm', 'arm64', 'ppc64', 's390x'].includes(process.arch))
+      throw new Error('Unsupported Architecture!');
+    else this.arch = process.arch;
+  })();
+
+  ready = false;
 
   constructor(playitOpts = {}, plugin = () => {}) {
     // On Exit, Stop PlayIt
@@ -16,26 +30,18 @@ class playit {
       if (this.destroyed) callback();
       this.stop().then(() => callback());
     });
-    return (async () => {
-      // Get Os
-      this.os =
-        process.platform === 'win32'
-          ? 'win'
-          : process.platform === 'darwin'
-          ? 'mac'
-          : 'lin';
-      // Check If Architexture is x64 Or Arm, If It Isn't, Throw An Error
-      if (!['x64', 'arm', 'arm64', 'ppc64', 's390x'].includes(process.arch))
-        throw new Error('Unsupported Architecture!');
-      else this.arch = process.arch;
-
+    (async () => {
       // Start PlayIt
       await this.start({ claim: true, playitOpts });
 
       this.plugin = plugin(this);
 
-      return this;
+      this.ready = true;
     })();
+
+    while (!ready);
+
+    return this;
   }
 
   async disableTunnel(id) {
