@@ -16,7 +16,7 @@ This is the main file for this project, containing the class, and all of the fun
 
 #### `index.d.ts`
 
-This file contains the types for the [index file](#index.js)
+This file contains the types for the [index file](#indexjs)
 
 ## Installation
 
