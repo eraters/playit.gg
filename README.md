@@ -22,8 +22,9 @@ This file contains the types for the [index file](#indexjs)
 
 ### Description
 
-This project is a sort of JavaScript wrapper around [PlayIt.GG](https://playit.gg/) and its API.
-PlayIt is a
+This project is a JavaScript wrapper around [PlayIt.GG](https://playit.gg/) and its API.
+
+PlayIt is an application that creates tunnels to a specified port and protocall. It can be used to expose web servers or other services.
 
 ## Installation
 
@@ -40,7 +41,7 @@ const Playit = require('playit.gg');
 
 (async () => {
   // Start PlayIt
-  const playit = await new playit();
+  const playit = await new PlayIt();
 
   // Create A PlayIt Tunnel
   await playit.createTunnel(); // Default Is TCP On Port 80
