@@ -39,7 +39,7 @@ class playit {
       this.ready = true;
     })();
 
-    while (!ready);
+    while (!this.ready);
 
     return this;
   }
@@ -109,13 +109,18 @@ class playit {
     playitOpts.NO_BROWSER = true;
     let url;
 
-    // Remove The .env File
-    fs.rmSync(`${__dirname}/.env`);
+    const dotenvStream = fs.createWriteStream(`${__dirname}/.env`, {
+      flags: 'w+'
+    });
 
     // Put The Options Into The .env File
-    Object.entries(playitOpts).map(([opt, value]) =>
-      fs.appendFileSync(`${__dirname}/.env`, `${opt}=${value}\n`)
-    );
+    for (const [opt, value] of Object.entries(playitOpts)) {
+      await new Promise((res, rej) =>
+        dotenvStream.write(`${opt}=${value}\n`, (err) =>
+          err ? rej(err) : res(undefined)
+        )
+      );
+    }
 
     // If A Previous Config File Exists, Remove It
     if (
