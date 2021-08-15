@@ -2,7 +2,7 @@ const { spawn } = require('child_process');
 import fs from 'fs';
 import fetch from 'node-fetch';
 
-export default class playit {
+class playit {
   destroyed: Boolean = false;
 
   arch: String = (() => {
@@ -202,6 +202,12 @@ export default class playit {
         headers: { authorization: `agent ${this.agent.agent_key}` }
       });
   }
+
+  public async startPlugin(
+    plugin: Function = (playit: playit) => playit
+  ): Promise<any> {
+    plugin;
+  }
 }
 
 function isRequired(argumentName: string): any {
@@ -210,11 +216,10 @@ function isRequired(argumentName: string): any {
 }
 
 async function init(opts?: startOpts): Promise<playit> {
-  let { playitOpts = {}, plugin = (playit: playit) => playit } = opts || {};
+  let { playitOpts = {} } = opts || {};
 
-  let newPlayIt = (
-    await new playit().create({ claim: true, playitOpts, plugin })
-  ).playit;
+  let newPlayIt = (await new playit().create({ claim: true, playitOpts }))
+    .playit;
 
   return newPlayIt;
 }
@@ -222,7 +227,6 @@ async function init(opts?: startOpts): Promise<playit> {
 interface startOpts {
   claim?: boolean;
   playitOpts?: any;
-  plugin?: Function;
 }
 
 interface tunnelOpts {
