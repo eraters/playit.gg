@@ -37,7 +37,7 @@ export default class playit {
     await this.fetch(`/account/tunnels/${id}/enable`);
   }
 
-  async createTunnel(tunnelOpts?: tunnelOpts) {
+  async createTunnel(tunnelOpts?: tunnelOpts): Promise<Object> {
     let { proto = 'TCP', port = 80 } = tunnelOpts || {};
 
     // Create The Tunnel, And Get The Id
@@ -210,7 +210,7 @@ function isRequired(argumentName: string): any {
   throw new TypeError(`${argumentName} is a required argument.`);
 }
 
-async function init(opts: startOpts) {
+async function init(opts?: startOpts): Promise<playit> {
   let { playitOpts = {}, plugin = (playit: playit) => playit } = opts || {};
 
   let newPlayIt = (
