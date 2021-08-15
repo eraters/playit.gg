@@ -1,6 +1,6 @@
 {
   "name": "playit.gg",
-  "version": "1.1.7",
+  "version": "1.1.8",
   "description": "An Unofficial JavaScript Wrapper For https://playit.gg",
   "private": false,
   "main": "dist/index.js",
@@ -9,7 +9,7 @@
     "access": "public"
   },
   "scripts": {
-    "prepublish": "tsc && terser -c -m -o dist/index.js dist/index.js",
+    "prepack": "tsc && terser -c -m -o dist/index.js dist/index.js",
     "test": "tsc && node test.js"
   },
   "repository": {
