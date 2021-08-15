@@ -37,7 +37,7 @@ export default class playit {
     await this.fetch(`/account/tunnels/${id}/enable`);
   }
 
-  public async createTunnel(tunnelOpts?: tunnelOpts): Promise<Object> {
+  public async createTunnel(tunnelOpts?: tunnelOpts): Promise<tunnel> {
     let { proto = 'TCP', port = 80 } = tunnelOpts || {};
 
     // Create The Tunnel, And Get The Id
@@ -64,7 +64,7 @@ export default class playit {
     ).id;
 
     // Get More Data About The Tunnel
-    let otherData = (
+    let otherData: tunnel = (
       await (await this.fetch('/account/tunnels')).json()
     ).tunnels.find((tunnel: any) => tunnel.id === tunnelId);
 
