@@ -209,7 +209,7 @@ function isRequired(argumentName: string): any {
   throw new TypeError(`${argumentName} is a required argument.`);
 }
 
-async function init(opts?: startOpts): Promise<playit> {
+export async function init(opts?: startOpts): Promise<playit> {
   let { playitOpts = {} } = opts || {};
 
   let newPlayIt = (await new playit().create({ claim: true, playitOpts }))
