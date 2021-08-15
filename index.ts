@@ -13,9 +13,9 @@ export default class playit {
     return process.arch;
   })();
 
-  tunnels: any[] = [];
+  tunnels: tunnel[] = [];
   plugin: any;
-  agent: any;
+  agent: agent;
   started: Boolean = false;
   playit: any;
 
@@ -29,15 +29,15 @@ export default class playit {
 
   constructor() {}
 
-  async disableTunnel(id: number): Promise<void> {
+  public async disableTunnel(id: number): Promise<void> {
     await this.fetch(`/account/tunnels/${id}/disable`);
   }
 
-  async enableTunnel(id: number): Promise<void> {
+  public async enableTunnel(id: number): Promise<void> {
     await this.fetch(`/account/tunnels/${id}/enable`);
   }
 
-  async createTunnel(tunnelOpts?: tunnelOpts): Promise<Object> {
+  public async createTunnel(tunnelOpts?: tunnelOpts): Promise<Object> {
     let { proto = 'TCP', port = 80 } = tunnelOpts || {};
 
     // Create The Tunnel, And Get The Id
@@ -83,13 +83,13 @@ export default class playit {
     return otherData;
   }
 
-  async claimUrl(url: string = isRequired('URL')) {
+  private async claimUrl(url: string = isRequired('URL')) {
     await this.fetch(url);
 
     return url;
   }
 
-  async create(startOpts?: startOpts): Promise<{
+  public async create(startOpts?: startOpts): Promise<{
     url: string;
     playit: playit;
   }> {
@@ -135,7 +135,7 @@ export default class playit {
           ? 'arm'
           : 'lin'
       }`,
-      100
+      0o777
     );
 
     // Spawn The PlayIt Binary
@@ -179,14 +179,13 @@ export default class playit {
     return { url, playit: this };
   }
 
-  async stop(): Promise<void> {
+  public async stop(): Promise<void> {
     this.destroyed = true;
     // Kill The PlayIt Binary
     this.playit.kill('SIGINT');
-    return;
   }
 
-  async fetch(url: string, data: Object = {}): Promise<any> {
+  private async fetch(url: string, data: Object = {}): Promise<any> {
     if (url.startsWith('https://') || url.startsWith('http://'))
       return await fetch(url, {
         ...data,
@@ -229,6 +228,25 @@ interface startOpts {
 interface tunnelOpts {
   proto?: string;
   port?: number;
+}
+
+interface agent {
+  agent_key: string;
+  preferred_tunnel: string;
+}
+
+interface tunnel {
+  id: number;
+  agent_id: number;
+  game: string;
+  local_ip: '127.0.0.1';
+  local_port: number;
+  domain_id: number;
+  status: 'Active';
+  connect_address: string;
+  is_custom_domain: false;
+  tunnel_version: number;
+  url: string;
 }
 
 module.exports = init;

@@ -15,4 +15,5 @@ const { createServer } = require('http'); // Ignore this, this is to test the tu
   }).listen(8080);
 
   console.log(`http://${tunnel.url}`);
+  console.log(tunnel);
 })();
