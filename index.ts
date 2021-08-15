@@ -2,7 +2,7 @@ const { spawn } = require('child_process');
 import fs from 'fs';
 import fetch from 'node-fetch';
 
-class playit {
+export default class playit {
   destroyed: Boolean = false;
 
   arch: String = (() => {
@@ -201,12 +201,6 @@ class playit {
         ...data,
         headers: { authorization: `agent ${this.agent.agent_key}` }
       });
-  }
-
-  public async startPlugin(
-    plugin: Function = (playit: playit) => playit
-  ): Promise<any> {
-    plugin;
   }
 }
 
