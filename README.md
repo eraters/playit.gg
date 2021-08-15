@@ -2,24 +2,6 @@
 
 > An Unofficial JavaScript Wrapper For [PlayIt.GG](https://playit.gg/)
 
-## For CS50x
-
-### Video Demo: **_TODO_**
-
-### Description: An Unofficial JavaScript Wrapper For [Playit.GG](https://playit.gg/)
-
-### Now, For The Files
-
-#### `index.js`
-
-This is the main file for this project. Containing the class, and all of the functions.
-
-### Description
-
-This project is a JavaScript wrapper around [PlayIt.GG](https://playit.gg/) and its API.
-
-PlayIt is an application that creates tunnels to a specified port and protocall. It can be used to expose web servers or other services.
-
 ## Installation
 
 To Install, Run:
