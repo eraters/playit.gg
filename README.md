@@ -64,6 +64,24 @@ Enable The Specified Tunnel. Only Works If The Tunnel Is Disabled.
 | :----: | :------: | :----------------------------: | :-----: |
 |   id   |   Yes    | The Id Of The Tunnel To Enable |  None   |
 
+## Plugins
+
+To Use A Plugin, Initialize It With The PlayIt Object
+
+```js
+const PlayIt = require('playit.gg');
+const myPlugin = require('playit-plugin-myplugin');
+
+(async () => {
+  // Start PlayIt
+  const playit = await PlayIt();
+
+  // Initialize The Plugin With The PlayIt Object
+  const plugin = await myPlugin(playit);
+  // You Can Use The Plugin, Using The Plugin's Documentation
+})();
+```
+
 ## Contribution
 
 More Features Are Soon To Come, And PRs Are Welcome!
