@@ -1,6 +1,6 @@
-const spawn = require('child_process').spawn;
-import fs = require('fs');
-import exitHook from 'async-exit-hook';
+const { spawn } = require('child_process');
+import fs from 'fs';
+import fetch from 'node-fetch';
 
 export default class playit {
   destroyed: Boolean = false;
@@ -27,31 +27,7 @@ export default class playit {
       ? 'mac'
       : 'lin';
 
-  constructor(
-    playitOpts: Object = {},
-    plugin: Function = (playit: playit) => playit
-  ) {
-    let ready: boolean = false;
-
-    // On Exit, Stop PlayIt
-    exitHook((callback: any) => {
-      if (this.destroyed) callback();
-      this.stop().then(callback);
-    });
-
-    (async () => {
-      // Start PlayIt
-      await this.start({ claim: true, playitOpts });
-
-      this.plugin = plugin(this);
-
-      ready = true;
-    })();
-
-    while (!ready);
-
-    return this;
-  }
+  constructor() {}
 
   async disableTunnel(id: number): Promise<void> {
     await this.fetch(`/account/tunnels/${id}/disable`);
@@ -113,21 +89,27 @@ export default class playit {
     return url;
   }
 
-  async start(startOpts?: startOpts) {
+  async create(startOpts?: startOpts): Promise<{
+    url: string;
+    playit: playit;
+  }> {
     let { claim = true, playitOpts = {} } = startOpts || {};
     this.started = true;
     playitOpts.NO_BROWSER = true;
     let url: string;
 
-    // Remove The .env File
-    fs.rmSync(`${__dirname}/.env`);
-
-    // Put The Options Into The .env File
-    Object.entries(playitOpts).map(([opt, value]) =>
-      fs.appendFileSync(`${__dirname}/.env`, `${opt}=${value}\n`)
-    );
+    const dotenvStream = fs.createWriteStream(`${__dirname}/.env`, {
+      flags: 'w+'
+    });
 
     // If A Previous Config File Exists, Remove It
+    for (const [opt, value] of Object.entries(playitOpts))
+      await new Promise((res, rej) =>
+        dotenvStream.write(`${opt}=${value}\n`, (err) =>
+          err ? rej(err) : res(undefined)
+        )
+      );
+
     if (
       fs.existsSync(
         this.os === 'win'
@@ -142,7 +124,7 @@ export default class playit {
       );
 
     fs.chmodSync(
-      `${__dirname}/binaries/playit.${
+      `${__dirname}/../binaries/playit.${
         this.os === 'win'
           ? 'exe'
           : this.os === 'mac'
@@ -158,7 +140,7 @@ export default class playit {
 
     // Spawn The PlayIt Binary
     this.playit = spawn(
-      `${__dirname}/binaries/playit.${
+      `${__dirname}/../binaries/playit.${
         this.os === 'win'
           ? 'exe'
           : this.os === 'mac'
@@ -194,7 +176,7 @@ export default class playit {
 
     if (claim === true) this.claimUrl(url);
 
-    return url;
+    return { url, playit: this };
   }
 
   async stop(): Promise<void> {
@@ -213,12 +195,12 @@ export default class playit {
     else if (url.startsWith('/'))
       return await fetch(`https://api.playit.gg${url}`, {
         ...data,
-        headers: { authorization: `agent ${(this, this.agent.agent_key)}` }
+        headers: { authorization: `agent ${this.agent.agent_key}` }
       });
     else
       return await fetch(`https://api.playit.gg/${url}`, {
         ...data,
-        headers: { authorization: `agent ${(this, this.agent.agent_key)}` }
+        headers: { authorization: `agent ${this.agent.agent_key}` }
       });
   }
 }
@@ -228,12 +210,25 @@ function isRequired(argumentName: string): any {
   throw new TypeError(`${argumentName} is a required argument.`);
 }
 
+async function init(opts: startOpts) {
+  let { playitOpts = {}, plugin = (playit: playit) => playit } = opts || {};
+
+  let newPlayIt = (
+    await new playit().create({ claim: true, playitOpts, plugin })
+  ).playit;
+
+  return newPlayIt;
+}
+
 interface startOpts {
   claim?: boolean;
   playitOpts?: any;
+  plugin?: Function;
 }
 
 interface tunnelOpts {
   proto?: string;
   port?: number;
 }
+
+module.exports = init;

@@ -17,7 +17,7 @@ const Playit = require('playit.gg');
 
 (async () => {
   // Start PlayIt
-  const playit = await new playit();
+  const playit = await PlayIt();
 
   // Create A PlayIt Tunnel
   await playit.createTunnel(); // Default Is TCP On Port 80
@@ -26,15 +26,16 @@ const Playit = require('playit.gg');
 
 ## API
 
-> **_NOTE:_** All Items In This Class (Even The Constructor) Are Asyncronous
+> **_NOTE:_** All Items In This Class Are Asyncronous
 
-### `playit(playitOpts)`
+### `playit(opts)`
 
 Start PlayIt.
 
-|   Option   | Required |            Description            | Default |
-| :--------: | :------: | :-------------------------------: | :-----: |
-| playitOpts |    No    | Options To Put In The `.env` File |  `{}`   |
+|   Option   | Required |            Description            |           Default            |
+| :--------: | :------: | :-------------------------------: | :--------------------------: |
+| playitOpts |    No    | Options To Put In The `.env` File |             `{}`             |
+|   plugin   |    No    |     A Plugin To Add To PlayIt     | `(playit: playit) => playit` |
 
 ### `playit.createTunnel(opts)`
 

@@ -1,11 +1,17 @@
 const PlayIt = require('.');
+const { createServer } = require('http');
 
 (async () => {
-  const playit = await new PlayIt();
+  const playit = await PlayIt();
 
-  const tunnel = await playit.createTunnel();
+  const tunnel = await playit.createTunnel({ port: 8080 });
 
-  console.log(tunnel.url);
+  createServer((_, res) => {
+    res.write(
+      "<h1>It Works!</h1><br/><p>If You're Reading This, Then PlayIt Works!</p>"
+    );
+    res.end();
+  }).listen(8080);
 
-  await playit.stop();
+  console.log(`http://${tunnel.url}`);
 })();
