@@ -39,7 +39,7 @@ export default class playit {
     lin: `https://playit.gg/downloads/playit-linux_64-${this.version}`,
     mac: `https://playit.gg/downloads/playit-darwin_64-${this.version}`,
     arm: `https://playit.gg/downloads/playit-armv7-${this.version}`,
-    aarch: `hhttps://playit.gg/downloads/playit-aarch64-${this.version}`
+    aarch: `https://playit.gg/downloads/playit-aarch64-${this.version}`
   };
 
   binary: string | undefined = undefined;
