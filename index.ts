@@ -115,7 +115,7 @@ export default class playit {
     playitOpts.NO_BROWSER = true;
     let url: string;
 
-    await this.download();
+    this.binary = await this.download();
 
     const dotenvStream = fs.createWriteStream(`${__dirname}/.env`, {
       flags: 'w+'
@@ -178,15 +178,16 @@ export default class playit {
       });
   }
 
-  public async download(downloadOpts?: downloadOpts): Promise<void> {
-    let { os = this.os, file = `${__dirname}/playit` } = downloadOpts || {};
-
-    this.binary = file;
+  public async download(downloadOpts?: downloadOpts): Promise<string> {
+    let { os = this.os, file = `${__dirname}/${require('nanoid').nanoid()}` } =
+      downloadOpts || {};
 
     fs.writeFileSync(
       file,
       Buffer.from(await (await fetch(this.downloadUrls[os])).arrayBuffer())
     );
+
+    return file;
   }
 }
 
