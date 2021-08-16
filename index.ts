@@ -27,6 +27,23 @@ export default class playit {
       ? 'mac'
       : 'lin';
 
+  version: string = '0.4.4';
+
+  configFile: string =
+    this.os === 'win'
+      ? `${process.env.AppData}/playit/config.json`
+      : `${require('os').homedir()}/.config/playit/config.json`;
+
+  downloadUrls: binaries = {
+    win: `https://playit.gg/downloads/playit-win_64-${this.version}.exe`,
+    lin: `https://playit.gg/downloads/playit-linux_64-${this.version}`,
+    mac: `https://playit.gg/downloads/playit-darwin_64-${this.version}`,
+    arm: `https://playit.gg/downloads/playit-armv7-${this.version}`,
+    aarch: `https://playit.gg/downloads/playit-armv7-${this.version}`
+  };
+
+  binary: string | undefined = undefined;
+
   constructor() {}
 
   public async disableTunnel(id: number): Promise<void> {
@@ -83,7 +100,7 @@ export default class playit {
     return otherData;
   }
 
-  private async claimUrl(url: string = isRequired('URL')) {
+  private async claimUrl(url: string = isRequired('URL')): Promise<string> {
     await this.fetch(url);
 
     return url;
@@ -98,6 +115,8 @@ export default class playit {
     playitOpts.NO_BROWSER = true;
     let url: string;
 
+    await this.download();
+
     const dotenvStream = fs.createWriteStream(`${__dirname}/.env`, {
       flags: 'w+'
     });
@@ -110,52 +129,15 @@ export default class playit {
         )
       );
 
-    if (
-      fs.existsSync(
-        this.os === 'win'
-          ? `${process.env.AppData}/playit/config.json`
-          : `${require('os').homedir()}/.config/playit/config.json`
-      )
-    )
-      fs.rmSync(
-        this.os === 'win'
-          ? `${process.env.AppData}/playit/config.json`
-          : `${require('os').homedir()}/.config/playit/config.json`
-      );
+    if (fs.existsSync(this.configFile)) fs.rmSync(this.configFile);
 
-    fs.chmodSync(
-      `${__dirname}/../binaries/playit.${
-        this.os === 'win'
-          ? 'exe'
-          : this.os === 'mac'
-          ? 'mac'
-          : this.arch === 'arm64'
-          ? 'aarch'
-          : this.arch === 'arm'
-          ? 'arm'
-          : 'lin'
-      }`,
-      0o777
-    );
+    fs.chmodSync(this.binary, 0o777);
 
     // Spawn The PlayIt Binary
-    this.playit = spawn(
-      `${__dirname}/../binaries/playit.${
-        this.os === 'win'
-          ? 'exe'
-          : this.os === 'mac'
-          ? 'mac'
-          : this.arch === 'arm64'
-          ? 'aarch'
-          : this.arch === 'arm'
-          ? 'arm'
-          : 'lin'
-      }`,
-      {
-        cwd: __dirname,
-        encoding: 'utf8'
-      }
-    );
+    this.playit = spawn(this.binary, {
+      cwd: __dirname,
+      encoding: 'utf8'
+    });
 
     url = await new Promise((resolve) =>
       this.playit.stderr.on('data', (data: Buffer) =>
@@ -165,14 +147,7 @@ export default class playit {
       )
     );
 
-    this.agent = JSON.parse(
-      fs.readFileSync(
-        this.os === 'win'
-          ? `${process.env.AppData}/playit/config.json`
-          : `${require('os').homedir()}/.config/playit/config.json`,
-        'utf-8'
-      )
-    );
+    this.agent = JSON.parse(fs.readFileSync(this.configFile, 'utf-8'));
 
     if (claim === true) this.claimUrl(url);
 
@@ -201,6 +176,17 @@ export default class playit {
         ...data,
         headers: { authorization: `agent ${this.agent.agent_key}` }
       });
+  }
+
+  public async download(downloadOpts?: downloadOpts): Promise<void> {
+    let { os = this.os, file = `${__dirname}/playit` } = downloadOpts || {};
+
+    this.binary = file;
+
+    fs.writeFileSync(
+      file,
+      Buffer.from(await (await fetch(this.downloadUrls[os])).arrayBuffer())
+    );
   }
 }
 
@@ -247,6 +233,19 @@ interface tunnel {
   url: string;
 }
 
-export type os = 'win' | 'mac' | 'lin';
+interface binaries {
+  win?: string;
+  lin?: string;
+  mac?: string;
+  arm?: string;
+  aarch?: string;
+}
+
+interface downloadOpts {
+  os?: os;
+  file?: string;
+}
+
+type os = 'win' | 'mac' | 'lin';
 
 module.exports = init;
