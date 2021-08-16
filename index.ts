@@ -20,7 +20,7 @@ export default class playit {
   playit: any;
 
   // Get Os
-  os: string =
+  os: os =
     process.platform === 'win32'
       ? 'win'
       : process.platform === 'darwin'
@@ -246,5 +246,7 @@ interface tunnel {
   tunnel_version: number;
   url: string;
 }
+
+export type os = 'win' | 'mac' | 'lin';
 
 module.exports = init;
