@@ -2,6 +2,7 @@ import { spawn } from 'child_process';
 import fs from 'fs';
 import fetch from 'node-fetch';
 import exitHook from 'exit-hook';
+import { homedir, tmpdir } from 'os';
 
 export default class playit {
   destroyed: Boolean = false;
@@ -15,10 +16,9 @@ export default class playit {
   })();
 
   tunnels: tunnel[] = [];
-  plugin: any;
-  agent: agent | undefined;
+  agent: agent | undefined = undefined;
   started: Boolean = false;
-  playit: any;
+  playit: any = undefined;
 
   // Get Os
   os: os =
@@ -33,7 +33,7 @@ export default class playit {
   configFile: string =
     this.os === 'win'
       ? `${process.env.AppData}/playit/config.json`
-      : `${require('os').homedir()}/.config/playit/config.json`;
+      : `${homedir()}/.config/playit/config.json`;
 
   downloadUrls: binaries = {
     win: `https://playit.gg/downloads/playit-win_64-${this.version}.exe`,
@@ -164,6 +164,17 @@ export default class playit {
     fs.rmSync(this.binary);
   }
 
+  public async download(os: os = this.os): Promise<string> {
+    let file = `${tmpdir()}/${require('nanoid').nanoid()}`;
+
+    fs.writeFileSync(
+      file,
+      Buffer.from(await (await fetch(this.downloadUrls[os])).arrayBuffer())
+    );
+
+    return file;
+  }
+
   private async fetch(url: string, data: Object = {}): Promise<any> {
     if (url.startsWith('https://') || url.startsWith('http://'))
       return await fetch(url, {
@@ -180,18 +191,6 @@ export default class playit {
         ...data,
         headers: { authorization: `agent ${this.agent.agent_key}` }
       });
-  }
-
-  private async download(downloadOpts?: downloadOpts): Promise<string> {
-    let { os = this.os, file = `${__dirname}/${require('nanoid').nanoid()}` } =
-      downloadOpts || {};
-
-    fs.writeFileSync(
-      file,
-      Buffer.from(await (await fetch(this.downloadUrls[os])).arrayBuffer())
-    );
-
-    return file;
   }
 }
 
@@ -248,11 +247,6 @@ interface binaries {
   mac?: string;
   arm?: string;
   aarch?: string;
-}
-
-interface downloadOpts {
-  os?: os;
-  file?: string;
 }
 
 type os = 'win' | 'mac' | 'lin';

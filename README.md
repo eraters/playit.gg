@@ -26,6 +26,26 @@ const PlayIt = require('playit.gg');
 })();
 ```
 
+## CLI
+
+To Install The CLI, Run:
+
+```bash
+npm install -g playit.gg
+```
+
+### Options
+
+```
+Usage: PlayIt --proto [Network Protocol] --port [Port]
+
+Options:
+  -V, --version  output the version number
+  -p, --port     port to expose. must be between 0 and 65535 (default: 80)
+  --proto        network protocol to expose. can either be TCP or UDP (default: "TCP")
+  -h, --help     display help for command
+```
+
 ## API
 
 > **_NOTE:_** All Items In This Class Are Asyncronous
@@ -34,10 +54,9 @@ const PlayIt = require('playit.gg');
 
 Start PlayIt.
 
-|   Option   | Required |            Description            |  Default   |
-| :--------: | :------: | :-------------------------------: | :--------: |
-| playitOpts |    No    | Options To Put In The `.env` File |    `{}`    |
-|   plugin   |    No    |     A Plugin To Add To PlayIt     | `() => {}` |
+|   Option   | Required |            Description            | Default |
+| :--------: | :------: | :-------------------------------: | :-----: |
+| playitOpts |    No    | Options To Put In The `.env` File |  `{}`   |
 
 ### `playit.createTunnel(tunnelOpts?: tunnelOpts): Promise<Object>`
 
@@ -64,6 +83,20 @@ Enable The Specified Tunnel. Only Works If The Tunnel Is Disabled.
 | :----: | :------: | :----------------------------: | :-----: |
 |   id   |   Yes    | The Id Of The Tunnel To Enable |  None   |
 
+### `playit.download(os?: os): Promise<string>`
+
+Download The Correct PlayIt Binary For The OS. Returns The Filename Of The Binary
+
+| Option | Required |                        Description                         |   Default   |
+| :----: | :------: | :--------------------------------------------------------: | :---------: |
+|   os   |    No    | The OS Of The Binary. Can Either Be `mac`, `win`, or `lin` | `playit.os` |
+
+### `playit.stop(): void`
+
+> This Is The Only Item In The Class That Is Syncronous.
+
+Stops The PlayIt Binary And Removes It. PlayIt Is Unusable After You Call This Function.
+
 ## Plugins
 
 To Use A Plugin, Initialize It With The PlayIt Object
@@ -80,6 +113,54 @@ const myPlugin = require('playit-plugin-myplugin');
   const plugin = await myPlugin(playit);
   // You Can Use The Plugin, Using The Plugin's Documentation
 })();
+```
+
+## Interfaces
+
+The Interfaces Are:
+
+```ts
+interface startOpts {
+  playitOpts?: any;
+}
+
+interface tunnelOpts {
+  proto?: string;
+  port?: number;
+}
+
+interface agent {
+  agent_key: string;
+  preferred_tunnel: string;
+}
+
+interface initOpts extends startOpts {
+  justConstructor?: Boolean;
+}
+
+interface tunnel {
+  id: number;
+  agent_id: number;
+  game: string;
+  local_ip: '127.0.0.1';
+  local_port: number;
+  domain_id: number;
+  status: 'Active';
+  connect_address: string;
+  is_custom_domain: false;
+  tunnel_version: number;
+  url: string;
+}
+
+interface binaries {
+  win?: string;
+  lin?: string;
+  mac?: string;
+  arm?: string;
+  aarch?: string;
+}
+
+type os = 'win' | 'mac' | 'lin';
 ```
 
 ## Contribution

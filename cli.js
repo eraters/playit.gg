@@ -10,18 +10,18 @@ const program = new Command();
 
   program
     .version(playit.version)
-    .name('PlayIt.GG')
-    .usage('[Network Prototype (tcp/udp)] [Port]')
+    .name('PlayIt')
+    .usage('--proto [Network Protocol] --port [Port]')
     .addOption(
       new Option(
         '-p, --port',
-        'port to expose. must be in between 0 and 65535'
+        'port to expose. must be between 0 and 65535'
       ).default(80)
     )
     .addOption(
       new Option(
         '--proto',
-        'network protocol to expose. can either be tcp or udp'
+        'network protocol to expose. can either be TCP or UDP'
       ).default('TCP')
     )
     .parse();
