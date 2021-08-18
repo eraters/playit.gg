@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
     "types": ["node"],
-    "target": "es3",
+    "target": "es6",
     "module": "CommonJS",
     "lib": ["es2017", "es7", "es6", "dom"],
     "declaration": true,

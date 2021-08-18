@@ -1,6 +1,7 @@
-const { spawn } = require('child_process');
+import { spawn } from 'child_process';
 import fs from 'fs';
 import fetch from 'node-fetch';
+import exitHook from 'exit-hook';
 
 export default class playit {
   destroyed: Boolean = false;
@@ -15,7 +16,7 @@ export default class playit {
 
   tunnels: tunnel[] = [];
   plugin: any;
-  agent: agent;
+  agent: agent | undefined;
   started: Boolean = false;
   playit: any;
 
@@ -57,8 +58,10 @@ export default class playit {
   public async createTunnel(tunnelOpts?: tunnelOpts): Promise<tunnel> {
     let { proto = 'TCP', port = 80 } = tunnelOpts || {};
 
+    port = Number(port);
+
     // Create The Tunnel, And Get The Id
-    const tunnelId = (
+    const tunnelId: number = (
       await (
         await this.fetch('/account/tunnels', {
           method: 'POST',
@@ -106,11 +109,8 @@ export default class playit {
     return url;
   }
 
-  public async create(startOpts?: startOpts): Promise<{
-    url: string;
-    playit: playit;
-  }> {
-    let { claim = true, playitOpts = {} } = startOpts || {};
+  public async create(startOpts?: startOpts): Promise<playit> {
+    let { playitOpts = {} } = startOpts || {};
     this.started = true;
     playitOpts.NO_BROWSER = true;
     let url: string;
@@ -135,8 +135,11 @@ export default class playit {
 
     // Spawn The PlayIt Binary
     this.playit = spawn(this.binary, {
-      cwd: __dirname,
-      encoding: 'utf8'
+      cwd: __dirname
+    });
+
+    exitHook(() => {
+      this.stop();
     });
 
     url = await new Promise((resolve) =>
@@ -149,15 +152,16 @@ export default class playit {
 
     this.agent = JSON.parse(fs.readFileSync(this.configFile, 'utf-8'));
 
-    if (claim === true) this.claimUrl(url);
+    this.claimUrl(url);
 
-    return { url, playit: this };
+    return this;
   }
 
-  public async stop(): Promise<void> {
+  public stop(): void {
     this.destroyed = true;
     // Kill The PlayIt Binary
     this.playit.kill('SIGINT');
+    fs.rmSync(this.binary);
   }
 
   private async fetch(url: string, data: Object = {}): Promise<any> {
@@ -178,7 +182,7 @@ export default class playit {
       });
   }
 
-  public async download(downloadOpts?: downloadOpts): Promise<string> {
+  private async download(downloadOpts?: downloadOpts): Promise<string> {
     let { os = this.os, file = `${__dirname}/${require('nanoid').nanoid()}` } =
       downloadOpts || {};
 
@@ -196,17 +200,17 @@ function isRequired(argumentName: string): any {
   throw new TypeError(`${argumentName} is a required argument.`);
 }
 
-export async function init(opts?: startOpts): Promise<playit> {
-  let { playitOpts = {} } = opts || {};
+export async function init(opts?: initOpts): Promise<playit> {
+  let { playitOpts = {}, justConstructor = false } = opts || {};
 
-  let newPlayIt = (await new playit().create({ claim: true, playitOpts }))
-    .playit;
+  let newPlayIt = justConstructor
+    ? new playit()
+    : await new playit().create({ playitOpts });
 
   return newPlayIt;
 }
 
 interface startOpts {
-  claim?: boolean;
   playitOpts?: any;
 }
 
@@ -218,6 +222,10 @@ interface tunnelOpts {
 interface agent {
   agent_key: string;
   preferred_tunnel: string;
+}
+
+interface initOpts extends startOpts {
+  justConstructor?: Boolean;
 }
 
 interface tunnel {

@@ -4,7 +4,7 @@ const { createServer } = require('http'); // Ignore this, this is to test the tu
 (async () => {
   const playit = await PlayIt();
 
-  const tunnel = await playit.createTunnel({ port: 8080 });
+  const tunnel = await playit.createTunnel({ proto: 'tcp', port: 8080 });
 
   // Ignore this, this just creates a webserver to test the tunnel
   createServer((_, res) => {
