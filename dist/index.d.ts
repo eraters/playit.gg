@@ -1,4 +1,4 @@
-export default class playit {
+export declare class playit {
     destroyed: Boolean;
     arch: String;
     tunnels: tunnel[];
@@ -20,7 +20,7 @@ export default class playit {
     download(os?: os): Promise<string>;
     private fetch;
 }
-export declare function init(opts?: initOpts): Promise<playit>;
+export default function init(opts?: initOpts): Promise<playit>;
 interface startOpts {
     playitOpts?: any;
 }

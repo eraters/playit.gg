@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.init = void 0;
+exports.playit = void 0;
 const child_process_1 = require("child_process");
 const fs_1 = __importDefault(require("fs"));
 const node_fetch_1 = __importDefault(require("node-fetch"));
@@ -152,7 +152,7 @@ class playit {
         });
     }
 }
-exports.default = playit;
+exports.playit = playit;
 function isRequired(argumentName) {
     // If A Required Argument Isn't Provided, Throw An Error
     throw new TypeError(`${argumentName} is a required argument.`);
@@ -166,5 +166,5 @@ function init(opts) {
         return newPlayIt;
     });
 }
-exports.init = init;
+exports.default = init;
 module.exports = init;

@@ -4,7 +4,7 @@ import fetch from 'node-fetch';
 import exitHook from 'exit-hook';
 import { homedir, tmpdir } from 'os';
 
-export default class playit {
+export class playit {
   destroyed: Boolean = false;
 
   arch: String = (() => {
@@ -199,7 +199,7 @@ function isRequired(argumentName: string): any {
   throw new TypeError(`${argumentName} is a required argument.`);
 }
 
-export async function init(opts?: initOpts): Promise<playit> {
+export default async function init(opts?: initOpts): Promise<playit> {
   let { playitOpts = {}, justConstructor = false } = opts || {};
 
   let newPlayIt = justConstructor
