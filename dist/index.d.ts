@@ -21,21 +21,21 @@ export declare class playit {
     private fetch;
 }
 export default function init(startOpts?: initOpts): Promise<playit>;
-interface startOpts {
+export interface startOpts {
     playitOpts?: any;
 }
-interface tunnelOpts {
+export interface tunnelOpts {
     proto?: string;
     port?: number;
 }
-interface agent {
+export interface agent {
     agent_key: string;
     preferred_tunnel: string;
 }
-interface initOpts extends startOpts {
+export interface initOpts extends startOpts {
     justConstructor?: Boolean;
 }
-interface tunnel {
+export interface tunnel {
     id: number;
     agent_id: number;
     game: string;
@@ -48,12 +48,11 @@ interface tunnel {
     tunnel_version: number;
     url: string;
 }
-interface binaries {
+export interface binaries {
     win?: string;
     lin?: string;
     mac?: string;
     arm?: string;
     aarch?: string;
 }
-declare type os = 'win' | 'mac' | 'lin';
-export {};
+export declare type os = 'win' | 'mac' | 'lin';
