@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
-const PlayIt = require('.');
-const { Command, Option } = require('commander');
+import PlayIt from './dist/index.js';
+import { Command, Option } from 'commander';
 
 const program = new Command();
 

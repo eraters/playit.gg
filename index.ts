@@ -1,8 +1,15 @@
-import { spawn } from 'child_process';
-import fs from 'fs';
+import { spawn } from 'node:child_process';
+import fs from 'node:fs';
 import fetch from 'node-fetch';
 import exitHook from 'exit-hook';
-import { homedir, tmpdir } from 'os';
+import nodeOS from 'node:os';
+import { createRequire } from 'module';
+import { dirname } from 'path';
+import { fileURLToPath } from 'url';
+
+global.__filename = fileURLToPath(import.meta.url);
+global.__dirname = dirname(__filename);
+global.require = createRequire(import.meta.url);
 
 export class playit {
   destroyed: Boolean = false;
@@ -33,7 +40,7 @@ export class playit {
   configFile: string =
     this.os === 'win'
       ? `${process.env.AppData}/playit/config.json`
-      : `${homedir()}/.config/playit/config.json`;
+      : `${nodeOS.homedir()}/.config/playit/config.json`;
 
   downloadUrls: binaries = {
     win: `https://playit.gg/downloads/playit-win_64-${this.version}.exe`,
@@ -165,7 +172,7 @@ export class playit {
   }
 
   public async download(os: os = this.os): Promise<string> {
-    let file = `${tmpdir()}/${require('nanoid').nanoid()}`;
+    let file = `${nodeOS.tmpdir()}/${require('nanoid').nanoid()}`;
 
     fs.writeFileSync(
       file,
@@ -199,8 +206,8 @@ function isRequired(argumentName: string): any {
   throw new TypeError(`${argumentName} is a required argument.`);
 }
 
-export default async function init(opts?: initOpts): Promise<playit> {
-  let { playitOpts = {}, justConstructor = false } = opts || {};
+export default async function init(startOpts?: initOpts): Promise<playit> {
+  let { playitOpts = {}, justConstructor = false } = startOpts || {};
 
   let newPlayIt = justConstructor
     ? new playit()
@@ -250,5 +257,3 @@ interface binaries {
 }
 
 type os = 'win' | 'mac' | 'lin';
-
-module.exports = init;

@@ -50,7 +50,7 @@ Options:
 
 > **_NOTE:_** All Items In This Class Are Asyncronous
 
-### `playit(opts?: startOpts): Promise<playit>`
+### `playit(startOpts?: startOpts): Promise<playit>`
 
 Start PlayIt.
 
@@ -83,13 +83,13 @@ Enable The Specified Tunnel. Only Works If The Tunnel Is Disabled.
 | :----: | :------: | :----------------------------: | :-----: |
 |   id   |   Yes    | The Id Of The Tunnel To Enable |  None   |
 
-### `playit.download(os?: os): Promise<string>`
+### `playit.download(pcOS?: os): Promise<string>`
 
 Download The Correct PlayIt Binary For The OS. Returns The Filename Of The Binary
 
 | Option | Required |                        Description                         |   Default   |
 | :----: | :------: | :--------------------------------------------------------: | :---------: |
-|   os   |    No    | The OS Of The Binary. Can Either Be `mac`, `win`, or `lin` | `playit.os` |
+|  pcOS  |    No    | The OS Of The Binary. Can Either Be `mac`, `win`, or `lin` | `playit.os` |
 
 ### `playit.stop(): void`
 

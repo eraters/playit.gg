@@ -1,5 +1,5 @@
-const PlayIt = require('.');
-const { createServer } = require('http'); // Ignore this, this is to test the tunnel
+import PlayIt from './dist/index.js';
+import { createServer } from 'node:http'; // Ignore this, this is to test the tunnel
 
 (async () => {
   const playit = await PlayIt();

@@ -20,7 +20,7 @@ export declare class playit {
     download(os?: os): Promise<string>;
     private fetch;
 }
-export default function init(opts?: initOpts): Promise<playit>;
+export default function init(startOpts?: initOpts): Promise<playit>;
 interface startOpts {
     playitOpts?: any;
 }

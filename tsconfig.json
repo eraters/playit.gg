@@ -1,8 +1,9 @@
 {
   "compilerOptions": {
     "types": ["node"],
-    "target": "es6",
-    "module": "CommonJS",
+    "target": "es2020",
+    "module": "es2020",
+    "moduleResolution": "Node",
     "lib": ["es2017", "es7", "es6", "dom"],
     "declaration": true,
     "outDir": "dist",
