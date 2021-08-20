@@ -3,9 +3,9 @@ import fs from 'node:fs';
 import fetch from 'node-fetch';
 import exitHook from 'exit-hook';
 import nodeOS from 'node:os';
-import { createRequire } from 'module';
-import { dirname } from 'path';
-import { fileURLToPath } from 'url';
+import { createRequire } from 'node:module';
+import { dirname } from 'node:path';
+import { fileURLToPath } from 'node:url';
 
 global.__filename = fileURLToPath(import.meta.url);
 global.__dirname = dirname(__filename);
@@ -216,25 +216,25 @@ export default async function init(startOpts?: initOpts): Promise<playit> {
   return newPlayIt;
 }
 
-interface startOpts {
+export interface startOpts {
   playitOpts?: any;
 }
 
-interface tunnelOpts {
+export interface tunnelOpts {
   proto?: string;
   port?: number;
 }
 
-interface agent {
+export interface agent {
   agent_key: string;
   preferred_tunnel: string;
 }
 
-interface initOpts extends startOpts {
+export interface initOpts extends startOpts {
   justConstructor?: Boolean;
 }
 
-interface tunnel {
+export interface tunnel {
   id: number;
   agent_id: number;
   game: string;
@@ -248,7 +248,7 @@ interface tunnel {
   url: string;
 }
 
-interface binaries {
+export interface binaries {
   win?: string;
   lin?: string;
   mac?: string;
@@ -256,4 +256,4 @@ interface binaries {
   aarch?: string;
 }
 
-type os = 'win' | 'mac' | 'lin';
+export type os = 'win' | 'mac' | 'lin';
