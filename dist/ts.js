@@ -58,7 +58,7 @@ export class playit {
                 game: `custom-${proto.toLowerCase()}`,
                 local_port: port,
                 local_ip: '127.0.0.1',
-                local_proto: proto.replace(/./g, (m, o) => o === 0 ? m.toUpperCase() : m.toLowerCase()),
+                local_proto: proto.toUpperCase(),
                 agent_id: (await (await this.fetch('/account/agents')).json()).agents.find((agent) => agent.key === this.agent.agent_key)
                     .id,
                 domain_id: null
