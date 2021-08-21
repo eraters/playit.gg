@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-import PlayIt from './dist/index.js';
+import PlayIt from './dist/ts.js';
 import { Command, Option } from 'commander';
 
 const program = new Command();
