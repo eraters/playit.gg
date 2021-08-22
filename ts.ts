@@ -65,8 +65,6 @@ export class playit {
   public async createTunnel(tunnelOpts?: tunnelOpts): Promise<tunnel> {
     let { proto = 'TCP', port = 80 } = tunnelOpts || {};
 
-    port = Number(port);
-
     // Create The Tunnel, And Get The Id
     const tunnelId: number = (
       await (
@@ -75,7 +73,7 @@ export class playit {
           body: JSON.stringify({
             id: null,
             game: `custom-${proto.toLowerCase()}`,
-            local_port: port,
+            local_port: Number(port),
             local_ip: '127.0.0.1',
             local_proto: proto.toUpperCase(),
             agent_id: (
@@ -108,10 +106,8 @@ export class playit {
     return otherData;
   }
 
-  private async claimUrl(url: string = isRequired('URL')): Promise<string> {
+  private async claimUrl(url: string = isRequired('URL')): Promise<void> {
     await this.fetch(url);
-
-    return url;
   }
 
   public async create(startOpts?: startOpts): Promise<playit> {
@@ -126,7 +122,6 @@ export class playit {
       flags: 'w+'
     });
 
-    // If A Previous Config File Exists, Remove It
     for (const [opt, value] of Object.entries(playitOpts))
       await new Promise((res, rej) =>
         dotenvStream.write(`${opt}=${value}\n`, (err) =>

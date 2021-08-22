@@ -49,14 +49,13 @@ export class playit {
     }
     async createTunnel(tunnelOpts) {
         let { proto = 'TCP', port = 80 } = tunnelOpts || {};
-        port = Number(port);
         // Create The Tunnel, And Get The Id
         const tunnelId = (await (await this.fetch('/account/tunnels', {
             method: 'POST',
             body: JSON.stringify({
                 id: null,
                 game: `custom-${proto.toLowerCase()}`,
-                local_port: port,
+                local_port: Number(port),
                 local_ip: '127.0.0.1',
                 local_proto: proto.toUpperCase(),
                 agent_id: (await (await this.fetch('/account/agents')).json()).agents.find((agent) => agent.key === this.agent.agent_key)
@@ -78,7 +77,6 @@ export class playit {
     }
     async claimUrl(url = isRequired('URL')) {
         await this.fetch(url);
-        return url;
     }
     async create(startOpts) {
         let { playitOpts = {} } = startOpts || {};
@@ -89,7 +87,6 @@ export class playit {
         const dotenvStream = fs.createWriteStream(`${__dirname}/.env`, {
             flags: 'w+'
         });
-        // If A Previous Config File Exists, Remove It
         for (const [opt, value] of Object.entries(playitOpts))
             await new Promise((res, rej) => dotenvStream.write(`${opt}=${value}\n`, (err) => err ? rej(err) : res(undefined)));
         if (fs.existsSync(this.configFile))
