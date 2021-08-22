@@ -11,7 +11,7 @@ global.__filename = fileURLToPath(import.meta.url);
 global.__dirname = dirname(__filename);
 global.require = createRequire(import.meta.url);
 
-export class playit {
+export class PlayIt {
   destroyed: Boolean = false;
 
   arch: String = (() => {
@@ -110,8 +110,7 @@ export class playit {
     await this.fetch(url);
   }
 
-  public async create(startOpts?: startOpts): Promise<playit> {
-    let { playitOpts = {} } = startOpts || {};
+  public async create(playitOpts: any): Promise<PlayIt> {
     this.started = true;
     playitOpts.NO_BROWSER = true;
     let url: string;
@@ -199,18 +198,8 @@ function isRequired(argumentName: string): any {
   throw new TypeError(`${argumentName} is a required argument.`);
 }
 
-export default async function init(startOpts?: initOpts): Promise<playit> {
-  let { playitOpts = {}, justConstructor = false } = startOpts || {};
-
-  let newPlayIt = justConstructor
-    ? new playit()
-    : await new playit().create({ playitOpts });
-
-  return newPlayIt;
-}
-
-export interface startOpts {
-  playitOpts?: any;
+export default async function init(playitOpts: any = {}): Promise<PlayIt> {
+  return await new PlayIt().create({ playitOpts });
 }
 
 export interface tunnelOpts {
@@ -222,11 +211,6 @@ export interface agent {
   agent_key: string;
   preferred_tunnel: string;
 }
-
-export interface initOpts extends startOpts {
-  justConstructor?: Boolean;
-}
-
 export interface tunnel {
   id: number;
   agent_id: number;

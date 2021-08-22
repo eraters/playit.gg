@@ -1,12 +1,12 @@
 #!/usr/bin/env node
 
-import PlayIt from './dist/ts.js';
+import { PlayIt } from './dist/ts.js';
 import { Command, Option } from 'commander';
 
 const program = new Command();
 
 (async () => {
-  let playit = await PlayIt({ justConstructor: true });
+  let playit = new PlayIt();
 
   program
     .version(playit.version)

@@ -1,16 +1,16 @@
 import caxa from 'caxa';
-import { playit as PlayIt } from './dist/ts.js';
+import { PlayIt } from './dist/ts.js';
 
 const os = new PlayIt().os;
 
 (async () => {
-  const output = `bin/${
-    os === 'win' ? 'playit.exe' : os === 'mac' ? 'playit.app' : 'playit.lin'
+  const output = `bin/playit.${
+    os === 'win' ? 'exe' : os === 'mac' ? 'app' : 'lin'
   }`;
   await caxa.default({
     input: '.',
     output,
-    command: ['{{caxa}}/node_modules/.bin/node', '{{caxa}}/test.js']
+    command: ['{{caxa}}/node_modules/.bin/node', '{{caxa}}/cli.js']
   });
   console.log(`Built PlayIt To ${output}`);
 })();
