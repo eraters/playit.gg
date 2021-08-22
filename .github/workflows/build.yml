@@ -3,7 +3,7 @@ on:
 
 jobs:
   build:
-     if: ${{ endsWith(github.event.commits[0].message, '[release]')  }}
+    if: ${{ endsWith(github.event.commits[0].message, '[release]')  }}
     strategy:
       matrix:
         platform: [ubuntu-latest, macos-latest, windows-latest]
