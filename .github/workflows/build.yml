@@ -14,14 +14,13 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v1
         with:
-          version: 16
+          node-version: 16
       - name: Build
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           npm install
           node --unhandled-rejections=strict --trace-uncaught --trace-warnings build.js
-      - run: ls -R .
       - name: Upload Artifacts
         uses: actions/upload-artifact@v2
         with:
@@ -38,7 +37,6 @@ jobs:
         uses: actions/download-artifact@v2
         with:
           path: bin/
-      - run: ls -R .
       - name: Get Release Name
         run: echo "::set-output name=VER::v$(node -p "require('./package.json').version")"
         id: VER
