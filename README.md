@@ -115,52 +115,14 @@ const myPlugin = require('playit-plugin-myplugin');
 })();
 ```
 
-## Interfaces
+## TypeScript
 
-The Interfaces Are:
+To Use In TypeScript, Import PlayIt From `playit.gg/ts`
 
 ```ts
-interface startOpts {
-  playitOpts?: any;
-}
+import PlayIt from 'playit.gg/ts';
 
-interface tunnelOpts {
-  proto?: string;
-  port?: number;
-}
-
-interface agent {
-  agent_key: string;
-  preferred_tunnel: string;
-}
-
-interface initOpts extends startOpts {
-  justConstructor?: Boolean;
-}
-
-interface tunnel {
-  id: number;
-  agent_id: number;
-  game: string;
-  local_ip: '127.0.0.1';
-  local_port: number;
-  domain_id: number;
-  status: 'Active';
-  connect_address: string;
-  is_custom_domain: false;
-  tunnel_version: number;
-  url: string;
-}
-
-interface binaries {
-  win?: string;
-  lin?: string;
-  mac?: string;
-  arm?: string;
-  aarch?: string;
-}
-
-type os = 'win' | 'mac' | 'lin';
+// Use PlayIt With Types
 ```
 
 ## Contribution
