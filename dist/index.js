@@ -15,7 +15,6 @@ global.__filename = (() => {
     return path;
 })();
 global.__dirname = dirname(__filename);
-console.log(__dirname);
 global.require = createRequire(__filename);
 export class PlayIt {
     constructor() {
