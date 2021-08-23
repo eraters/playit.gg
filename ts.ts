@@ -199,7 +199,7 @@ function isRequired(argumentName: string): any {
 }
 
 export default async function init(playitOpts: any = {}): Promise<PlayIt> {
-  return await new PlayIt().create({ playitOpts });
+  return await new PlayIt().create(playitOpts);
 }
 
 export interface tunnelOpts {

@@ -9,7 +9,7 @@ import { fileURLToPath } from 'node:url';
 global.__filename = fileURLToPath(import.meta.url);
 global.__dirname = dirname(__filename);
 global.require = createRequire(import.meta.url);
-export class playit {
+export class PlayIt {
     constructor() {
         this.destroyed = false;
         this.arch = (() => {
@@ -78,8 +78,7 @@ export class playit {
     async claimUrl(url = isRequired('URL')) {
         await this.fetch(url);
     }
-    async create(startOpts) {
-        let { playitOpts = {} } = startOpts || {};
+    async create(playitOpts = {}) {
         this.started = true;
         playitOpts.NO_BROWSER = true;
         let url;
@@ -139,10 +138,6 @@ function isRequired(argumentName) {
     // If A Required Argument Isn't Provided, Throw An Error
     throw new TypeError(`${argumentName} is a required argument.`);
 }
-export default async function init(startOpts) {
-    let { playitOpts = {}, justConstructor = false } = startOpts || {};
-    let newPlayIt = justConstructor
-        ? new playit()
-        : await new playit().create({ playitOpts });
-    return newPlayIt;
+export default async function init(playitOpts = {}) {
+    return await new PlayIt().create(playitOpts);
 }

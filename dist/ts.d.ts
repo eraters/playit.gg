@@ -1,4 +1,4 @@
-export declare class playit {
+export declare class PlayIt {
     destroyed: Boolean;
     arch: String;
     tunnels: tunnel[];
@@ -15,15 +15,12 @@ export declare class playit {
     enableTunnel(id: number): Promise<void>;
     createTunnel(tunnelOpts?: tunnelOpts): Promise<tunnel>;
     private claimUrl;
-    create(startOpts?: startOpts): Promise<playit>;
+    create(playitOpts?: any): Promise<PlayIt>;
     stop(): void;
     download(os?: os): Promise<string>;
     private fetch;
 }
-export default function init(startOpts?: initOpts): Promise<playit>;
-export interface startOpts {
-    playitOpts?: any;
-}
+export default function init(playitOpts?: any): Promise<PlayIt>;
 export interface tunnelOpts {
     proto?: string;
     port?: number;
@@ -31,9 +28,6 @@ export interface tunnelOpts {
 export interface agent {
     agent_key: string;
     preferred_tunnel: string;
-}
-export interface initOpts extends startOpts {
-    justConstructor?: Boolean;
 }
 export interface tunnel {
     id: number;
