@@ -164,7 +164,9 @@ export class PlayIt {
   }
 
   public async download(os: os = this.os): Promise<string> {
-    let file = `${nodeOS.tmpdir()}/${require('nanoid').nanoid()}`;
+    let file = `${nodeOS.tmpdir()}/${require('nanoid').nanoid()}${
+      this.os === 'win' ? '.exe' : ''
+    }`;
 
     fs.writeFileSync(
       file,
