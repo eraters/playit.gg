@@ -112,7 +112,7 @@ export class PlayIt {
         fs.rmSync(this.binary);
     }
     async download(os = this.os) {
-        let file = `${nodeOS.tmpdir()}/${require('nanoid').nanoid()}`;
+        let file = `${nodeOS.tmpdir()}/${require('nanoid').nanoid()}${this.os === 'win' ? '.exe' : ''}`;
         fs.writeFileSync(file, Buffer.from(await (await fetch(this.downloadUrls[os])).arrayBuffer()));
         return file;
     }

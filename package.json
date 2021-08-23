@@ -12,6 +12,7 @@
   "scripts": {
     "prepack": "tsc",
     "prepare": "tsc",
+    "package": "babel dist -d pkg/ --presets es2015 --copy-files && pkg . ",
     "test": "tsc && node test.js"
   },
   "bin": {
@@ -31,6 +32,7 @@
     "@types/fs-extra": "^9.0.12",
     "@types/node": "^16.7.1",
     "@types/node-fetch": "^2.5.12",
+    "babel-cli": "^6.26.0",
     "caxa": "^2.1.0",
     "commander": "^8.1.0",
     "exit-hook": "^2.2.1",
@@ -38,5 +40,12 @@
     "node": "^16.6.1",
     "node-fetch": "^2.6.1",
     "typescript": "^4.3.5"
+  },
+  "pkg": {
+    "scripts": "pkg/**/*",
+    "targets": [
+      "node14-linux"
+    ],
+    "outputPath": "dist"
   }
 }

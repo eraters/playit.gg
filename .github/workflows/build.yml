@@ -20,7 +20,7 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           npm install
-          node --unhandled-rejections=strict --trace-uncaught --trace-warnings build.js
+          npm run package
       - name: Upload Artifacts
         uses: actions/upload-artifact@v2
         with:
