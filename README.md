@@ -115,16 +115,6 @@ const myPlugin = require('playit-plugin-myplugin');
 })();
 ```
 
-## TypeScript
-
-To Use In TypeScript, Import PlayIt From `playit.gg/ts`
-
-```ts
-import PlayIt from 'playit.gg/ts';
-
-// Use PlayIt With Types
-```
-
 ## Contribution
 
 More Features Are Soon To Come, And PRs Are Welcome!
