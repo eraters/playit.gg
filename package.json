@@ -12,11 +12,11 @@
   "scripts": {
     "prepack": "tsc",
     "prepare": "tsc",
-    "package": "babel dist -d pkg/ --presets es2015 --copy-files && pkg . ",
+    "package": "tsc --outDir pkg --module commonjs --target es2020 && pkg .",
     "test": "tsc && node dist/test.js"
   },
   "bin": {
-    "playit": "dist/cli.js"
+    "playit": "pkg/cli.js"
   },
   "repository": {
     "type": "git",
@@ -32,17 +32,11 @@
     "@types/node": "^16.7.1",
     "@types/node-fetch": "^2.5.12",
     "commander": "^8.1.0",
+    "es-dirname": "^0.1.0",
     "exit-hook": "^2.2.1",
     "nanoid": "^3.1.25",
     "node": "^16.6.1",
     "playit.gg": "^1.3.8",
     "typescript": "^4.3.5"
-  },
-  "pkg": {
-    "scripts": "pkg/**/*",
-    "targets": [
-      "node14-linux"
-    ],
-    "outputPath": "bin"
   }
 }

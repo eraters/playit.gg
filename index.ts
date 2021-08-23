@@ -5,11 +5,19 @@ import exitHook from 'exit-hook';
 import nodeOS from 'node:os';
 import { createRequire } from 'node:module';
 import { dirname } from 'node:path';
-import { fileURLToPath } from 'node:url';
 
-global.__filename = fileURLToPath(import.meta.url);
+// https://jakedeichert.com/blog/2020/02/a-super-hacky-alternative-to-import-meta-url/
+global.__filename = (() => {
+  const initiator = String(new Error().stack).split('\n').slice(2, 3)[0];
+  let path = /(?<path>[^\(\s]+):[0-9]+:[0-9]+/.exec(initiator).groups.path;
+  if (path.indexOf('file') >= 0) {
+    path = new URL(path).pathname;
+  }
+
+  return path;
+})();
 global.__dirname = dirname(__filename);
-global.require = createRequire(import.meta.url);
+global.require = createRequire(__filename);
 
 export class PlayIt {
   destroyed: Boolean = false;
