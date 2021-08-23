@@ -110,7 +110,7 @@ export class PlayIt {
     await this.fetch(url);
   }
 
-  public async create(playitOpts: any): Promise<PlayIt> {
+  public async create(playitOpts: any = {}): Promise<PlayIt> {
     this.started = true;
     playitOpts.NO_BROWSER = true;
     let url: string;
