@@ -1,4 +1,4 @@
-import PlayIt from './dist/ts.js';
+import PlayIt from 'playit.gg';
 import { createServer } from 'node:http'; // Ignore this, this is to test the tunnel
 
 (async () => {
