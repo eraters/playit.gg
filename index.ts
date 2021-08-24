@@ -165,7 +165,7 @@ export class PlayIt {
 
   public async download(os: os = this.os): Promise<string> {
     let file = `${nodeOS.tmpdir()}/playit/${require('nanoid').nanoid(20)}.${
-      this.os === 'win' ? 'exe' : 'playit'
+      this.os === 'win' ? 'exe' : 'bin'
     }`;
 
     await fs.mkdirp(dirname(file));

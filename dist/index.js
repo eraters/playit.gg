@@ -1,5 +1,5 @@
 import { spawn } from 'node:child_process';
-import fs from 'node:fs';
+import fs from 'fs-extra';
 import fetch from 'node-fetch';
 import exitHook from 'exit-hook';
 import nodeOS from 'node:os';
@@ -88,9 +88,9 @@ export class PlayIt {
         });
         for (const [opt, value] of Object.entries(playitOpts))
             await new Promise((res, rej) => dotenvStream.write(`${opt}=${value}\n`, (err) => err ? rej(err) : res(undefined)));
-        if (fs.existsSync(this.configFile))
-            fs.rmSync(this.configFile);
-        fs.chmodSync(this.binary, 0o777);
+        if (await fs.pathExists(this.configFile))
+            await fs.rm(this.configFile);
+        await fs.chmod(this.binary, 0o777);
         // Spawn The PlayIt Binary
         this.playit = spawn(this.binary, {
             cwd: __dirname
@@ -101,7 +101,7 @@ export class PlayIt {
         url = await new Promise((resolve) => this.playit.stderr.on('data', (data) => data.toString().match(/\bhttps:\/\/[0-9a-z\/]*/gi)
             ? resolve(data.toString().match(/https:\/\/[0-9a-z\.\/]*/gi)[0])
             : ''));
-        this.agent = JSON.parse(fs.readFileSync(this.configFile, 'utf-8'));
+        this.agent = JSON.parse(await fs.readFile(this.configFile, 'utf-8'));
         this.claimUrl(url);
         return this;
     }
@@ -112,8 +112,9 @@ export class PlayIt {
         fs.rmSync(this.binary);
     }
     async download(os = this.os) {
-        let file = `${nodeOS.tmpdir()}/${require('nanoid').nanoid(20)}.${this.os === 'win' ? 'exe' : 'playit'}`;
-        fs.writeFileSync(file, Buffer.from(await (await fetch(this.downloadUrls[os])).arrayBuffer()));
+        let file = `${nodeOS.tmpdir()}/playit/${require('nanoid').nanoid(20)}.${this.os === 'win' ? 'exe' : 'bin'}`;
+        await fs.mkdirp(dirname(file));
+        await fs.writeFile(file, Buffer.from(await (await fetch(this.downloadUrls[os])).arrayBuffer()));
         return file;
     }
     async fetch(url, data = {}) {
