@@ -1,5 +1,5 @@
 import { spawn } from 'node:child_process';
-import fs from 'node:fs';
+import fs from 'fs-extra';
 import fetch from 'node-fetch';
 import exitHook from 'exit-hook';
 import nodeOS from 'node:os';
@@ -75,7 +75,7 @@ export class PlayIt {
             game: `custom-${proto.toLowerCase()}`,
             local_port: Number(port),
             local_ip: '127.0.0.1',
-            local_proto: proto.toUpperCase(),
+            local_proto: proto,
             agent_id: (
               await (await this.fetch('/account/agents')).json()
             ).agents.find((agent: any) => agent.key === this.agent.agent_key)
@@ -89,7 +89,7 @@ export class PlayIt {
     // Get More Data About The Tunnel
     let otherData: tunnel = (
       await (await this.fetch('/account/tunnels')).json()
-    ).tunnels.find((tunnel: any) => tunnel.id === tunnelId);
+    ).tunnels.find((tunnel: tunnel) => tunnel.id === tunnelId);
 
     while (otherData.domain_id === null || otherData.connect_address === null) {
       let time = new Date().getTime();
@@ -128,9 +128,9 @@ export class PlayIt {
         )
       );
 
-    if (fs.existsSync(this.configFile)) fs.rmSync(this.configFile);
+    if (await fs.pathExists(this.configFile)) await fs.rm(this.configFile);
 
-    fs.chmodSync(this.binary, 0o777);
+    await fs.chmod(this.binary, 0o777);
 
     // Spawn The PlayIt Binary
     this.playit = spawn(this.binary, {
@@ -149,7 +149,7 @@ export class PlayIt {
       )
     );
 
-    this.agent = JSON.parse(fs.readFileSync(this.configFile, 'utf-8'));
+    this.agent = JSON.parse(await fs.readFile(this.configFile, 'utf-8'));
 
     this.claimUrl(url);
 
@@ -164,11 +164,13 @@ export class PlayIt {
   }
 
   public async download(os: os = this.os): Promise<string> {
-    let file = `${nodeOS.tmpdir()}/${require('nanoid').nanoid()}${
-      this.os === 'win' ? '.exe' : ''
+    let file = `${nodeOS.tmpdir()}/playit/${require('nanoid').nanoid(20)}.${
+      this.os === 'win' ? 'exe' : 'playit'
     }`;
 
-    fs.writeFileSync(
+    await fs.mkdirp(dirname(file));
+
+    await fs.writeFile(
       file,
       Buffer.from(await (await fetch(this.downloadUrls[os])).arrayBuffer())
     );

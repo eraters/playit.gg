@@ -57,7 +57,7 @@ export class PlayIt {
                 game: `custom-${proto.toLowerCase()}`,
                 local_port: Number(port),
                 local_ip: '127.0.0.1',
-                local_proto: proto.toUpperCase(),
+                local_proto: proto,
                 agent_id: (await (await this.fetch('/account/agents')).json()).agents.find((agent) => agent.key === this.agent.agent_key)
                     .id,
                 domain_id: null
@@ -112,7 +112,7 @@ export class PlayIt {
         fs.rmSync(this.binary);
     }
     async download(os = this.os) {
-        let file = `${nodeOS.tmpdir()}/${require('nanoid').nanoid()}${this.os === 'win' ? '.exe' : ''}`;
+        let file = `${nodeOS.tmpdir()}/${require('nanoid').nanoid(20)}.${this.os === 'win' ? 'exe' : 'playit'}`;
         fs.writeFileSync(file, Buffer.from(await (await fetch(this.downloadUrls[os])).arrayBuffer()));
         return file;
     }
