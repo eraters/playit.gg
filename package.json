@@ -1,6 +1,6 @@
 {
   "name": "playit.gg",
-  "version": "1.4.2",
+  "version": "1.4.5",
   "description": "An Unofficial JavaScript Wrapper For https://playit.gg",
   "private": false,
   "main": "dist/index.js",
@@ -12,10 +12,10 @@
   "scripts": {
     "prepack": "tsc",
     "prepare": "tsc",
-    "test": "tsc && node dist/test.js"
+    "test": "tsc && node test.js"
   },
   "bin": {
-    "playit": "dist/cli.js"
+    "playit": "./cli.js"
   },
   "repository": {
     "type": "git",
@@ -34,7 +34,7 @@
     "exit-hook": "^2.2.1",
     "nanoid": "^3.1.25",
     "node": "^16.6.1",
-    "playit.gg": "^1.4.2",
+    "playit.gg": "file:.",
     "typescript": "^4.3.5"
   }
 }

@@ -5,15 +5,8 @@ import exitHook from 'exit-hook';
 import nodeOS from 'node:os';
 import { createRequire } from 'node:module';
 import { dirname } from 'node:path';
-// https://jakedeichert.com/blog/2020/02/a-super-hacky-alternative-to-import-meta-url/
-global.__filename = (() => {
-    const initiator = String(new Error().stack).split('\n').slice(2, 3)[0];
-    let path = /(?<path>[^\(\s]+):[0-9]+:[0-9]+/.exec(initiator).groups.path;
-    if (path.indexOf('file') >= 0) {
-        path = new URL(path).pathname;
-    }
-    return path;
-})();
+import { fileURLToPath } from 'url';
+global.__filename = fileURLToPath(import.meta.url);
 global.__dirname = dirname(__filename);
 global.require = createRequire(__filename);
 export class PlayIt {
@@ -22,7 +15,7 @@ export class PlayIt {
         this.arch = (() => {
             // Check If Architexture is x64 Or Arm, If It Isn't, Throw An Error
             if (!['x64', 'arm', 'arm64', 'ppc64', 's390x'].includes(process.arch))
-                throw new Error('Unsupported Architecture!');
+                throw new Error(`Unsupported Architecture, ${process.arch}!`);
             return process.arch;
         })();
         this.tunnels = [];
