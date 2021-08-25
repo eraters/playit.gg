@@ -28,7 +28,7 @@ export class PlayIt {
             : process.platform === 'darwin'
                 ? 'mac'
                 : 'lin';
-        this.version = '0.4.4';
+        this.version = '0.4.7';
         this.configFile = this.os === 'win'
             ? `${process.env.AppData}/playit/config.json`
             : `${nodeOS.homedir()}/.config/playit/config.json`;

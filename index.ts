@@ -35,7 +35,7 @@ export class PlayIt {
       ? 'mac'
       : 'lin';
 
-  version: string = '0.4.4';
+  version: string = '0.4.7';
 
   configFile: string =
     this.os === 'win'
