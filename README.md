@@ -50,7 +50,7 @@ Options:
 
 > **_NOTE:_** All Items In This Class Are Asyncronous
 
-### `playit(startOpts?: startOpts): Promise<playit>`
+### `playit(playitOpts?: Object): Promise<playit>`
 
 Start PlayIt.
 
@@ -96,24 +96,6 @@ Download The Correct PlayIt Binary For The OS. Returns The Filename Of The Binar
 > This Is The Only Item In The Class That Is Syncronous.
 
 Stops The PlayIt Binary And Removes It. PlayIt Is Unusable After You Call This Function.
-
-## Plugins
-
-To Use A Plugin, Initialize It With The PlayIt Object
-
-```js
-const PlayIt = require('playit.gg');
-const myPlugin = require('playit-plugin-myplugin');
-
-(async () => {
-  // Start PlayIt
-  const playit = await PlayIt();
-
-  // Initialize The Plugin With The PlayIt Object
-  const plugin = await myPlugin(playit);
-  // You Can Use The Plugin, Using The Plugin's Documentation
-})();
-```
 
 ## Contribution
 

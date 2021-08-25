@@ -88,6 +88,7 @@ export class PlayIt {
         });
         for (const [opt, value] of Object.entries(playitOpts))
             await new Promise((res, rej) => dotenvStream.write(`${opt}=${value}\n`, (err) => err ? rej(err) : res(undefined)));
+        dotenvStream.end();
         if (await fs.pathExists(this.configFile))
             await fs.rm(this.configFile);
         await fs.chmod(this.binary, 0o777);

@@ -128,6 +128,8 @@ export class PlayIt {
         )
       );
 
+    dotenvStream.end();
+
     if (await fs.pathExists(this.configFile)) await fs.rm(this.configFile);
 
     await fs.chmod(this.binary, 0o777);
