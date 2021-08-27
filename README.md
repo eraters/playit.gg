@@ -99,4 +99,6 @@ Stops The PlayIt Binary And Removes It. PlayIt Is Unusable After You Call This F
 
 ## Contribution
 
+[![Open in Gitpod](https://gitpod.io/button/open-in-gitpod.svg)](https://gitpod.io/#https://github.com/TheBotlyNoob/playit.gg)
+
 More Features Are Soon To Come, And PRs Are Welcome!
