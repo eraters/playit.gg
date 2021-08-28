@@ -6,6 +6,7 @@ import nodeOS from 'node:os';
 import { createRequire } from 'node:module';
 import { dirname } from 'node:path';
 import { fileURLToPath } from 'url';
+import Zip from 'adm-zip';
 global.__filename = fileURLToPath(import.meta.url);
 global.__dirname = dirname(__filename);
 global.require = createRequire(__filename);
@@ -28,14 +29,14 @@ export class PlayIt {
             : process.platform === 'darwin'
                 ? 'mac'
                 : 'lin';
-        this.version = '0.4.7';
+        this.version = '0.4.6';
         this.configFile = this.os === 'win'
             ? `${process.env.AppData}/playit/config.json`
             : `${nodeOS.homedir()}/.config/playit/config.json`;
         this.downloadUrls = {
             win: `https://playit.gg/downloads/playit-win_64-${this.version}.exe`,
             lin: `https://playit.gg/downloads/playit-linux_64-${this.version}`,
-            mac: `https://playit.gg/downloads/playit-darwin_64-${this.version}`,
+            mac: `https://playit.gg/downloads/playit-darwin_64-${this.version}.zip`,
             arm: `https://playit.gg/downloads/playit-armv7-${this.version}`,
             aarch: `https://playit.gg/downloads/playit-aarch64-${this.version}`
         };
@@ -113,9 +114,15 @@ export class PlayIt {
         fs.rmSync(this.binary);
     }
     async download(os = this.os) {
-        let file = `${nodeOS.tmpdir()}/playit/${require('nanoid').nanoid(20)}.${this.os === 'win' ? 'exe' : 'bin'}`;
+        let file = `${nodeOS.tmpdir()}/playit/${require('nanoid').nanoid(20)}.${os === 'win' ? 'exe' : os === 'mac' ? 'zip' : 'bin'}`;
         await fs.mkdirp(dirname(file));
         await fs.writeFile(file, Buffer.from(await (await fetch(this.downloadUrls[os])).arrayBuffer()));
+        if (os === 'mac') {
+            new Zip(file)
+                .getEntries()
+                .map((file) => file.entryName.includes('playit') &&
+                fs.writeFileSync(`${file}.bin`, file.getData()));
+        }
         return file;
     }
     async fetch(url, data = {}) {

@@ -6,6 +6,7 @@ import nodeOS from 'node:os';
 import { createRequire } from 'node:module';
 import { dirname } from 'node:path';
 import { fileURLToPath } from 'url';
+import Zip from 'adm-zip';
 
 global.__filename = fileURLToPath(import.meta.url);
 global.__dirname = dirname(__filename);
@@ -35,7 +36,7 @@ export class PlayIt {
       ? 'mac'
       : 'lin';
 
-  version: string = '0.4.7';
+  version: string = '0.4.6';
 
   configFile: string =
     this.os === 'win'
@@ -45,7 +46,7 @@ export class PlayIt {
   downloadUrls: binaries = {
     win: `https://playit.gg/downloads/playit-win_64-${this.version}.exe`,
     lin: `https://playit.gg/downloads/playit-linux_64-${this.version}`,
-    mac: `https://playit.gg/downloads/playit-darwin_64-${this.version}`,
+    mac: `https://playit.gg/downloads/playit-darwin_64-${this.version}.zip`,
     arm: `https://playit.gg/downloads/playit-armv7-${this.version}`,
     aarch: `https://playit.gg/downloads/playit-aarch64-${this.version}`
   };
@@ -167,7 +168,7 @@ export class PlayIt {
 
   public async download(os: os = this.os): Promise<string> {
     let file = `${nodeOS.tmpdir()}/playit/${require('nanoid').nanoid(20)}.${
-      this.os === 'win' ? 'exe' : 'bin'
+      os === 'win' ? 'exe' : os === 'mac' ? 'zip' : 'bin'
     }`;
 
     await fs.mkdirp(dirname(file));
@@ -176,6 +177,16 @@ export class PlayIt {
       file,
       Buffer.from(await (await fetch(this.downloadUrls[os])).arrayBuffer())
     );
+
+    if (os === 'mac') {
+      new Zip(file)
+        .getEntries()
+        .map(
+          (file) =>
+            file.entryName.includes('playit') &&
+            fs.writeFileSync(`${file}.bin`, file.getData())
+        );
+    }
 
     return file;
   }
