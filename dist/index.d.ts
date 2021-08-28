@@ -1,6 +1,7 @@
 export declare class PlayIt {
     destroyed: Boolean;
     arch: String;
+    dir: string;
     tunnels: tunnel[];
     agent: agent | undefined;
     started: Boolean;

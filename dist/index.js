@@ -19,6 +19,7 @@ export class PlayIt {
                 throw new Error(`Unsupported Architecture, ${process.arch}!`);
             return process.arch;
         })();
+        this.dir = `${nodeOS.tmpdir()}/playit`;
         this.tunnels = [];
         this.agent = undefined;
         this.started = false;
@@ -86,7 +87,7 @@ export class PlayIt {
         playitOpts.NO_BROWSER = true;
         let url;
         this.binary = await this.download();
-        const dotenvStream = fs.createWriteStream(`${__dirname}/.env`, {
+        const dotenvStream = fs.createWriteStream(`${this.dir}/.env`, {
             flags: 'w+'
         });
         for (const [opt, value] of Object.entries(playitOpts))
@@ -97,7 +98,7 @@ export class PlayIt {
         await fs.chmod(this.binary, 0o777);
         // Spawn The PlayIt Binary
         this.playit = spawn(this.binary, {
-            cwd: __dirname
+            cwd: this.dir
         });
         exitHook(this.stop);
         url = await new Promise((resolve) => this.playit.stderr.on('data', (data) => data.toString().match(/\bhttps:\/\/[0-9a-z\/]*/gi)
@@ -114,7 +115,7 @@ export class PlayIt {
         fs.rmSync(this.binary);
     }
     async download(os = this.os) {
-        let file = `${nodeOS.tmpdir()}/playit/${require('nanoid').nanoid(20)}.${os === 'win' ? 'exe' : os === 'mac' ? 'zip' : 'bin'}`;
+        let file = `${this.dir}/${require('nanoid').nanoid(20)}.${os === 'win' ? 'exe' : os === 'mac' ? 'zip' : 'bin'}`;
         await fs.mkdirp(dirname(file));
         await fs.writeFile(file, Buffer.from(await (await fetch(this.downloadUrls[os])).arrayBuffer()));
         if (os === 'mac') {

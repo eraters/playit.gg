@@ -23,6 +23,8 @@ export class PlayIt {
     return process.arch;
   })();
 
+  dir: string = `${nodeOS.tmpdir()}/playit`;
+
   tunnels: tunnel[] = [];
   agent: agent | undefined = undefined;
   started: Boolean = false;
@@ -120,7 +122,7 @@ export class PlayIt {
 
     this.binary = await this.download();
 
-    const dotenvStream = fs.createWriteStream(`${__dirname}/.env`, {
+    const dotenvStream = fs.createWriteStream(`${this.dir}/.env`, {
       flags: 'w+'
     });
 
@@ -139,7 +141,7 @@ export class PlayIt {
 
     // Spawn The PlayIt Binary
     this.playit = spawn(this.binary, {
-      cwd: __dirname
+      cwd: this.dir
     });
 
     exitHook(this.stop);
@@ -167,7 +169,7 @@ export class PlayIt {
   }
 
   public async download(os: os = this.os): Promise<string> {
-    let file = `${nodeOS.tmpdir()}/playit/${require('nanoid').nanoid(20)}.${
+    let file = `${this.dir}/${require('nanoid').nanoid(20)}.${
       os === 'win' ? 'exe' : os === 'mac' ? 'zip' : 'bin'
     }`;
 

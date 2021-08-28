@@ -1,6 +1,6 @@
 {
   "name": "playit.gg",
-  "version": "1.5.1",
+  "version": "1.5.2",
   "description": "An Unofficial JavaScript Wrapper For https://playit.gg",
   "private": false,
   "main": "dist/index.js",
@@ -39,9 +39,7 @@
     "node": "^16.6.1",
     "node-fetch": "^2.6.1",
     "playit.gg": "file:.",
-    "typescript": "^4.3.5"
-  },
-  "devDependencies": {
+    "typescript": "^4.3.5",
     "@types/adm-zip": "^0.4.34"
   }
 }
