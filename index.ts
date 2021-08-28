@@ -41,6 +41,8 @@ export class PlayIt {
   configFile: string =
     this.os === 'win'
       ? `${process.env.AppData}/playit/config.json`
+      : this.os === 'mac'
+      ? `${nodeOS.homedir()}/Library/Application Support/playit/config.json`
       : `${nodeOS.homedir()}/.config/playit/config.json`;
 
   downloadUrls: binaries = {
@@ -140,9 +142,7 @@ export class PlayIt {
       cwd: __dirname
     });
 
-    exitHook(() => {
-      this.stop();
-    });
+    exitHook(this.stop);
 
     url = await new Promise((resolve) =>
       this.playit.stderr.on('data', (data: Buffer) =>
