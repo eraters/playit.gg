@@ -32,7 +32,9 @@ export class PlayIt {
         this.version = '0.4.6';
         this.configFile = this.os === 'win'
             ? `${process.env.AppData}/playit/config.json`
-            : `${nodeOS.homedir()}/.config/playit/config.json`;
+            : this.os === 'mac'
+                ? `${nodeOS.homedir()}/Library/Application Support/playit/config.json`
+                : `${nodeOS.homedir()}/.config/playit/config.json`;
         this.downloadUrls = {
             win: `https://playit.gg/downloads/playit-win_64-${this.version}.exe`,
             lin: `https://playit.gg/downloads/playit-linux_64-${this.version}`,
@@ -97,9 +99,7 @@ export class PlayIt {
         this.playit = spawn(this.binary, {
             cwd: __dirname
         });
-        exitHook(() => {
-            this.stop();
-        });
+        exitHook(this.stop);
         url = await new Promise((resolve) => this.playit.stderr.on('data', (data) => data.toString().match(/\bhttps:\/\/[0-9a-z\/]*/gi)
             ? resolve(data.toString().match(/https:\/\/[0-9a-z\.\/]*/gi)[0])
             : ''));
