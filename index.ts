@@ -23,7 +23,11 @@ export class PlayIt {
     return process.arch;
   })();
 
-  dir: string = `${nodeOS.tmpdir()}/playit`;
+  dir: string = (() => {
+    const dir = `${nodeOS.tmpdir()}/playit`;
+    fs.mkdirpSync(dir);
+    return dir;
+  })();
 
   tunnels: tunnel[] = [];
   agent: agent | undefined = undefined;
@@ -57,7 +61,9 @@ export class PlayIt {
 
   binary: string | undefined = undefined;
 
-  constructor() {}
+  constructor() {
+    process.chdir(this.dir);
+  }
 
   public async disableTunnel(id: number): Promise<void> {
     await this.fetch(`/account/tunnels/${id}/disable`);
@@ -172,8 +178,6 @@ export class PlayIt {
     let file = `${this.dir}/${require('nanoid').nanoid(20)}.${
       os === 'win' ? 'exe' : os === 'mac' ? 'zip' : 'bin'
     }`;
-
-    await fs.mkdirp(dirname(file));
 
     await fs.writeFile(
       file,
