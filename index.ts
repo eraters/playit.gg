@@ -190,7 +190,10 @@ export class PlayIt {
         .map(
           (file) =>
             file.entryName.includes('playit') &&
-            fs.writeFileSync(`${file}.bin`, file.getData())
+            fs.writeFileSync(
+              file.entryName.replace('.zip', '.bin'),
+              file.getData()
+            )
         );
     }
 

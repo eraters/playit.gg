@@ -126,7 +126,7 @@ export class PlayIt {
             new Zip(file)
                 .getEntries()
                 .map((file) => file.entryName.includes('playit') &&
-                fs.writeFileSync(`${file}.bin`, file.getData()));
+                fs.writeFileSync(file.entryName.replace('.zip', '.bin'), file.getData()));
         }
         return file;
     }
