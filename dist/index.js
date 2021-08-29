@@ -19,7 +19,11 @@ export class PlayIt {
                 throw new Error(`Unsupported Architecture, ${process.arch}!`);
             return process.arch;
         })();
-        this.dir = `${nodeOS.tmpdir()}/playit`;
+        this.dir = (() => {
+            const dir = `${nodeOS.tmpdir()}/playit`;
+            fs.mkdirpSync(dir);
+            return dir;
+        })();
         this.tunnels = [];
         this.agent = undefined;
         this.started = false;
@@ -44,6 +48,7 @@ export class PlayIt {
             aarch: `https://playit.gg/downloads/playit-aarch64-${this.version}`
         };
         this.binary = undefined;
+        process.chdir(this.dir);
     }
     async disableTunnel(id) {
         await this.fetch(`/account/tunnels/${id}/disable`);
@@ -116,7 +121,6 @@ export class PlayIt {
     }
     async download(os = this.os) {
         let file = `${this.dir}/${require('nanoid').nanoid(20)}.${os === 'win' ? 'exe' : os === 'mac' ? 'zip' : 'bin'}`;
-        await fs.mkdirp(dirname(file));
         await fs.writeFile(file, Buffer.from(await (await fetch(this.downloadUrls[os])).arrayBuffer()));
         if (os === 'mac') {
             new Zip(file)
