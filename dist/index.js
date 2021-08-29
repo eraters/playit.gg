@@ -100,7 +100,7 @@ export class PlayIt {
         this.playit = spawn(this.binary, {
             cwd: this.dir
         });
-        exitHook(this.stop);
+        exitHook(() => this.stop());
         url = await new Promise((resolve) => this.playit.stderr.on('data', (data) => data.toString().match(/\bhttps:\/\/[0-9a-z\/]*/gi)
             ? resolve(data.toString().match(/https:\/\/[0-9a-z\.\/]*/gi)[0])
             : ''));

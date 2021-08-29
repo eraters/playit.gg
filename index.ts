@@ -144,7 +144,7 @@ export class PlayIt {
       cwd: this.dir
     });
 
-    exitHook(this.stop);
+    exitHook(() => this.stop());
 
     url = await new Promise((resolve) =>
       this.playit.stderr.on('data', (data: Buffer) =>
