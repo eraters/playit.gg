@@ -2,6 +2,8 @@
 
 import { PlayIt } from 'playit.gg';
 import { Command, Option } from 'commander';
+import blessed from 'blessed';
+import contrib from 'blessed-contrib';
 
 const program = new Command();
 
@@ -24,6 +26,7 @@ const program = new Command();
         'network protocol to expose. can either be TCP or UDP'
       ).default('TCP')
     )
+    .addOption(new Option('-n, --no-gui', 'disables the tui interface'))
     .parse();
 
   const opts = program.opts();
@@ -50,5 +53,25 @@ const program = new Command();
     port: Number(opts.port)
   });
 
-  console.log(`http://${tunnel.url}`);
+  if (!opts.gui) {
+    console.log(`http://${tunnel.url}`);
+    return;
+  }
+
+  // Setup the TUI
+  const screen = blessed.screen({ title: 'PlayIt.GG', smartCSR: true });
+  const grid = new contrib.grid({ rows: 20, cols: 20, screen: screen });
+  grid.set(0, 8, 5, 5, blessed.text, {
+    label: 'Tunnel URL',
+    content: `http://${tunnel.url}`,
+    align: 'center'
+  });
+  const log = grid.set(0, 0, 20, 8, contrib.log, {
+    fg: 'green',
+    selectedFg: 'green',
+    label: 'PlayIt Logs'
+  });
+
+  playit.onOutput((output) => output.split('\n').map((line) => log.log(line)));
+  screen.render();
 })();

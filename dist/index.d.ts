@@ -6,11 +6,16 @@ export declare class PlayIt {
     agent: agent | undefined;
     started: Boolean;
     playit: any;
+    servers: any[] | undefined;
     os: os;
     version: string;
     configFile: string;
     downloadUrls: binaries;
     binary: string | undefined;
+    output: string;
+    stdout: string;
+    stderr: string;
+    onOutput: Function | undefined;
     constructor();
     disableTunnel(id: number): Promise<void>;
     enableTunnel(id: number): Promise<void>;

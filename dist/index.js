@@ -28,6 +28,7 @@ export class PlayIt {
         this.agent = undefined;
         this.started = false;
         this.playit = undefined;
+        this.servers = undefined;
         // Get Os
         this.os = process.platform === 'win32'
             ? 'win'
@@ -48,6 +49,10 @@ export class PlayIt {
             aarch: `https://playit.gg/downloads/playit-aarch64-${this.version}`
         };
         this.binary = undefined;
+        this.output = '';
+        this.stdout = '';
+        this.stderr = '';
+        this.onOutput = undefined;
         process.chdir(this.dir);
     }
     async disableTunnel(id) {
@@ -105,11 +110,31 @@ export class PlayIt {
         this.playit = spawn(this.binary, {
             cwd: this.dir
         });
+        this.playit.stdout.on('data', (data) => {
+            this.output += `${data}\n`;
+            this.stdout += `${data}\n`;
+        });
+        this.playit.stderr.on('data', (data) => {
+            this.output += `${data}\n`;
+            this.stderr += `${data}\n`;
+        });
+        let callbacks = [];
+        this.onOutput = (callback = (output) => output) => {
+            callbacks.push(callback);
+            callbacks.map((callback) => callback(this.output));
+            this.playit.stdout.on('data', (data) => {
+                callbacks.map((callback) => callback(data.toString()));
+            });
+            this.playit.stderr.on('data', (data) => {
+                callbacks.map((callback) => callback(data.toString()));
+            });
+        };
         exitHook(() => this.stop());
         url = await new Promise((resolve) => this.playit.stderr.on('data', (data) => data.toString().match(/\bhttps:\/\/[0-9a-z\/]*/gi)
             ? resolve(data.toString().match(/https:\/\/[0-9a-z\.\/]*/gi)[0])
             : ''));
         this.agent = JSON.parse(await fs.readFile(this.configFile, 'utf-8'));
+        this.servers = (await (await this.fetch('/servers/online/v4')).json()).servers;
         this.claimUrl(url);
         return this;
     }

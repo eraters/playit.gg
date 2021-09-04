@@ -33,6 +33,7 @@ export class PlayIt {
   agent: agent | undefined = undefined;
   started: Boolean = false;
   playit: any = undefined;
+  servers: any[] | undefined = undefined;
 
   // Get Os
   os: os =
@@ -60,6 +61,11 @@ export class PlayIt {
   };
 
   binary: string | undefined = undefined;
+
+  output: string = '';
+  stdout: string = '';
+  stderr: string = '';
+  onOutput: Function | undefined = undefined;
 
   constructor() {
     process.chdir(this.dir);
@@ -150,6 +156,28 @@ export class PlayIt {
       cwd: this.dir
     });
 
+    this.playit.stdout.on('data', (data: Buffer) => {
+      this.output += `${data}\n`;
+      this.stdout += `${data}\n`;
+    });
+    this.playit.stderr.on('data', (data: Buffer) => {
+      this.output += `${data}\n`;
+      this.stderr += `${data}\n`;
+    });
+
+    let callbacks: Function[] = [];
+    this.onOutput = (callback: Function = (output: string[]) => output) => {
+      callbacks.push(callback);
+
+      callbacks.map((callback: Function) => callback(this.output));
+      this.playit.stdout.on('data', (data: Buffer) => {
+        callbacks.map((callback: Function) => callback(data.toString()));
+      });
+      this.playit.stderr.on('data', (data: Buffer) => {
+        callbacks.map((callback: Function) => callback(data.toString()));
+      });
+    };
+
     exitHook(() => this.stop());
 
     url = await new Promise((resolve) =>
@@ -161,6 +189,9 @@ export class PlayIt {
     );
 
     this.agent = JSON.parse(await fs.readFile(this.configFile, 'utf-8'));
+    this.servers = (
+      await (await this.fetch('/servers/online/v4')).json()
+    ).servers;
 
     this.claimUrl(url);
 
