@@ -64,7 +64,6 @@ export class PlayIt {
     async createTunnel(tunnelOpts) {
         let { proto = 'TCP', port = 80 } = tunnelOpts || {};
         // Create The Tunnel, And Get The Id
-        console.log('test');
         const tunnelId = (await (await this.fetch('/account/tunnels', {
             method: 'POST',
             body: JSON.stringify({
@@ -80,10 +79,8 @@ export class PlayIt {
         })).json()).id;
         // Get More Data About The Tunnel
         let otherData = (await (await this.fetch('/account/tunnels')).json()).tunnels.find((tunnel) => tunnel.id === tunnelId);
-        console.log('afg');
         while (otherData.domain_id === null || otherData.connect_address === null) {
             otherData = (await (await this.fetch('/account/tunnels')).json()).tunnels.find((tunnel) => tunnel.id === tunnelId);
-            console.log(otherData);
         }
         otherData.url = otherData.connect_address;
         this.tunnels.push(otherData);
