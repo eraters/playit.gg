@@ -109,8 +109,6 @@ export class PlayIt {
     ).tunnels.find((tunnel: tunnel) => tunnel.id === tunnelId);
 
     while (otherData.domain_id === null || otherData.connect_address === null) {
-      let time = new Date().getTime();
-      while (new Date().getTime() < time + 1000);
       otherData = (
         await (await this.fetch('/account/tunnels')).json()
       ).tunnels.find((tunnel: any) => tunnel.id === tunnelId);
@@ -141,7 +139,7 @@ export class PlayIt {
     for (const [opt, value] of Object.entries(playitOpts))
       await new Promise((res, rej) =>
         dotenvStream.write(`${opt}=${value}\n`, (err) =>
-          err ? rej(err) : res(undefined)
+          err ? rej(err) : res(null)
         )
       );
 
@@ -180,10 +178,10 @@ export class PlayIt {
 
     exitHook(() => this.stop());
 
-    url = await new Promise((resolve) =>
+    url = await new Promise((res) =>
       this.playit.stderr.on('data', (data: Buffer) =>
         data.toString().match(/\bhttps:\/\/[0-9a-z\/]*/gi)
-          ? resolve(data.toString().match(/https:\/\/[0-9a-z\.\/]*/gi)[0])
+          ? res(data.toString().match(/https:\/\/[0-9a-z\.\/]*/gi)[0])
           : ''
       )
     );

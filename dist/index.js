@@ -64,6 +64,7 @@ export class PlayIt {
     async createTunnel(tunnelOpts) {
         let { proto = 'TCP', port = 80 } = tunnelOpts || {};
         // Create The Tunnel, And Get The Id
+        console.log('test');
         const tunnelId = (await (await this.fetch('/account/tunnels', {
             method: 'POST',
             body: JSON.stringify({
@@ -79,11 +80,10 @@ export class PlayIt {
         })).json()).id;
         // Get More Data About The Tunnel
         let otherData = (await (await this.fetch('/account/tunnels')).json()).tunnels.find((tunnel) => tunnel.id === tunnelId);
+        console.log('afg');
         while (otherData.domain_id === null || otherData.connect_address === null) {
-            let time = new Date().getTime();
-            while (new Date().getTime() < time + 1000)
-                ;
             otherData = (await (await this.fetch('/account/tunnels')).json()).tunnels.find((tunnel) => tunnel.id === tunnelId);
+            console.log(otherData);
         }
         otherData.url = otherData.connect_address;
         this.tunnels.push(otherData);
@@ -101,7 +101,7 @@ export class PlayIt {
             flags: 'w+'
         });
         for (const [opt, value] of Object.entries(playitOpts))
-            await new Promise((res, rej) => dotenvStream.write(`${opt}=${value}\n`, (err) => err ? rej(err) : res(undefined)));
+            await new Promise((res, rej) => dotenvStream.write(`${opt}=${value}\n`, (err) => err ? rej(err) : res(null)));
         dotenvStream.end();
         if (await fs.pathExists(this.configFile))
             await fs.rm(this.configFile);
@@ -130,8 +130,8 @@ export class PlayIt {
             });
         };
         exitHook(() => this.stop());
-        url = await new Promise((resolve) => this.playit.stderr.on('data', (data) => data.toString().match(/\bhttps:\/\/[0-9a-z\/]*/gi)
-            ? resolve(data.toString().match(/https:\/\/[0-9a-z\.\/]*/gi)[0])
+        url = await new Promise((res) => this.playit.stderr.on('data', (data) => data.toString().match(/\bhttps:\/\/[0-9a-z\/]*/gi)
+            ? res(data.toString().match(/https:\/\/[0-9a-z\.\/]*/gi)[0])
             : ''));
         this.agent = JSON.parse(await fs.readFile(this.configFile, 'utf-8'));
         this.servers = (await (await this.fetch('/servers/online/v4')).json()).servers;
