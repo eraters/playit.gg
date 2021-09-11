@@ -7,7 +7,10 @@ import { createRequire } from 'node:module';
 import { dirname } from 'node:path';
 import { fileURLToPath } from 'url';
 import Zip from 'adm-zip';
-global.__filename = fileURLToPath(import.meta.url);
+global.__filename = fileURLToPath(String(new Error().stack)
+    .replace(/^Error.*\n/, '')
+    .split('\n')[0]
+    .match(/file:\/\/.*\.[jt]s/)[0]);
 global.__dirname = dirname(__filename);
 global.require = createRequire(__filename);
 export class PlayIt {
@@ -25,10 +28,12 @@ export class PlayIt {
             return dir;
         })();
         this.tunnels = [];
-        this.agent = undefined;
+        this.agent_key = undefined;
         this.started = false;
         this.playit = undefined;
-        this.servers = undefined;
+        this.preferred_tunnel = undefined;
+        this.used_packets = 0;
+        this.free_packets = 0;
         // Get Os
         this.os = process.platform === 'win32'
             ? 'win'
@@ -53,6 +58,8 @@ export class PlayIt {
         this.stdout = '';
         this.stderr = '';
         this.onOutput = undefined;
+        this.onStdout = undefined;
+        this.onStderr = undefined;
         process.chdir(this.dir);
     }
     async disableTunnel(id) {
@@ -72,8 +79,7 @@ export class PlayIt {
                 local_port: Number(port),
                 local_ip: '127.0.0.1',
                 local_proto: proto,
-                agent_id: (await (await this.fetch('/account/agents')).json()).agents.find((agent) => agent.key === this.agent.agent_key)
-                    .id,
+                agent_id: (await (await this.fetch('/account/agents')).json()).agents.find((agent) => agent.key === this.agent_key).id,
                 domain_id: null
             })
         })).json()).id;
@@ -92,7 +98,7 @@ export class PlayIt {
     async create(playitOpts = {}) {
         this.started = true;
         playitOpts.NO_BROWSER = true;
-        let url;
+        let outputCallbacks = [], stderrCallbacks = [], stdoutCallbacks = [];
         this.binary = await this.download();
         const dotenvStream = fs.createWriteStream(`${this.dir}/.env`, {
             flags: 'w+'
@@ -110,29 +116,35 @@ export class PlayIt {
         this.playit.stdout.on('data', (data) => {
             this.output += `${data}\n`;
             this.stdout += `${data}\n`;
+            outputCallbacks.map((callback) => callback(data.toString()));
+            stdoutCallbacks.map((callback) => callback(data.toString()));
         });
         this.playit.stderr.on('data', (data) => {
             this.output += `${data}\n`;
             this.stderr += `${data}\n`;
+            outputCallbacks.map((callback) => callback(data.toString()));
+            stderrCallbacks.map((callback) => callback(data.toString()));
         });
-        let callbacks = [];
         this.onOutput = (callback = (output) => output) => {
-            callbacks.push(callback);
-            callbacks.map((callback) => callback(this.output));
-            this.playit.stdout.on('data', (data) => {
-                callbacks.map((callback) => callback(data.toString()));
-            });
-            this.playit.stderr.on('data', (data) => {
-                callbacks.map((callback) => callback(data.toString()));
-            });
+            callback(this.output);
+            outputCallbacks.push(callback);
+        };
+        this.onStdout = (callback = (output) => output) => {
+            callback(this.stdout);
+            stdoutCallbacks.push(callback);
+        };
+        this.onStderr = (callback = (output) => output) => {
+            callback(this.stderr);
+            stderrCallbacks.push(callback);
         };
         exitHook(() => this.stop());
-        url = await new Promise((res) => this.playit.stderr.on('data', (data) => data.toString().match(/\bhttps:\/\/[0-9a-z\/]*/gi)
-            ? res(data.toString().match(/https:\/\/[0-9a-z\.\/]*/gi)[0])
-            : ''));
-        this.agent = JSON.parse(await fs.readFile(this.configFile, 'utf-8'));
-        this.servers = (await (await this.fetch('/servers/online/v4')).json()).servers;
-        this.claimUrl(url);
+        this.parseOutput();
+        await new Promise((res) => {
+            while (!fs.pathExistsSync(this.configFile))
+                ;
+            res(null);
+        });
+        Object.assign(this, JSON.parse(await fs.readFile(this.configFile, 'utf-8')));
         return this;
     }
     stop() {
@@ -152,21 +164,33 @@ export class PlayIt {
         }
         return file;
     }
+    async parseOutput() {
+        await this.claimUrl(await new Promise((res) => this.onStderr((data) => data.match(/\bhttps:\/\/[0-9a-z\/]*/gi)
+            ? res(data.match(/https:\/\/[0-9a-z\.\/]*/gi)[0])
+            : '')));
+        this.onStderr((output) => {
+            let packetInfo = /INFO Allocator: used packets: [0-9]*, free packets: [0-9]*/.exec(output);
+            if (packetInfo) {
+                this.used_packets = parseInt(packetInfo[1]);
+                this.free_packets = parseInt(packetInfo[2]);
+            }
+        });
+    }
     async fetch(url, data = {}) {
         if (url.startsWith('https://') || url.startsWith('http://'))
             return await fetch(url, {
                 ...data,
-                headers: { authorization: `agent ${this.agent.agent_key}` }
+                headers: { authorization: `agent ${this.agent_key}` }
             });
         else if (url.startsWith('/'))
             return await fetch(`https://api.playit.gg${url}`, {
                 ...data,
-                headers: { authorization: `agent ${this.agent.agent_key}` }
+                headers: { authorization: `agent ${this.agent_key}` }
             });
         else
             return await fetch(`https://api.playit.gg/${url}`, {
                 ...data,
-                headers: { authorization: `agent ${this.agent.agent_key}` }
+                headers: { authorization: `agent ${this.agent_key}` }
             });
     }
 }

@@ -1,12 +1,16 @@
+/// <reference types="node" />
+import { ChildProcessWithoutNullStreams } from 'node:child_process';
 export declare class PlayIt {
     destroyed: Boolean;
     arch: String;
     dir: string;
     tunnels: tunnel[];
-    agent: agent | undefined;
+    agent_key: string | undefined;
     started: Boolean;
-    playit: any;
-    servers: any[] | undefined;
+    playit: ChildProcessWithoutNullStreams | undefined;
+    preferred_tunnel: string | undefined;
+    used_packets: number;
+    free_packets: number;
     os: os;
     version: string;
     configFile: string;
@@ -16,6 +20,8 @@ export declare class PlayIt {
     stdout: string;
     stderr: string;
     onOutput: Function | undefined;
+    onStdout: Function | undefined;
+    onStderr: Function | undefined;
     constructor();
     disableTunnel(id: number): Promise<void>;
     enableTunnel(id: number): Promise<void>;
@@ -24,6 +30,7 @@ export declare class PlayIt {
     create(playitOpts?: any): Promise<PlayIt>;
     stop(): void;
     download(os?: os): Promise<string>;
+    private parseOutput;
     private fetch;
 }
 export default function init(playitOpts?: any): Promise<PlayIt>;

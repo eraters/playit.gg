@@ -6,6 +6,8 @@ import { createServer } from 'node:http'; // Ignore this, this is to test the tu
 
   const tunnel = await playit.createTunnel({ proto: 'tcp', port: 8080 });
 
+  console.log(`Free Packets: ${playit.free_packets}`);
+
   // Ignore this, this just creates a webserver to test the tunnel
   createServer((_, res) => {
     res.write(
