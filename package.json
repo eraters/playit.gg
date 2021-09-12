@@ -45,7 +45,6 @@
     "@types/make-fetch-happen": "^9.0.1",
     "@types/node": "^16.9.1",
     "caxa": "^2.1.0",
-    "changeexe": "^1.0.2",
-    "glob": "^7.1.7"
+    "changeexe": "^1.0.2"
   }
 }

@@ -3,7 +3,7 @@ import fs from 'fs-extra';
 import { icon } from 'changeexe';
 import { resolve } from 'node:path';
 import { PlayIt } from './dist/index.js';
-import glob from 'glob';
+s;
 
 const { os } = new PlayIt();
 
@@ -29,8 +29,11 @@ const { os } = new PlayIt();
       ? await (async () => {
           const zip = new (require('adm-zip'))();
           zip.addLocalFolder(output);
-          zip.writeZip(`${__dirname}/mac.zip`);
-          console.log(zip.getEntries());
+          await new Promise((res) =>
+            zip.writeZip(`${__dirname}/mac.zip`, (err) =>
+              err ? console.error(err) : res(null)
+            )
+          );
           await fs.rm(output, { recursive: true, force: true });
           output = `${__dirname}/mac.zip`;
         })()
