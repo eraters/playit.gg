@@ -15,10 +15,7 @@ const program = new Command();
     .name('PlayIt')
     .usage('--proto [Network Protocol] --port [Port]')
     .addOption(
-      new Option(
-        '-p, --port',
-        'port to expose. must be between 0 and 65535'
-      ).default(80)
+      new Option('-p, --port', 'port to expose. must be between 0 and 65535')
     )
     .addOption(
       new Option(
@@ -32,7 +29,7 @@ const program = new Command();
   const opts = program.opts();
 
   if (opts.proto === undefined) opts.proto = 'tcp';
-  if (opts.port === undefined) opts.port = 80;
+  if (opts.port === undefined) return program.outputHelp();
 
   if (!['udp', 'tcp'].includes(opts.proto?.toLowerCase()))
     throw new Error('the prototype must be either UDP, or TCP');
@@ -66,7 +63,7 @@ const program = new Command();
     content: `http://${tunnel.url}`,
     align: 'center'
   });
-  const log = grid.set(0, 0, 20, 10, blessed.log, {
+  const log = grid.set(0, 0, 20, 10, contrib.log, {
     fg: 'green',
     selectedFg: 'green',
     label: 'PlayIt Logs'

@@ -25,12 +25,13 @@ export class PlayIt {
             return dir;
         })();
         this.tunnels = [];
-        this.agent_key = undefined;
+        this.agent_key = '';
         this.started = false;
         this.playit = undefined;
-        this.preferred_tunnel = undefined;
+        this.preferred_tunnel = '';
         this.used_packets = 0;
         this.free_packets = 0;
+        this.connections = [];
         // Get Os
         this.os = process.platform === 'win32'
             ? 'win'
@@ -54,19 +55,23 @@ export class PlayIt {
         this.output = '';
         this.stdout = '';
         this.stderr = '';
+        this.errors = '';
+        this.warnings = '';
         this.onOutput = undefined;
         this.onStdout = undefined;
         this.onStderr = undefined;
+        this.onError = undefined;
+        this.onWarning = undefined;
         process.chdir(this.dir);
     }
-    async disableTunnel(id) {
+    async disableTunnel(id = isRequired('ID')) {
         await this.fetch(`/account/tunnels/${id}/disable`);
     }
-    async enableTunnel(id) {
+    async enableTunnel(id = isRequired('ID')) {
         await this.fetch(`/account/tunnels/${id}/enable`);
     }
-    async createTunnel(tunnelOpts) {
-        let { proto = 'TCP', port = 80 } = tunnelOpts || {};
+    async createTunnel(tunnelOpts = isRequired('Tunnel Options')) {
+        let { proto = 'TCP', port } = tunnelOpts;
         // Create The Tunnel, And Get The Id
         const tunnelId = (await (await this.fetch('/account/tunnels', {
             method: 'POST',
@@ -95,7 +100,7 @@ export class PlayIt {
     async create(playitOpts = {}) {
         this.started = true;
         playitOpts.NO_BROWSER = true;
-        let outputCallbacks = [], stderrCallbacks = [], stdoutCallbacks = [];
+        let outputCallbacks = [], stderrCallbacks = [], stdoutCallbacks = [], errorCallbacks = [], warningCallbacks = [];
         this.binary = await this.download();
         const dotenvStream = fs.createWriteStream(`${this.dir}/.env`, {
             flags: 'w+'
@@ -121,6 +126,14 @@ export class PlayIt {
             this.stderr += `${data}\n`;
             outputCallbacks.map((callback) => callback(data.toString()));
             stderrCallbacks.map((callback) => callback(data.toString()));
+            if (data.toString().includes('ERRO')) {
+                this.errors += `${data}\n`;
+                errorCallbacks.map((callback) => callback(data.toString()));
+            }
+            else if (data.toString().includes('WARN')) {
+                this.warnings += `${data}\n`;
+                warningCallbacks.map((callback) => callback(data.toString()));
+            }
         });
         this.onOutput = (callback = (output) => output) => {
             callback(this.output);
@@ -133,6 +146,14 @@ export class PlayIt {
         this.onStderr = (callback = (output) => output) => {
             callback(this.stderr);
             stderrCallbacks.push(callback);
+        };
+        this.onError = (callback = (output) => output) => {
+            callback(this.errors);
+            errorCallbacks.push(callback);
+        };
+        this.onWarning = (callback = (output) => output) => {
+            callback(this.warnings);
+            warningCallbacks.push(callback);
         };
         exitHook(() => this.stop());
         this.parseOutput();
@@ -171,9 +192,13 @@ export class PlayIt {
                 this.used_packets = parseInt(packetInfo[1]);
                 this.free_packets = parseInt(packetInfo[2]);
             }
+            let connectionInfo = /INFO ([0-9]*\.[0-9]*\.[0-9]*\.[0-9]*)\/([tu][dc]p): new client connecting to 127\.0\.0\.1:([0-9]*)/.exec(output);
+            if (connectionInfo) {
+                this.connections.push({ ip: connectionInfo[1] });
+            }
         });
     }
-    async fetch(url, data = {}) {
+    async fetch(url = isRequired('URL'), data = {}) {
         if (url.startsWith('https://') || url.startsWith('http://'))
             return await fetch(url, {
                 ...data,

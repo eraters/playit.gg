@@ -30,12 +30,13 @@ export class PlayIt {
   })();
 
   tunnels: tunnel[] = [];
-  agent_key: string | undefined = undefined;
+  agent_key: string = '';
   started: Boolean = false;
   playit: ChildProcessWithoutNullStreams | undefined = undefined;
-  preferred_tunnel: string | undefined = undefined;
+  preferred_tunnel: string = '';
   used_packets: number = 0;
   free_packets: number = 0;
+  connections: connection[] = [];
 
   // Get Os
   os: os =
@@ -67,24 +68,30 @@ export class PlayIt {
   output: string = '';
   stdout: string = '';
   stderr: string = '';
+  errors: string = '';
+  warnings: string = '';
   onOutput: Function | undefined = undefined;
   onStdout: Function | undefined = undefined;
   onStderr: Function | undefined = undefined;
+  onError: Function | undefined = undefined;
+  onWarning: Function | undefined = undefined;
 
   constructor() {
     process.chdir(this.dir);
   }
 
-  public async disableTunnel(id: number): Promise<void> {
+  public async disableTunnel(id: number = isRequired('ID')): Promise<void> {
     await this.fetch(`/account/tunnels/${id}/disable`);
   }
 
-  public async enableTunnel(id: number): Promise<void> {
+  public async enableTunnel(id: number = isRequired('ID')): Promise<void> {
     await this.fetch(`/account/tunnels/${id}/enable`);
   }
 
-  public async createTunnel(tunnelOpts?: tunnelOpts): Promise<tunnel> {
-    let { proto = 'TCP', port = 80 } = tunnelOpts || {};
+  public async createTunnel(
+    tunnelOpts: tunnelOpts = isRequired('Tunnel Options')
+  ): Promise<tunnel> {
+    let { proto = 'TCP', port } = tunnelOpts;
 
     // Create The Tunnel, And Get The Id
     const tunnelId: number = (
@@ -133,7 +140,9 @@ export class PlayIt {
     playitOpts.NO_BROWSER = true;
     let outputCallbacks: Function[] = [],
       stderrCallbacks: Function[] = [],
-      stdoutCallbacks: Function[] = [];
+      stdoutCallbacks: Function[] = [],
+      errorCallbacks: Function[] = [],
+      warningCallbacks: Function[] = [];
 
     this.binary = await this.download();
 
@@ -170,6 +179,13 @@ export class PlayIt {
       this.stderr += `${data}\n`;
       outputCallbacks.map((callback) => callback(data.toString()));
       stderrCallbacks.map((callback) => callback(data.toString()));
+      if (data.toString().includes('ERRO')) {
+        this.errors += `${data}\n`;
+        errorCallbacks.map((callback) => callback(data.toString()));
+      } else if (data.toString().includes('WARN')) {
+        this.warnings += `${data}\n`;
+        warningCallbacks.map((callback) => callback(data.toString()));
+      }
     });
 
     this.onOutput = (callback: Function = (output: string[]) => output) => {
@@ -185,6 +201,16 @@ export class PlayIt {
     this.onStderr = (callback: Function = (output: string[]) => output) => {
       callback(this.stderr);
       stderrCallbacks.push(callback);
+    };
+
+    this.onError = (callback: Function = (output: string[]) => output) => {
+      callback(this.errors);
+      errorCallbacks.push(callback);
+    };
+
+    this.onWarning = (callback: Function = (output: string[]) => output) => {
+      callback(this.warnings);
+      warningCallbacks.push(callback);
     };
 
     exitHook(() => this.stop());
@@ -257,10 +283,29 @@ export class PlayIt {
         this.used_packets = parseInt(packetInfo[1]);
         this.free_packets = parseInt(packetInfo[2]);
       }
+
+      let connectionInfo =
+        /INFO ([0-9]*\.[0-9]*\.[0-9]*\.[0-9]*)\/([tu][dc]p): new client connecting to 127\.0\.0\.1:([0-9]*)/.exec(
+          output
+        );
+
+      if (connectionInfo) {
+        this.connections.push({
+          ip: connectionInfo[1],
+          tunnel: this.tunnels.find(
+            (tunnel: tunnel) =>
+              tunnel.game === `custom-${connectionInfo[2].toLowerCase()}` &&
+              tunnel.local_port === Number(connectionInfo[3])
+          )
+        });
+      }
     });
   }
 
-  private async fetch(url: string, data: Object = {}): Promise<any> {
+  public async fetch(
+    url: string = isRequired('URL'),
+    data: Object = {}
+  ): Promise<any> {
     if (url.startsWith('https://') || url.startsWith('http://'))
       return await fetch(url, {
         ...data,
@@ -290,13 +335,9 @@ export default async function init(playitOpts: any = {}): Promise<PlayIt> {
 
 export interface tunnelOpts {
   proto?: string;
-  port?: number;
+  port: number;
 }
 
-export interface agent {
-  agent_key: string;
-  preferred_tunnel: string;
-}
 export interface tunnel {
   id: number;
   agent_id: number;
@@ -312,11 +353,16 @@ export interface tunnel {
 }
 
 export interface binaries {
-  win?: string;
-  lin?: string;
-  mac?: string;
-  arm?: string;
-  aarch?: string;
+  win: string;
+  lin: string;
+  mac: string;
+  arm: string;
+  aarch: string;
+}
+
+export interface connection {
+  ip: string;
+  tunnel: tunnel;
 }
 
 export type os = 'win' | 'mac' | 'lin';

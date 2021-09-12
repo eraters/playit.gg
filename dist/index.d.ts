@@ -5,12 +5,13 @@ export declare class PlayIt {
     arch: String;
     dir: string;
     tunnels: tunnel[];
-    agent_key: string | undefined;
+    agent_key: string;
     started: Boolean;
     playit: ChildProcessWithoutNullStreams | undefined;
-    preferred_tunnel: string | undefined;
+    preferred_tunnel: string;
     used_packets: number;
     free_packets: number;
+    connections: connection[];
     os: os;
     version: string;
     configFile: string;
@@ -19,28 +20,28 @@ export declare class PlayIt {
     output: string;
     stdout: string;
     stderr: string;
+    errors: string;
+    warnings: string;
     onOutput: Function | undefined;
     onStdout: Function | undefined;
     onStderr: Function | undefined;
+    onError: Function | undefined;
+    onWarning: Function | undefined;
     constructor();
-    disableTunnel(id: number): Promise<void>;
-    enableTunnel(id: number): Promise<void>;
+    disableTunnel(id?: number): Promise<void>;
+    enableTunnel(id?: number): Promise<void>;
     createTunnel(tunnelOpts?: tunnelOpts): Promise<tunnel>;
     private claimUrl;
     create(playitOpts?: any): Promise<PlayIt>;
     stop(): void;
     download(os?: os): Promise<string>;
     private parseOutput;
-    private fetch;
+    fetch(url?: string, data?: Object): Promise<any>;
 }
 export default function init(playitOpts?: any): Promise<PlayIt>;
 export interface tunnelOpts {
     proto?: string;
-    port?: number;
-}
-export interface agent {
-    agent_key: string;
-    preferred_tunnel: string;
+    port: number;
 }
 export interface tunnel {
     id: number;
@@ -56,10 +57,14 @@ export interface tunnel {
     url: string;
 }
 export interface binaries {
-    win?: string;
-    lin?: string;
-    mac?: string;
-    arm?: string;
-    aarch?: string;
+    win: string;
+    lin: string;
+    mac: string;
+    arm: string;
+    aarch: string;
+}
+export interface connection {
+    ip: string;
+    tunnel?: tunnel;
 }
 export declare type os = 'win' | 'mac' | 'lin';
