@@ -309,8 +309,8 @@ export class PlayIt {
       if (closedConnectionInfo) {
         this.connections.filter(
           (connection: connection) =>
-            connection.ip === closedConnectionInfo[1] &&
-            connection.type === closedConnectionInfo[2]
+            connection.ip !== closedConnectionInfo[1] &&
+            connection.type !== closedConnectionInfo[2]
         );
       }
     });
