@@ -3,7 +3,6 @@ import fs from 'fs-extra';
 import { icon } from 'changeexe';
 import { resolve } from 'node:path';
 import { PlayIt } from './dist/index.js';
-s;
 
 const { os } = new PlayIt();
 
