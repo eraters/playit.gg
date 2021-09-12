@@ -29,9 +29,9 @@ const { os } = new PlayIt();
       ? await (async () => {
           const zip = new (require('adm-zip'))();
           zip.addLocalFolder(output);
-          zip.writeZip(`${__dirname}/${os}.zip`);
+          zip.writeZip(`${__dirname}/mac.zip`);
           await fs.rm(output, { recursive: true, force: true });
-          output = output.replace('.app', '.zip');
+          output = `${__dirname}/mac.zip`;
         })()
       : '';
 
