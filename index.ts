@@ -1,19 +1,14 @@
 import { spawn, ChildProcessWithoutNullStreams } from 'node:child_process';
 import fs from 'fs-extra';
-import fetch from 'node-fetch';
+import fetch from 'make-fetch-happen';
 import exitHook from 'exit-hook';
 import nodeOS from 'node:os';
 import { createRequire } from 'node:module';
 import { dirname } from 'node:path';
-import { fileURLToPath } from 'url';
+import { fileURLToPath } from 'node:url';
 import Zip from 'adm-zip';
 
-global.__filename = fileURLToPath(
-  String(new Error().stack)
-    .replace(/^Error.*\n/, '')
-    .split('\n')[0]
-    .match(/file:\/\/.*\.[jt]s/)[0]
-);
+global.__filename = fileURLToPath(import.meta.url);
 global.__dirname = dirname(__filename);
 global.require = createRequire(__filename);
 

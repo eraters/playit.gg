@@ -1,9 +1,9 @@
 #!/usr/bin/env node
 
-const { PlayIt } = require('playit.gg');
-const { Command, Option } = require('commander');
-const blessed = require('blessed');
-const contrib = require('blessed-contrib');
+import { PlayIt } from './dist/index.js';
+import { Command, Option } from 'commander';
+import blessed from 'blessed';
+import contrib from 'blessed-contrib';
 
 const program = new Command();
 
@@ -61,20 +61,12 @@ const program = new Command();
   // Setup the TUI
   const screen = blessed.screen({ title: 'PlayIt.GG', smartCSR: true });
   const grid = new contrib.grid({ rows: 20, cols: 20, screen: screen });
-  grid.set(0, 10, 5, 7, blessed.text, {
+  grid.set(0, 10, 5, 8, blessed.text, {
     label: 'Tunnel URL',
     content: `http://${tunnel.url}`,
     align: 'center'
   });
-  const log = grid.set(0, 0, 20, 10, contrib.log, {
-    vi: true,
-    alwaysScroll: true,
-    scrollable: true,
-    scrollbar: {
-      style: {
-        bg: 'yellow'
-      }
-    },
+  const log = grid.set(0, 0, 20, 10, blessed.log, {
     fg: 'green',
     selectedFg: 'green',
     label: 'PlayIt Logs'

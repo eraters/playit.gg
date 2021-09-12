@@ -3,23 +3,17 @@
   "version": "1.5.6",
   "description": "An Unofficial JavaScript Wrapper For https://playit.gg",
   "private": false,
-  "types": "dist/mjs/index.d.ts",
-  "exports": {
-    "require": "./dist/cjs/index.js",
-    "import": "./dist/mjs/index.js"
-  },
+  "types": "dist/index.d.ts",
+  "main": "dist/index.js",
   "type": "module",
   "publishConfig": {
     "access": "public"
   },
   "scripts": {
-    "build": "npm run build:mjs && npm run build:cjs",
-    "build:mjs": "tsc --module es2020 --target es2020 --outDir dist/mjs",
-    "build:cjs": "tsc --module commonjs --target es3 --outDir dist/cjs",
-    "package": "pkg .",
-    "prepack": "npm run build",
-    "prepare": "npm run build",
-    "test": "npm run build && node test.js"
+    "package": "npm install && node build.js",
+    "prepack": "tsc",
+    "prepare": "tsc",
+    "test": "tsc && node test.js"
   },
   "bin": {
     "playit": "./cli.js"
@@ -35,20 +29,23 @@
   "author": "Jay Jackson",
   "license": "MIT",
   "dependencies": {
-    "@types/adm-zip": "^0.4.34",
-    "@types/fs-extra": "^9.0.12",
-    "@types/node": "^16.9.1",
-    "@types/node-fetch": "^3.0.2",
     "adm-zip": "^0.5.5",
     "blessed": "^0.1.81",
     "blessed-contrib": "^4.10.1",
     "commander": "^8.2.0",
     "exit-hook": "^3.0.0",
     "fs-extra": "^10.0.0",
+    "make-fetch-happen": "^9.1.0",
     "nanoid": "^3.1.25",
-    "node": "^16.6.1",
-    "node-fetch": "^3.0.0",
-    "pkg": "^5.3.2",
     "typescript": "^4.4.3"
+  },
+  "devDependencies": {
+    "@types/adm-zip": "^0.4.34",
+    "@types/fs-extra": "^9.0.12",
+    "@types/make-fetch-happen": "^9.0.1",
+    "@types/node": "^16.9.1",
+    "caxa": "^2.1.0",
+    "changeexe": "^1.0.2",
+    "glob": "^7.1.7"
   }
 }

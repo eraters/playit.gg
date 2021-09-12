@@ -1,12 +1,10 @@
-import PlayIt from 'playit.gg';
+import PlayIt from './dist/index.js';
 import { createServer } from 'node:http'; // Ignore this, this is to test the tunnel
 
 (async () => {
   const playit = await PlayIt();
 
   const tunnel = await playit.createTunnel({ proto: 'tcp', port: 8080 });
-
-  console.log(`Free Packets: ${playit.free_packets}`);
 
   // Ignore this, this just creates a webserver to test the tunnel
   createServer((_, res) => {
