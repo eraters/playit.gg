@@ -289,15 +289,29 @@ export class PlayIt {
           output
         );
 
+      let closedConnectionInfo =
+        /INFO ([0-9]*\.[0-9]*\.[0-9]*\.[0-9]*)\/([tu][dc]p): fully closed/.exec(
+          output
+        );
+
       if (connectionInfo) {
         this.connections.push({
           ip: connectionInfo[1],
           tunnel: this.tunnels.find(
             (tunnel: tunnel) =>
-              tunnel.game === `custom-${connectionInfo[2].toLowerCase()}` &&
+              tunnel.game === `custom-${connectionInfo[2]}` &&
               tunnel.local_port === Number(connectionInfo[3])
-          )
+          ),
+          type: connectionInfo[2] as 'tcp' | 'udp'
         });
+      }
+
+      if (closedConnectionInfo) {
+        this.connections.filter(
+          (connection: connection) =>
+            connection.ip === closedConnectionInfo[1] &&
+            connection.type === closedConnectionInfo[2]
+        );
       }
     });
   }
@@ -363,6 +377,7 @@ export interface binaries {
 export interface connection {
   ip: string;
   tunnel: tunnel;
+  type: 'tcp' | 'udp';
 }
 
 export type os = 'win' | 'mac' | 'lin';
