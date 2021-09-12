@@ -20,6 +20,7 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           npm run package
+      - run: 'ls -R bin'
       - name: Upload Artifacts
         uses: actions/upload-artifact@v2
         with:
