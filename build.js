@@ -30,12 +30,12 @@ const { os } = new PlayIt();
           const zip = new (require('adm-zip'))();
           zip.addLocalFolder(output);
           await new Promise((res) =>
-            zip.writeZip(`${__dirname}/mac.zip`, (err) =>
+            zip.writeZip(`${__dirname}/bin/mac.zip`, (err) =>
               err ? console.error(err) : res(null)
             )
           );
           await fs.rm(output, { recursive: true, force: true });
-          output = `${__dirname}/mac.zip`;
+          output = `${__dirname}/bin/mac.zip`;
         })()
       : '';
 
