@@ -27,7 +27,7 @@ const { os } = new PlayIt();
       : os === 'mac'
       ? await (async () => {
           const zip = new (require('adm-zip'))();
-          zip.addLocalFolder(output);
+          zip.addLocalFolder(output, 'mac.app');
           await new Promise((res) =>
             zip.writeZip(`${__dirname}/bin/mac.zip`, (err) =>
               err ? console.error(err) : res(null)
