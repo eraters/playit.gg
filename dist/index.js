@@ -192,13 +192,19 @@ export class PlayIt {
                 this.used_packets = parseInt(packetInfo[1]);
                 this.free_packets = parseInt(packetInfo[2]);
             }
-            let connectionInfo = /INFO ([0-9]*\.[0-9]*\.[0-9]*\.[0-9]*)\/([tu][dc]p): new client connecting to 127\.0\.0\.1:([0-9]*)/.exec(output);
+            let connectionInfo = /INFO ([0-9]*\.[0-9]*\.[0-9]*\.[0-9]*)\/([tu][dc]p): new client connecting to 127\.0\.0\.1:([0-9]*)|INFO ([0-9]*\.[0-9]*\.[0-9]*\.[0-9]*)\/([tu][dc]p) host=>tunnel: closed due to peer EOF, mapping: host=>tunnel/.exec(output);
+            let closedConnectionInfo = /INFO ([0-9]*\.[0-9]*\.[0-9]*\.[0-9]*)\/([tu][dc]p): fully closed/.exec(output);
             if (connectionInfo) {
                 this.connections.push({
                     ip: connectionInfo[1],
-                    tunnel: this.tunnels.find((tunnel) => tunnel.game === `custom-${connectionInfo[2].toLowerCase()}` &&
-                        tunnel.local_port === Number(connectionInfo[3]))
+                    tunnel: this.tunnels.find((tunnel) => tunnel.game === `custom-${connectionInfo[2]}` &&
+                        tunnel.local_port === Number(connectionInfo[3])),
+                    type: connectionInfo[2]
                 });
+            }
+            if (closedConnectionInfo) {
+                this.connections.filter((connection) => connection.ip !== closedConnectionInfo[1] &&
+                    connection.type !== closedConnectionInfo[2]);
             }
         });
     }

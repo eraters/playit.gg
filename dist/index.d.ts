@@ -66,5 +66,6 @@ export interface binaries {
 export interface connection {
     ip: string;
     tunnel: tunnel;
+    type: 'tcp' | 'udp';
 }
 export declare type os = 'win' | 'mac' | 'lin';
