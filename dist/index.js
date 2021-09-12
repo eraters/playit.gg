@@ -194,7 +194,11 @@ export class PlayIt {
             }
             let connectionInfo = /INFO ([0-9]*\.[0-9]*\.[0-9]*\.[0-9]*)\/([tu][dc]p): new client connecting to 127\.0\.0\.1:([0-9]*)/.exec(output);
             if (connectionInfo) {
-                this.connections.push({ ip: connectionInfo[1] });
+                this.connections.push({
+                    ip: connectionInfo[1],
+                    tunnel: this.tunnels.find((tunnel) => tunnel.game === `custom-${connectionInfo[2].toLowerCase()}` &&
+                        tunnel.local_port === Number(connectionInfo[3]))
+                });
             }
         });
     }

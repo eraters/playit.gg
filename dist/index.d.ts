@@ -65,6 +65,6 @@ export interface binaries {
 }
 export interface connection {
     ip: string;
-    tunnel?: tunnel;
+    tunnel: tunnel;
 }
 export declare type os = 'win' | 'mac' | 'lin';
