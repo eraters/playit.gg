@@ -9,7 +9,7 @@ const { os } = new PlayIt();
 
 (async () => {
   __dirname = resolve(__dirname, '..');
-  let output = `${__dirname}/bin/playit.${
+  let output = `${__dirname}/bin/${os}.${
     os === 'win' ? 'exe' : os === 'mac' ? 'app' : 'sh'
   }`;
 
@@ -29,7 +29,7 @@ const { os } = new PlayIt();
       ? await (async () => {
           const zip = new (require('adm-zip'))();
           zip.addLocalFolder(output);
-          zip.writeZip(`${__dirname}/macos.zip`);
+          zip.writeZip(`${__dirname}/${os}.zip`);
           await fs.rm(output, { recursive: true, force: true });
           output = output.replace('.app', '.zip');
         })()
