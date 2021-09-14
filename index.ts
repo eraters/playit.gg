@@ -12,6 +12,7 @@ global.__filename = fileURLToPath(import.meta.url);
 global.__dirname = dirname(__filename);
 global.require = createRequire(__filename);
 
+/**  @class */
 export class PlayIt {
   destroyed: Boolean = false;
 
@@ -80,10 +81,23 @@ export class PlayIt {
     process.chdir(this.dir);
   }
 
+  /**
+   * @param {number} id - The Tunnel ID
+   * @description Disables The Specified Tunnel
+   * @example
+   * await playit.disableTunnel(<Tunnel ID>);
+   */
   public async disableTunnel(id: number = isRequired('ID')): Promise<void> {
     await this.fetch(`/account/tunnels/${id}/disable`);
   }
 
+  /**
+   * @param {number} id - The Tunnel ID
+   * @description Enables The Specified Tunnel
+   * @example
+   * await playit.disableTunnel(<Tunnel ID>); // Disables The Tunnel
+   * await playit.enableTunnel(<Same Tunnel ID>); // Enables The Tunnel Again
+   */
   public async enableTunnel(id: number = isRequired('ID')): Promise<void> {
     await this.fetch(`/account/tunnels/${id}/enable`);
   }
