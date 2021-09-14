@@ -4,11 +4,11 @@ import { icon } from 'changeexe';
 import { resolve } from 'node:path';
 import { PlayIt } from './dist/index.js';
 
-const { os } = new PlayIt();
+const { os, version } = new PlayIt();
 
 (async () => {
   __dirname = resolve(__dirname, '..');
-  let output = `${__dirname}/bin/${os}.${
+  let output = `${__dirname}/bin/playit-${os}-${version}.${
     os === 'win' ? 'exe' : os === 'mac' ? 'app' : 'sh'
   }`;
 
@@ -29,7 +29,7 @@ const { os } = new PlayIt();
           const zip = new (require('adm-zip'))();
           zip.addLocalFolder(output, 'mac.app');
           await new Promise((res) =>
-            zip.writeZip(`${__dirname}/bin/mac.zip`, (err) =>
+            zip.writeZip(output.replace('.app', '.zip', (err) =>
               err ? console.error(err) : res(null)
             )
           );
