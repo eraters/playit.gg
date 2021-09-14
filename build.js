@@ -29,7 +29,7 @@ const { os, version } = new PlayIt();
           const zip = new (require('adm-zip'))();
           zip.addLocalFolder(output, 'mac.app');
           await new Promise((res) =>
-            zip.writeZip(output.replace('.app', '.zip', (err) =>
+            zip.writeZip(output.replace('.app', '.zip'), (err) =>
               err ? console.error(err) : res(null)
             )
           );
