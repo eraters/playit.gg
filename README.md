@@ -49,54 +49,29 @@ Options:
 
 ## API
 
-> **_NOTE:_** All Items In This Class Are Asyncronous
+> Most Items In This Module Are Asynchronous
 
-### `playit(playitOpts?: Object): Promise<playit>`
+### Exports
 
-Start PlayIt.
+#### `PlayIt`
 
-|   Option   | Required |            Description            | Default |
-| :--------: | :------: | :-------------------------------: | :-----: |
-| playitOpts |    No    | Options To Put In The `.env` File |  `{}`   |
+The Bare [PlayIt](#methods) Class
 
-### `playit.createTunnel(tunnelOpts?: tunnelOpts): Promise<Object>`
+|  Type   | Returns  |
+| :-----: | :------: |
+| `Class` | `PlayIt` |
 
-Create A Tunnel With The Provided Network Protocall, And Port.
+Example:
 
-| Option | Required |                       Description                       | Default |
-| :----: | :------: | :-----------------------------------------------------: | :-----: |
-| proto  |    No    | Network Protocall To Use, Can Either Be `UDP`, Or `TCP` |  `TCP`  |
-|  port  |    No    |                  Local Port To Expose                   |  `80`   |
+##### `default`
 
-### `playit.disableTunnel(id: number): Promise<void>`
+The Function That Starts The PlayIt Class
 
-Disable The Specified Tunnel. Only Works If The Tunnel Is Enabled.
+|    Type    | Async  |
+| :--------: | :----: |
+| `Function` | `true` |
 
-| Option | Required |           Description           | Default |
-| :----: | :------: | :-----------------------------: | :-----: |
-|   id   |   Yes    | The Id Of The Tunnel To Disable |  None   |
-
-### `playit.enableTunnel(id: number): Promise<void>`
-
-Enable The Specified Tunnel. Only Works If The Tunnel Is Disabled.
-
-| Option | Required |          Description           | Default |
-| :----: | :------: | :----------------------------: | :-----: |
-|   id   |   Yes    | The Id Of The Tunnel To Enable |  None   |
-
-### `playit.download(pcOS?: os): Promise<string>`
-
-Download The Correct PlayIt Binary For The OS. Returns The Filename Of The Binary
-
-| Option | Required |                        Description                         |   Default   |
-| :----: | :------: | :--------------------------------------------------------: | :---------: |
-|  pcOS  |    No    | The OS Of The Binary. Can Either Be `mac`, `win`, or `lin` | `playit.os` |
-
-### `playit.stop(): void`
-
-> This Is The Only Item In The Class That Is Syncronous.
-
-Stops The PlayIt Binary And Removes It. PlayIt Is Unusable After You Call This Function.
+### Methods
 
 ## Contribution
 

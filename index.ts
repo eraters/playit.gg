@@ -102,6 +102,12 @@ export class PlayIt {
     await this.fetch(`/account/tunnels/${id}/enable`);
   }
 
+  /**
+   * @param {tunnelOpts} tunnelOpts - Options For The Tunnel
+   * @description Creates A Tunnel With The Specified Port And Protocall
+   * @example
+   * console.log((await playit.createTunnel({ port: <Port>, proto: <Network Protocall> })
+   */
   public async createTunnel(
     tunnelOpts: tunnelOpts = isRequired('Tunnel Options')
   ): Promise<tunnel> {
@@ -149,6 +155,13 @@ export class PlayIt {
     await this.fetch(url);
   }
 
+  /**
+   * @param {any} playitOpts - Options To Put Into The `.env` File
+   * @description Starts PlayIt
+   * @example
+   * import { PlayIt } from 'playit.gg';
+   * const playit = await new PlayIt.create(<Options For Playit>);
+   */
   public async create(playitOpts: any = {}): Promise<PlayIt> {
     this.started = true;
     playitOpts.NO_BROWSER = true;
@@ -244,24 +257,35 @@ export class PlayIt {
     return this;
   }
 
+  /**
+   * @description Stops PlayIt
+   * @example
+   * playit.stop(); // Stops PlayIt, Class Cannot Be Used After Run
+   */
   public stop(): void {
+    if (this.destroyed) return;
     this.destroyed = true;
     // Kill The PlayIt Binary
     this.playit.kill('SIGINT');
     fs.rmSync(this.binary);
   }
 
-  public async download(os: os = this.os): Promise<string> {
+  /**
+   * @description Downloads PlayIt To A Temp Folder
+   * @example
+   * const playitBinary = await playit.download(); // Downloads PlayIt, And Returns The File Path
+   */
+  public async download(): Promise<string> {
     let file = `${this.dir}/${require('nanoid').nanoid(20)}.${
-      os === 'win' ? 'exe' : os === 'mac' ? 'zip' : 'bin'
+      this.os === 'win' ? 'exe' : this.os === 'mac' ? 'zip' : 'bin'
     }`;
 
     await fs.writeFile(
       file,
-      Buffer.from(await (await fetch(this.downloadUrls[os])).arrayBuffer())
+      Buffer.from(await (await fetch(this.downloadUrls[this.os])).arrayBuffer())
     );
 
-    if (os === 'mac') {
+    if (this.os === 'mac') {
       new Zip(file)
         .getEntries()
         .map(
@@ -330,7 +354,7 @@ export class PlayIt {
     });
   }
 
-  public async fetch(
+  private async fetch(
     url: string = isRequired('URL'),
     data: Object = {}
   ): Promise<any> {
@@ -357,9 +381,8 @@ function isRequired(argumentName: string): any {
   throw new TypeError(`${argumentName} is a required argument.`);
 }
 
-export default async function init(playitOpts: any = {}): Promise<PlayIt> {
-  return await new PlayIt().create(playitOpts);
-}
+export default async (playitOpts: any = {}) =>
+  await new PlayIt().create(playitOpts);
 
 export interface tunnelOpts {
   proto?: string;

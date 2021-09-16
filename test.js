@@ -14,5 +14,8 @@ import { createServer } from 'node:http'; // Ignore this, this is to test the tu
     res.end();
   }).listen(8080);
 
+  playit.onError(console.error);
+  playit.onWarning(console.warn);
+
   console.log(`http://${tunnel.url}`);
 })();

@@ -1,5 +1,6 @@
 /// <reference types="node" />
 import { ChildProcessWithoutNullStreams } from 'node:child_process';
+/**  @class */
 export declare class PlayIt {
     destroyed: Boolean;
     arch: String;
@@ -28,17 +29,54 @@ export declare class PlayIt {
     onError: Function | undefined;
     onWarning: Function | undefined;
     constructor();
+    /**
+     * @param {number} id - The Tunnel ID
+     * @description Disables The Specified Tunnel
+     * @example
+     * await playit.disableTunnel(<Tunnel ID>);
+     */
     disableTunnel(id?: number): Promise<void>;
+    /**
+     * @param {number} id - The Tunnel ID
+     * @description Enables The Specified Tunnel
+     * @example
+     * await playit.disableTunnel(<Tunnel ID>); // Disables The Tunnel
+     * await playit.enableTunnel(<Same Tunnel ID>); // Enables The Tunnel Again
+     */
     enableTunnel(id?: number): Promise<void>;
+    /**
+     * @param {tunnelOpts} tunnelOpts - Options For The Tunnel
+     * @description Creates A Tunnel With The Specified Port And Protocall
+     * @example
+     * console.log((await playit.createTunnel({ port: <Port>, proto: <Network Protocall> })
+     */
     createTunnel(tunnelOpts?: tunnelOpts): Promise<tunnel>;
     private claimUrl;
+    /**
+     * @param {any} playitOpts - Options To Put Into The `.env` File
+     * @description Starts PlayIt
+     * @example
+     * import { PlayIt } from 'playit.gg';
+     * const playit = await new PlayIt.create(<Options For Playit>);
+     */
     create(playitOpts?: any): Promise<PlayIt>;
+    /**
+     * @description Stops PlayIt
+     * @example
+     * playit.stop(); // Stops PlayIt, Class Cannot Be Used After Run
+     */
     stop(): void;
-    download(os?: os): Promise<string>;
+    /**
+     * @description Downloads PlayIt To A Temp Folder
+     * @example
+     * const playitBinary = await playit.download(); // Downloads PlayIt, And Returns The File Path
+     */
+    download(): Promise<string>;
     private parseOutput;
-    fetch(url?: string, data?: Object): Promise<any>;
+    private fetch;
 }
-export default function init(playitOpts?: any): Promise<PlayIt>;
+declare const _default: (playitOpts?: any) => Promise<PlayIt>;
+export default _default;
 export interface tunnelOpts {
     proto?: string;
     port: number;

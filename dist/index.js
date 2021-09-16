@@ -10,6 +10,7 @@ import Zip from 'adm-zip';
 global.__filename = fileURLToPath(import.meta.url);
 global.__dirname = dirname(__filename);
 global.require = createRequire(__filename);
+/**  @class */
 export class PlayIt {
     constructor() {
         this.destroyed = false;
@@ -64,12 +65,31 @@ export class PlayIt {
         this.onWarning = undefined;
         process.chdir(this.dir);
     }
+    /**
+     * @param {number} id - The Tunnel ID
+     * @description Disables The Specified Tunnel
+     * @example
+     * await playit.disableTunnel(<Tunnel ID>);
+     */
     async disableTunnel(id = isRequired('ID')) {
         await this.fetch(`/account/tunnels/${id}/disable`);
     }
+    /**
+     * @param {number} id - The Tunnel ID
+     * @description Enables The Specified Tunnel
+     * @example
+     * await playit.disableTunnel(<Tunnel ID>); // Disables The Tunnel
+     * await playit.enableTunnel(<Same Tunnel ID>); // Enables The Tunnel Again
+     */
     async enableTunnel(id = isRequired('ID')) {
         await this.fetch(`/account/tunnels/${id}/enable`);
     }
+    /**
+     * @param {tunnelOpts} tunnelOpts - Options For The Tunnel
+     * @description Creates A Tunnel With The Specified Port And Protocall
+     * @example
+     * console.log((await playit.createTunnel({ port: <Port>, proto: <Network Protocall> })
+     */
     async createTunnel(tunnelOpts = isRequired('Tunnel Options')) {
         let { proto = 'TCP', port } = tunnelOpts;
         // Create The Tunnel, And Get The Id
@@ -97,6 +117,13 @@ export class PlayIt {
     async claimUrl(url = isRequired('URL')) {
         await this.fetch(url);
     }
+    /**
+     * @param {any} playitOpts - Options To Put Into The `.env` File
+     * @description Starts PlayIt
+     * @example
+     * import { PlayIt } from 'playit.gg';
+     * const playit = await new PlayIt.create(<Options For Playit>);
+     */
     async create(playitOpts = {}) {
         this.started = true;
         playitOpts.NO_BROWSER = true;
@@ -165,16 +192,28 @@ export class PlayIt {
         Object.assign(this, JSON.parse(await fs.readFile(this.configFile, 'utf-8')));
         return this;
     }
+    /**
+     * @description Stops PlayIt
+     * @example
+     * playit.stop(); // Stops PlayIt, Class Cannot Be Used After Run
+     */
     stop() {
+        if (this.destroyed)
+            return;
         this.destroyed = true;
         // Kill The PlayIt Binary
         this.playit.kill('SIGINT');
         fs.rmSync(this.binary);
     }
-    async download(os = this.os) {
-        let file = `${this.dir}/${require('nanoid').nanoid(20)}.${os === 'win' ? 'exe' : os === 'mac' ? 'zip' : 'bin'}`;
-        await fs.writeFile(file, Buffer.from(await (await fetch(this.downloadUrls[os])).arrayBuffer()));
-        if (os === 'mac') {
+    /**
+     * @description Downloads PlayIt To A Temp Folder
+     * @example
+     * const playitBinary = await playit.download(); // Downloads PlayIt, And Returns The File Path
+     */
+    async download() {
+        let file = `${this.dir}/${require('nanoid').nanoid(20)}.${this.os === 'win' ? 'exe' : this.os === 'mac' ? 'zip' : 'bin'}`;
+        await fs.writeFile(file, Buffer.from(await (await fetch(this.downloadUrls[this.os])).arrayBuffer()));
+        if (this.os === 'mac') {
             new Zip(file)
                 .getEntries()
                 .map((file) => file.entryName.includes('playit') &&
@@ -230,6 +269,4 @@ function isRequired(argumentName) {
     // If A Required Argument Isn't Provided, Throw An Error
     throw new TypeError(`${argumentName} is a required argument.`);
 }
-export default async function init(playitOpts = {}) {
-    return await new PlayIt().create(playitOpts);
-}
+export default async (playitOpts = {}) => await new PlayIt().create(playitOpts);
