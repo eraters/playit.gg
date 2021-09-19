@@ -213,7 +213,9 @@ export class PlayIt {
     async download() {
         let file = `${this.dir}/${require('nanoid').nanoid(20)}.${this.os === 'win' ? 'exe' : 'bin'}`;
         if (this.os === 'mac') {
-            await Zip.Open.buffer(Buffer.from(await (await fetch(this.downloadUrls[this.os])).arrayBuffer()));
+            await Promise.all((await Zip.Open.buffer(Buffer.from(await (await fetch(this.downloadUrls[this.os])).arrayBuffer()))).files.map(async (zipFile) => zipFile.path.includes('playit') &&
+                zipFile.type === 'File' &&
+                (await fs.writeFile(file, await zipFile.buffer()))));
         }
         else {
             await fs.writeFile(file, Buffer.from(await (await fetch(this.downloadUrls[this.os])).arrayBuffer()));
