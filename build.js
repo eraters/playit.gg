@@ -9,7 +9,7 @@ const { os, version } = new PlayIt();
 (async () => {
   __dirname = resolve(__dirname, '..');
   let output = `${__dirname}/bin/playit-${os}-${version}.${
-    os === 'win' ? 'exe' : os === 'mac' ? 'app' : 'sh'
+    os === 'win' ? 'exe' : 'sh'
   }`;
 
   await caxa.default({
@@ -22,21 +22,7 @@ const { os, version } = new PlayIt();
   });
 
   if (await fs.pathExists(output)) {
-    os === 'win'
-      ? icon(output, `${__dirname}/playit-icon.ico`)
-      : os === 'mac'
-      ? await (async () => {
-          const zip = new (require('adm-zip'))();
-          zip.addLocalFolder(output, 'mac.app');
-          await new Promise((res) =>
-            zip.writeZip(output.replace('.app', '.zip'), (err) =>
-              err ? console.error(err) : res(null)
-            )
-          );
-          await fs.rm(output, { recursive: true, force: true });
-          output = `${__dirname}/bin/mac.zip`;
-        })()
-      : '';
+    os === 'win' && icon(output, `${__dirname}/playit-icon.ico`);
 
     console.log(`Built PlayIt To ${output}`);
   } else {
