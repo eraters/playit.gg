@@ -133,16 +133,20 @@ export class PlayIt {
       ).json()
     ).id;
 
-    // Get More Data About The Tunnel
-    let otherData: tunnel = (
-      await (await this.fetch('/account/tunnels')).json()
-    ).tunnels.find((tunnel: tunnel) => tunnel.id === tunnelId);
+    let otherData = await (async () => {
+      let otherData: tunnel;
+      do {
+        // Get More Data About The Tunnel
+        otherData = (
+          await (await this.fetch('/account/tunnels')).json()
+        ).tunnels.find((tunnel: tunnel) => tunnel.id === tunnelId);
+      } while (
+        otherData.domain_id === null ||
+        otherData.connect_address === null
+      );
 
-    while (otherData.domain_id === null || otherData.connect_address === null) {
-      otherData = (
-        await (await this.fetch('/account/tunnels')).json()
-      ).tunnels.find((tunnel: any) => tunnel.id === tunnelId);
-    }
+      return otherData;
+    })();
 
     otherData.url = otherData.connect_address;
 
