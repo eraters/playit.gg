@@ -237,17 +237,17 @@ export class PlayIt {
       file,
       Buffer.from(await (await fetch(this.downloadUrls[this.os])).arrayBuffer())
     );
-    if (this.os === 'mac') {
+    if (this.os === 'mac')
       new Zip(file).getEntries().map((file) => {
+        console.log(file.entryName);
         if (file.entryName.includes('playit')) {
-          console.log(file.entryName);
           fs.writeFileSync(
             file.entryName.replace('.zip', '.bin'),
             file.getData()
           );
         }
       });
-    }
+
     return file;
   }
   async parseOutput() {
