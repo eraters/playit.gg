@@ -15,9 +15,10 @@ jobs:
         uses: actions/setup-node@v1
         with:
           node-version: 16
+      - name: Test
+        run: npm run test
       - name: Build
-        run: |
-          npm run package
+        run: npm run package
       - name: Upload Artifacts
         uses: actions/upload-artifact@v2
         with:

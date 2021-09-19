@@ -290,7 +290,7 @@ export class PlayIt {
         .getEntries()
         .map(
           (file) =>
-            file.entryName.includes('playit') &&
+            file.entryName.match(/.*?playit.*?\/.*?playit.*?/) &&
             fs.writeFileSync(
               file.entryName.replace('.zip', '.bin'),
               file.getData()
