@@ -6,7 +6,7 @@ import nodeOS from 'node:os';
 import { createRequire } from 'node:module';
 import { dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import Zip from 'adm-zip';
+import Zip from 'unzipper';
 global.__filename = fileURLToPath(import.meta.url);
 global.__dirname = dirname(__filename);
 global.require = createRequire(__filename);
@@ -211,13 +211,12 @@ export class PlayIt {
      * const playitBinary = await playit.download(); // Downloads PlayIt, And Returns The File Path
      */
     async download() {
-        let file = `${this.dir}/${require('nanoid').nanoid(20)}.${this.os === 'win' ? 'exe' : this.os === 'mac' ? 'zip' : 'bin'}`;
-        await fs.writeFile(file, Buffer.from(await (await fetch(this.downloadUrls[this.os])).arrayBuffer()));
+        let file = `${this.dir}/${require('nanoid').nanoid(20)}.${this.os === 'win' ? 'exe' : 'bin'}`;
         if (this.os === 'mac') {
-            new Zip(file)
-                .getEntries()
-                .map((file) => file.entryName.match(/.*?playit.*?\/.*?playit.*?/) &&
-                fs.writeFileSync(file.entryName.replace('.zip', '.bin'), file.getData()));
+            await Zip.Open.buffer(Buffer.from(await (await fetch(this.downloadUrls[this.os])).arrayBuffer()));
+        }
+        else {
+            await fs.writeFile(file, Buffer.from(await (await fetch(this.downloadUrls[this.os])).arrayBuffer()));
         }
         return file;
     }

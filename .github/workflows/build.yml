@@ -18,7 +18,7 @@ jobs:
       - name: Install Packages
         run: npm install
       - name: Test
-        run: npm run test
+        run: npm run test 30
       - name: Build
         run: npm run package
       - name: Upload Artifacts

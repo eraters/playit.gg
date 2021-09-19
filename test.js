@@ -18,4 +18,6 @@ import { createServer } from 'node:http'; // Ignore this, this is to test the tu
   playit.onWarning(console.warn);
 
   console.log(`http://${tunnel.url}`);
+
+  process.argv[2] && setTimeout(process.exit, parseInt(process.argv[2]));
 })();
