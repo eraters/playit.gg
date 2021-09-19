@@ -34,6 +34,8 @@ To Install The CLI, Run:
 npm install -g playit.gg
 ```
 
+Or Download From The [Releases](https://github.com/TheBotlyNoob/playit.gg/releases/latest)
+
 ### Options
 
 ```
