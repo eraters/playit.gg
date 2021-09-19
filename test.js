@@ -23,13 +23,13 @@ import fetch from 'make-fetch-happen';
   await (async (res) => {
     let result = false;
 
-    console.time('tunnelOn');
+    console.time('\nTunnel Active');
 
     do {
       try {
         await fetch(`http://${tunnel.url}`);
         result = true;
-        console.timeEnd('tunnelOn');
+        console.timeEnd('\nTunnel Active');
         res(null);
       } catch {}
     } while (!result);
