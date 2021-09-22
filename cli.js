@@ -4,6 +4,7 @@ import { PlayIt } from './dist/index.js';
 import { Command, Option } from 'commander';
 import blessed from 'blessed';
 import contrib from 'blessed-contrib';
+import prompt from 'prompts';
 
 const program = new Command();
 
@@ -29,7 +30,18 @@ const program = new Command();
   const opts = program.opts();
 
   if (opts.proto === undefined) opts.proto = 'tcp';
-  if (opts.port === undefined) return program.outputHelp();
+  if (opts.port === undefined)
+    opts.port = Number(
+      await prompt({
+        type: 'number',
+        name: 'port',
+        message: 'What Port Do You Want To Use?',
+        validate: (port) =>
+          !isNaN(Number(port)) && Number(port) <= 65353 && Number(port) > 0
+            ? 'The Port Must Be A Number And Between 1 And 65535'
+            : true
+      })
+    );
 
   if (!['udp', 'tcp'].includes(opts.proto?.toLowerCase()))
     throw new Error('the prototype must be either UDP, or TCP');
@@ -42,7 +54,7 @@ const program = new Command();
     )
   )
     throw new Error(
-      'the port must be a valid integer, and between 0 and 65353'
+      'the port must be a valid integer, and between 1 and 65353'
     );
   playit = await playit.create();
   const tunnel = await playit.createTunnel({
