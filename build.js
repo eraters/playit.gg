@@ -15,7 +15,11 @@ const { os, version } = new PlayIt();
   await caxa.default({
     input: __dirname,
     output,
-    command: ['{{caxa}}/node_modules/.bin/node', '{{caxa}}/cli.js'],
+    command: [
+      '{{caxa}}/node_modules/.bin/node',
+      '--unhandled-rejections=strict',
+      '{{caxa}}/cli.js'
+    ],
     dedupe: true,
     uncompressionMessage:
       'May Take Extra Time To Start On First Run, Please Wait...'

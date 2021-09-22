@@ -140,6 +140,8 @@ export class PlayIt {
         otherData = (
           await (await this.fetch('/account/tunnels')).json()
         ).tunnels.find((tunnel: tunnel) => tunnel.id === tunnelId);
+        let now = new Date().getTime();
+        while (now > new Date().getTime() + 5000);
       } while (
         otherData.domain_id === null ||
         otherData.connect_address === null

@@ -3,6 +3,8 @@ import { createServer } from 'node:http'; // Ignore this, this is to test the tu
 import fetch from 'make-fetch-happen';
 
 (async () => {
+  process.argv[2] && setTimeout(process.exit, parseInt(process.argv[2]) * 1000);
+
   const playit = await PlayIt();
 
   const tunnel = await playit.createTunnel({ proto: 'tcp', port: 8080 });
@@ -34,6 +36,4 @@ import fetch from 'make-fetch-happen';
       } catch {}
     } while (!result);
   })();
-
-  process.argv[2] && setTimeout(process.exit, parseInt(process.argv[2]) * 1000);
 })();

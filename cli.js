@@ -32,15 +32,17 @@ const program = new Command();
   if (opts.proto === undefined) opts.proto = 'tcp';
   if (opts.port === undefined)
     opts.port = Number(
-      await prompt({
-        type: 'number',
-        name: 'port',
-        message: 'What Port Do You Want To Use?',
-        validate: (port) =>
-          !isNaN(Number(port)) && Number(port) <= 65353 && Number(port) > 0
-            ? 'The Port Must Be A Number And Between 1 And 65535'
-            : true
-      })
+      (
+        await prompt({
+          type: 'number',
+          name: 'port',
+          message: 'What Port Do You Want To Use?',
+          validate: (port) =>
+            !isNaN(Number(port)) && Number(port) <= 65353 && Number(port) > 0
+              ? true
+              : 'The Port Must Be A Number And Between 1 And 65535'
+        })
+      ).port
     );
 
   if (!['udp', 'tcp'].includes(opts.proto?.toLowerCase()))
