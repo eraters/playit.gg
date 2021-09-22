@@ -3,7 +3,7 @@ import { ChildProcessWithoutNullStreams } from 'node:child_process';
 /**  @class */
 export declare class PlayIt {
     destroyed: Boolean;
-    arch: String;
+    arch: 'x64' | 'arm' | 'arm64' | 'ppc64' | 's390x';
     dir: string;
     tunnels: tunnel[];
     agent_key: string;
@@ -17,6 +17,7 @@ export declare class PlayIt {
     version: string;
     configFile: string;
     downloadUrls: binaries;
+    type: 'armv7' | 'darwin' | 'win' | 'linux' | 'aarch64';
     binary: string | undefined;
     output: string;
     stdout: string;

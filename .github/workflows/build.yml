@@ -2,7 +2,7 @@ on:
   - push
 
 jobs:
-  build:
+  buildOnx64:
     if: ${{ endsWith(github.event.commits[0].message, '[release]')  }}
     strategy:
       matrix:
@@ -19,7 +19,7 @@ jobs:
         run: npm install
       - name: Test
         run: npm run test 30
-      - name: Build
+      - name: Build For ${{ matrix.platform }}
         run: npm run package
       - name: Upload Artifacts
         uses: actions/upload-artifact@v2
@@ -27,8 +27,47 @@ jobs:
           name: ${{ matrix.platform }}
           path: |
             bin/*
+
+  buildOnArm:
+    needs: [buildOnx64]
+    strategy:
+      matrix:
+        arch: [armv7, aarch64]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v1
+      - name: Setup Node
+        uses: actions/setup-node@v1
+        with:
+          node-version: 16
+      - name: Test
+        uses: uraimo/run-on-arch-action@v2.0.5
+          with:
+            arch: ${{ matrix.arch }}
+            githubToken: ${{ github.token }}
+            distro: ubuntu20.04
+            install: npm install
+            run: npm test
+
+      - name: Build For Unix ${{ matrix.arch }}
+        uses: uraimo/run-on-arch-action@v2.0.5
+        with:
+          arch: ${{ matrix.arch }}
+          githubToken: ${{ github.token }}
+          distro: ubuntu20.04
+          install: npm install
+          run: npm run build
+
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: ${{ matrix.platform }}
+          path: |
+            bin/*
+
   release:
-    needs: [build]
+    needs: [buildOnArm]
     runs-on: ubuntu-latest
     steps:
       - name: Checkout

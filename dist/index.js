@@ -52,6 +52,15 @@ export class PlayIt {
             arm: `https://playit.gg/downloads/playit-armv7-${this.version}`,
             aarch: `https://playit.gg/downloads/playit-aarch64-${this.version}`
         };
+        this.type = this.os === 'win'
+            ? 'win'
+            : this.os === 'mac'
+                ? 'darwin'
+                : this.os === 'lin' && this.arch === 'arm'
+                    ? 'armv7'
+                    : this.os === 'lin' && this.arch === 'arm64'
+                        ? 'aarch64'
+                        : 'linux';
         this.binary = undefined;
         this.output = '';
         this.stdout = '';

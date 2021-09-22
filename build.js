@@ -4,11 +4,11 @@ import { icon } from 'changeexe';
 import { resolve } from 'node:path';
 import { PlayIt } from './dist/index.js';
 
-const { os, version } = new PlayIt();
+const { os, type, version } = new PlayIt();
 
 (async () => {
   __dirname = resolve(__dirname, '..');
-  let output = `${__dirname}/bin/playit-${os}-${version}.${
+  let output = `${__dirname}/bin/playit-${type}-${version}.${
     os === 'win' ? 'exe' : 'sh'
   }`;
 

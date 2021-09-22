@@ -16,12 +16,12 @@ global.require = createRequire(__filename);
 export class PlayIt {
   destroyed: Boolean = false;
 
-  arch: String = (() => {
+  arch: 'x64' | 'arm' | 'arm64' | 'ppc64' | 's390x' = (() => {
     // Check If Architexture is x64 Or Arm, If It Isn't, Throw An Error
     if (!['x64', 'arm', 'arm64', 'ppc64', 's390x'].includes(process.arch))
       throw new Error(`Unsupported Architecture, ${process.arch}!`);
 
-    return process.arch;
+    return process.arch as 'x64' | 'arm' | 'arm64' | 'ppc64' | 's390x';
   })();
 
   dir: string = (() => {
@@ -63,6 +63,17 @@ export class PlayIt {
     arm: `https://playit.gg/downloads/playit-armv7-${this.version}`,
     aarch: `https://playit.gg/downloads/playit-aarch64-${this.version}`
   };
+
+  type: 'armv7' | 'darwin' | 'win' | 'linux' | 'aarch64' =
+    this.os === 'win'
+      ? 'win'
+      : this.os === 'mac'
+      ? 'darwin'
+      : this.os === 'lin' && this.arch === 'arm'
+      ? 'armv7'
+      : this.os === 'lin' && this.arch === 'arm64'
+      ? 'aarch64'
+      : 'linux';
 
   binary: string | undefined = undefined;
 
