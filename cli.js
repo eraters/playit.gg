@@ -29,8 +29,31 @@ const program = new Command();
 
   const opts = program.opts();
 
-  if (opts.proto === undefined) opts.proto = 'tcp';
-  if (opts.port === undefined)
+  if (opts.proto === undefined && opts.port === undefined)
+    Object.assign(
+      opts,
+      await prompt([
+        {
+          type: 'number',
+          name: 'port',
+          message: 'What Port Do You Want To Use?',
+          validate: (port) =>
+            !isNaN(Number(port)) && Number(port) <= 65353 && Number(port) > 0
+              ? true
+              : 'The Port Must Be A Number And Between 1 And 65535'
+        },
+        {
+          type: 'select',
+          name: 'proto',
+          message: 'What Network Prototype Do You Want To Use?',
+          choices: [
+            { title: 'TCP', value: 'tcp' },
+            { title: 'UDP', value: 'udp' }
+          ]
+        }
+      ])
+    );
+  else if (opts.port === undefined)
     opts.port = Number(
       (
         await prompt({
@@ -44,8 +67,11 @@ const program = new Command();
         })
       ).port
     );
+  else if (opts.proto === undefined) opts.proto = 'tcp';
 
-  if (!['udp', 'tcp'].includes(opts.proto?.toLowerCase()))
+  console.log(opts);
+
+  if (!['udp', 'tcp'].includes(opts.proto.toLowerCase()))
     throw new Error('the prototype must be either UDP, or TCP');
 
   if (
