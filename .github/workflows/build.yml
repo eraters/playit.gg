@@ -43,12 +43,12 @@ jobs:
           node-version: 16
       - name: Test
         uses: uraimo/run-on-arch-action@v2.0.5
-          with:
-            arch: ${{ matrix.arch }}
-            githubToken: ${{ github.token }}
-            distro: ubuntu20.04
-            install: npm install
-            run: npm test
+        with:
+          arch: ${{ matrix.arch }}
+          githubToken: ${{ github.token }}
+          distro: ubuntu20.04
+          install: npm install
+          run: npm test
 
       - name: Build For Unix ${{ matrix.arch }}
         uses: uraimo/run-on-arch-action@v2.0.5
