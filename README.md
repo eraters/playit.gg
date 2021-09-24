@@ -43,7 +43,7 @@ Usage: PlayIt --proto [Network Protocol] --port [Port]
 
 Options:
   -V, --version  output the version number
-  -p, --port     port to expose. must be between 0 and 65535 (default: 80)
+  -p, --port     port to expose. must be between 0 and 65535
   --proto        network protocol to expose. can either be TCP or UDP (default: "TCP")
   -n, --no-gui   disables the tui interface
   -h, --help     display help for command
