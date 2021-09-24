@@ -426,7 +426,6 @@ var PlayIt = /** @class */ (function () {
         // Kill The PlayIt Binary
         this.playit.kill('SIGINT');
         fs_extra_1["default"].rmSync(this.binary);
-        console.log(this.binary.toString());
     };
     /**
      * @description Downloads PlayIt To A Temp Folder

@@ -5,7 +5,7 @@ const { PlayIt } = require('.');
 const { Command, Option } = require('commander');
 
 const program = new Command();
-const playit = new PlayIt();
+let playit = new PlayIt();
 
 (async () => {
   program
