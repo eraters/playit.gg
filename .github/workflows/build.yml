@@ -16,7 +16,7 @@ jobs:
       - name: Test
         run: npm run test 30
       - name: Build For ${{ matrix.platform }}
-        run: npm run package
+        run: npm run build
       - name: Upload Artifacts
         uses: actions/upload-artifact@v2
         with:
