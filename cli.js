@@ -1,10 +1,10 @@
 #!/usr/bin/env node
 
-import { PlayIt } from './dist/index.js';
-import { Command, Option } from 'commander';
-import blessed from 'blessed';
-import contrib from 'blessed-contrib';
-import prompt from 'prompts';
+const prompt = require('prompts');
+const { PlayIt } = require('.');
+const { Command, Option } = require('commander');
+const blessed = require('blessed');
+const contrib = require('blessed-contrib');
 
 const program = new Command();
 
@@ -69,8 +69,6 @@ const program = new Command();
     );
   else if (opts.proto === undefined) opts.proto = 'tcp';
 
-  console.log(opts);
-
   if (!['udp', 'tcp'].includes(opts.proto.toLowerCase()))
     throw new Error('the prototype must be either UDP, or TCP');
 
@@ -90,28 +88,8 @@ const program = new Command();
     port: Number(opts.port)
   });
 
-  if (!opts.gui) {
-    console.log(`http://${tunnel.url}`);
-    return;
-  }
+  playit.onError(console.error);
+  playit.onWarning(console.warn);
 
-  // Setup the TUI
-  const screen = blessed.screen({ title: 'PlayIt.GG', smartCSR: true });
-  const grid = new contrib.grid({ rows: 20, cols: 20, screen: screen });
-  grid.set(0, 10, 5, 8, blessed.text, {
-    label: 'Tunnel URL',
-    content: `http://${tunnel.url}`,
-    align: 'center'
-  });
-  const log = grid.set(0, 0, 20, 10, contrib.log, {
-    fg: 'green',
-    selectedFg: 'green',
-    label: 'PlayIt Logs'
-  });
-
-  playit.onOutput((output) => {
-    output.split('\n').map((line) => log.log(line));
-    screen.render();
-  });
-  screen.render();
+  console.log(`http://${tunnel.url}`);
 })();

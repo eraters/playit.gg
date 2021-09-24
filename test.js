@@ -1,6 +1,6 @@
-import PlayIt from './dist/index.js';
-import { createServer } from 'node:http'; // Ignore this, this is to test the tunnel
-import fetch from 'make-fetch-happen';
+const PlayIt = require('.');
+const { createServer } = require('http');
+const fetch = require('make-fetch-happen');
 
 (async () => {
   process.argv[2] && setTimeout(process.exit, parseInt(process.argv[2]) * 1000);
@@ -22,7 +22,7 @@ import fetch from 'make-fetch-happen';
 
   console.log(`http://${tunnel.url}`);
 
-  await (async (res) => {
+  await (async () => {
     let result = false;
 
     console.time('\nTunnel Active');
@@ -32,7 +32,6 @@ import fetch from 'make-fetch-happen';
         await fetch(`http://${tunnel.url}`);
         result = true;
         console.timeEnd('\nTunnel Active');
-        res(null);
       } catch {}
     } while (!result);
   })();

@@ -1,35 +1,26 @@
-import caxa from 'caxa';
-import fs from 'fs-extra';
-import { icon } from 'changeexe';
-import { resolve } from 'node:path';
-import { PlayIt } from './dist/index.js';
+const { exec: pkg } = require('pkg');
+const { PlayIt } = require('./dist');
 
-const { os, type, version } = new PlayIt();
+const { os, type, arch, version } = new PlayIt();
 
-(async () => {
-  __dirname = resolve(__dirname, '..');
-  let output = `${__dirname}/bin/playit-${type}-${version}.${
-    os === 'win' ? 'exe' : 'sh'
-  }`;
+const targets = [`${os}-${arch}`];
+const nodeOptions = [];
+const assets = [];
+const output = `${__dirname}/bin/playit-${type}-${version}`;
 
-  await caxa.default({
-    input: __dirname,
+(async () =>
+  await pkg([
+    __dirname,
+    '--public-packages',
+    '*',
+    '--no-bytecode',
+    '--public',
+    '--output',
     output,
-    command: [
-      '{{caxa}}/node_modules/.bin/node',
-      '--unhandled-rejections=strict',
-      '{{caxa}}/cli.js'
-    ],
-    dedupe: true,
-    uncompressionMessage:
-      'May Take Extra Time To Start On First Run, Please Wait...'
-  });
-
-  if (await fs.pathExists(output)) {
-    os === 'win' && icon(output, `${__dirname}/playit-icon.ico`);
-
-    console.log(`Built PlayIt To ${output}`);
-  } else {
-    throw new Error('Failed To Build PlayIt');
-  }
-})();
+    '--targets',
+    targets.map((target) => `node16-${target}`).join(','),
+    '--options',
+    nodeOptions.join(','),
+    '--assets',
+    assets.join(',')
+  ]))();

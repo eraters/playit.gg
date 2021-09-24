@@ -1,9 +1,9 @@
 /// <reference types="node" />
-import { ChildProcessWithoutNullStreams } from 'node:child_process';
+import { ChildProcessWithoutNullStreams } from 'child_process';
 /**  @class */
 export declare class PlayIt {
     destroyed: Boolean;
-    arch: 'x64' | 'arm' | 'arm64' | 'ppc64' | 's390x';
+    arch: 'x64' | 'arm' | 'arm64';
     dir: string;
     tunnels: tunnel[];
     agent_key: string;
@@ -49,7 +49,7 @@ export declare class PlayIt {
      * @param {tunnelOpts} tunnelOpts - Options For The Tunnel
      * @description Creates A Tunnel With The Specified Port And Protocall
      * @example
-     * console.log((await playit.createTunnel({ port: <Port>, proto: <Network Protocall> })
+     * console.log((await playit.createTunnel({ port: <Port>, proto: <Network Protocall> })).url)
      */
     createTunnel(tunnelOpts?: tunnelOpts): Promise<tunnel>;
     private claimUrl;
@@ -76,8 +76,7 @@ export declare class PlayIt {
     private parseOutput;
     private fetch;
 }
-declare const _default: (playitOpts?: any) => Promise<PlayIt>;
-export default _default;
+export default function init(playitOpts?: any): Promise<PlayIt>;
 export interface tunnelOpts {
     proto?: string;
     port: number;

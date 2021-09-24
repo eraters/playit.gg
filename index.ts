@@ -1,27 +1,19 @@
-import { spawn, ChildProcessWithoutNullStreams } from 'node:child_process';
+import { spawn, ChildProcessWithoutNullStreams } from 'child_process';
 import fs from 'fs-extra';
 import fetch from 'make-fetch-happen';
-import exitHook from 'exit-hook';
-import nodeOS from 'node:os';
-import { createRequire } from 'node:module';
-import { dirname } from 'node:path';
-import { fileURLToPath } from 'node:url';
+import nodeOS from 'os';
 import Zip from 'unzipper';
-
-global.__filename = fileURLToPath(import.meta.url);
-global.__dirname = dirname(__filename);
-global.require = createRequire(__filename);
 
 /**  @class */
 export class PlayIt {
   destroyed: Boolean = false;
 
-  arch: 'x64' | 'arm' | 'arm64' | 'ppc64' | 's390x' = (() => {
+  arch: 'x64' | 'arm' | 'arm64' = (() => {
     // Check If Architexture is x64 Or Arm, If It Isn't, Throw An Error
-    if (!['x64', 'arm', 'arm64', 'ppc64', 's390x'].includes(process.arch))
+    if (!['x64', 'arm', 'arm64'].includes(process.arch))
       throw new Error(`Unsupported Architecture, ${process.arch}!`);
 
-    return process.arch as 'x64' | 'arm' | 'arm64' | 'ppc64' | 's390x';
+    return process.arch as 'x64' | 'arm' | 'arm64';
   })();
 
   dir: string = (() => {
@@ -117,12 +109,12 @@ export class PlayIt {
    * @param {tunnelOpts} tunnelOpts - Options For The Tunnel
    * @description Creates A Tunnel With The Specified Port And Protocall
    * @example
-   * console.log((await playit.createTunnel({ port: <Port>, proto: <Network Protocall> })
+   * console.log((await playit.createTunnel({ port: <Port>, proto: <Network Protocall> })).url)
    */
   public async createTunnel(
     tunnelOpts: tunnelOpts = isRequired('Tunnel Options')
   ): Promise<tunnel> {
-    let { proto = 'TCP', port } = tunnelOpts;
+    let { proto = 'TCP', port = isRequired('Port') } = tunnelOpts;
 
     // Create The Tunnel, And Get The Id
     const tunnelId: number = (
@@ -232,27 +224,27 @@ export class PlayIt {
       }
     });
 
-    this.onOutput = (callback: Function = (output: string[]) => output) => {
+    this.onOutput = (callback: Function = (output: string) => output) => {
       callback(this.output);
       outputCallbacks.push(callback);
     };
 
-    this.onStdout = (callback: Function = (output: string[]) => output) => {
+    this.onStdout = (callback: Function = (output: string) => output) => {
       callback(this.stdout);
       stdoutCallbacks.push(callback);
     };
 
-    this.onStderr = (callback: Function = (output: string[]) => output) => {
+    this.onStderr = (callback: Function = (output: string) => output) => {
       callback(this.stderr);
       stderrCallbacks.push(callback);
     };
 
-    this.onError = (callback: Function = (output: string[]) => output) => {
+    this.onError = (callback: Function = (output: string) => output) => {
       callback(this.errors);
       errorCallbacks.push(callback);
     };
 
-    this.onWarning = (callback: Function = (output: string[]) => output) => {
+    this.onWarning = (callback: Function = (output: string) => output) => {
       callback(this.warnings);
       warningCallbacks.push(callback);
     };
@@ -404,8 +396,9 @@ function isRequired(argumentName: string): any {
   throw new TypeError(`${argumentName} is a required argument.`);
 }
 
-export default async (playitOpts: any = {}) =>
-  await new PlayIt().create(playitOpts);
+export default async function init(playitOpts: any = {}) {
+  return await new PlayIt().create(playitOpts);
+}
 
 export interface tunnelOpts {
   proto?: string;
@@ -441,3 +434,52 @@ export interface connection {
 }
 
 export type os = 'win' | 'mac' | 'lin';
+
+module.exports = Object.assign(init, module.exports);
+
+// https://github.com/sindresorhus/exit-hook/ but for CommonJS
+
+function exitHook(onExit: Function) {
+  const callbacks: Set<Function> = new Set();
+  let isCalled = false;
+  let isRegistered = false;
+
+  function exit(shouldManuallyExit: boolean, signal: number) {
+    if (isCalled) {
+      return;
+    }
+
+    isCalled = true;
+
+    for (const callback of callbacks) {
+      callback();
+    }
+
+    if (shouldManuallyExit === true) {
+      process.exit(128 + signal); // eslint-disable-line unicorn/no-process-exit
+    }
+  }
+
+  callbacks.add(onExit);
+
+  if (!isRegistered) {
+    isRegistered = true;
+
+    process.once('exit', exit);
+    process.once('SIGINT', exit.bind(undefined, true, 2));
+    process.once('SIGTERM', exit.bind(undefined, true, 15));
+
+    // PM2 Cluster shutdown message. Caught to support async handlers with pm2, needed because
+    // explicitly calling process.exit() doesn't trigger the beforeExit event, and the exit
+    // event cannot support async handlers, since the event loop is never called after it.
+    process.on('message', (message) => {
+      if (message === 'shutdown') {
+        exit(true, -128);
+      }
+    });
+  }
+
+  return () => {
+    callbacks.delete(onExit);
+  };
+}
