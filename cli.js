@@ -5,10 +5,9 @@ const { PlayIt } = require('.');
 const { Command, Option } = require('commander');
 
 const program = new Command();
+const playit = new PlayIt();
 
 (async () => {
-  let playit = new PlayIt();
-
   program
     .version(playit.version)
     .name('PlayIt')
