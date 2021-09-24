@@ -3,8 +3,6 @@
 const prompt = require('prompts');
 const { PlayIt } = require('.');
 const { Command, Option } = require('commander');
-const blessed = require('blessed');
-const contrib = require('blessed-contrib');
 
 const program = new Command();
 
