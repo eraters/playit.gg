@@ -28,5 +28,6 @@ const output = `${__dirname}/bin/playit-${type}-${version}`;
     assets.join(',')
   ]);
 
-  if (os === 'win') icon(`${output}.exe`, `${__dirname}/.ci/playit-icon.ico`);
+  // TODO: Figure out why the hell this brakes the build
+  // if (os === 'win') icon(`${output}.exe`, `${__dirname}/.ci/playit-icon.ico`);
 })();

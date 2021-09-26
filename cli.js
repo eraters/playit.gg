@@ -21,7 +21,7 @@ let playit = new PlayIt();
   const opts = program.opts();
 
   if (opts.tunnels !== undefined)
-    opts.tunnels.map((tunnel) => ({
+    opts.tunnels = opts.tunnels.map((tunnel) => ({
       port: Number(tunnel.split(':')[0]),
       proto: tunnel.split(':')[1]
     }));
@@ -97,9 +97,10 @@ let playit = new PlayIt();
   playit.onWarning(console.warn);
 
   for (const tunnel of opts.tunnels)
-    console.log(
-      `http://${(await playit.createTunnel(tunnel)).url} : ${
-        tunnel.port
-      }:${tunnel.proto.toUpperCase()}`
-    );
+    (async () =>
+      console.log(
+        `http://${(await playit.createTunnel(tunnel)).url} : ${
+          tunnel.port
+        }:${tunnel.proto.toUpperCase()}`
+      ))();
 })();
