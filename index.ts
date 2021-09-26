@@ -109,7 +109,8 @@ export class PlayIt {
    * @param {tunnelOpts} tunnelOpts - Options For The Tunnel
    * @description Creates A Tunnel With The Specified Port And Protocall
    * @example
-   * console.log((await playit.createTunnel({ port: <Port>, proto: <Network Protocall> })).url)
+   * const tunnel = await playit.createTunnel({ port: <Port>, proto: <Network Protocall> });
+   * console.log(tunnel.url);
    */
   public async createTunnel(
     tunnelOpts: tunnelOpts = isRequired('Tunnel Options')
@@ -143,8 +144,7 @@ export class PlayIt {
         otherData = (
           await (await this.fetch('/account/tunnels')).json()
         ).tunnels.find((tunnel: tunnel) => tunnel.id === tunnelId);
-        let now = new Date().getTime();
-        while (now > new Date().getTime() + 5000);
+        await new Promise((res) => setTimeout(res, 5000));
       } while (
         otherData.domain_id === null ||
         otherData.connect_address === null

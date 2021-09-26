@@ -190,7 +190,8 @@ var PlayIt = /** @class */ (function () {
      * @param {tunnelOpts} tunnelOpts - Options For The Tunnel
      * @description Creates A Tunnel With The Specified Port And Protocall
      * @example
-     * console.log((await playit.createTunnel({ port: <Port>, proto: <Network Protocall> })).url)
+     * const tunnel = await playit.createTunnel({ port: <Port>, proto: <Network Protocall> });
+     * console.log(tunnel.url);
      */
     PlayIt.prototype.createTunnel = function (tunnelOpts) {
         if (tunnelOpts === void 0) { tunnelOpts = isRequired('Tunnel Options'); }
@@ -225,7 +226,7 @@ var PlayIt = /** @class */ (function () {
                     case 4:
                         tunnelId = (_j.sent()).id;
                         return [4 /*yield*/, (function () { return __awaiter(_this, void 0, void 0, function () {
-                                var otherData, now;
+                                var otherData;
                                 return __generator(this, function (_a) {
                                     switch (_a.label) {
                                         case 0: return [4 /*yield*/, this.fetch('/account/tunnels')];
@@ -233,15 +234,16 @@ var PlayIt = /** @class */ (function () {
                                         case 2:
                                             // Get More Data About The Tunnel
                                             otherData = (_a.sent()).tunnels.find(function (tunnel) { return tunnel.id === tunnelId; });
-                                            now = new Date().getTime();
-                                            while (now > new Date().getTime() + 5000)
-                                                ;
-                                            _a.label = 3;
+                                            return [4 /*yield*/, new Promise(function (res) { return setTimeout(res, 5000); })];
                                         case 3:
+                                            _a.sent();
+                                            console.log(otherData);
+                                            _a.label = 4;
+                                        case 4:
                                             if (otherData.domain_id === null ||
                                                 otherData.connect_address === null) return [3 /*break*/, 0];
-                                            _a.label = 4;
-                                        case 4: return [2 /*return*/, otherData];
+                                            _a.label = 5;
+                                        case 5: return [2 /*return*/, otherData];
                                     }
                                 });
                             }); })()];

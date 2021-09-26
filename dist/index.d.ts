@@ -49,7 +49,8 @@ export declare class PlayIt {
      * @param {tunnelOpts} tunnelOpts - Options For The Tunnel
      * @description Creates A Tunnel With The Specified Port And Protocall
      * @example
-     * console.log((await playit.createTunnel({ port: <Port>, proto: <Network Protocall> })).url)
+     * const tunnel = await playit.createTunnel({ port: <Port>, proto: <Network Protocall> });
+     * console.log(tunnel.url);
      */
     createTunnel(tunnelOpts?: tunnelOpts): Promise<tunnel>;
     private claimUrl;
