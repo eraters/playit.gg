@@ -33,7 +33,9 @@ jobs:
       - name: Login To NPM
         run: echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_PUBLISH_TOKEN }}"  > ~/.npmrc
       - name: Publish To NPM
-        run: npm publish || echo
+        run: |
+          npm install
+          npm publish || echo
       - name: Download Artifacts
         uses: actions/download-artifact@v2
         with:

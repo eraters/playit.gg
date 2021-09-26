@@ -495,7 +495,8 @@ var PlayIt = /** @class */ (function () {
                         _a = this.claimUrl;
                         return [4 /*yield*/, new Promise(function (res) {
                                 return _this.onStderr(function (data) {
-                                    return data.match(/\bhttps:\/\/[0-9a-z\/]*/gi)
+                                    var _a;
+                                    return ((_a = data.match(/https:\/\/[0-9a-z\.\/]*/gi)) === null || _a === void 0 ? void 0 : _a[0])
                                         ? res(data.match(/https:\/\/[0-9a-z\.\/]*/gi)[0])
                                         : '';
                                 });
