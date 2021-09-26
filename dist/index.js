@@ -237,7 +237,6 @@ var PlayIt = /** @class */ (function () {
                                             return [4 /*yield*/, new Promise(function (res) { return setTimeout(res, 5000); })];
                                         case 3:
                                             _a.sent();
-                                            console.log(otherData);
                                             _a.label = 4;
                                         case 4:
                                             if (otherData.domain_id === null ||

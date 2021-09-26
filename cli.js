@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 
 const { PlayIt } = require('.');
+const prompt = require('prompts');
 
 const program = new (require('commander').Command)();
 let playit = new PlayIt();
@@ -10,7 +11,7 @@ let playit = new PlayIt();
     .version(playit.version)
     .name('PlayIt')
     .usage('--tunnels <Port:Proto...>')
-    .requiredOption(
+    .option(
       '-t, --tunnels <Port:Proto...>',
       'tunnels to create with the specified port and prototype'
     )
@@ -19,10 +20,33 @@ let playit = new PlayIt();
 
   const opts = program.opts();
 
-  opts.tunnels = opts.tunnels.map((tunnel) => ({
-    port: Number(tunnel.split(':')[0]),
-    proto: tunnel.split(':')[1]
-  }));
+  opts.tunnels = opts.tunnels
+    ? opts.tunnels.map((tunnel) => ({
+        port: Number(tunnel.split(':')[0]),
+        proto: tunnel.split(':')[1]
+      }))
+    : [
+        await prompt([
+          {
+            type: 'number',
+            name: 'port',
+            message: 'What Port Do You Want To Use?',
+            validate: (port) =>
+              !isNaN(Number(port)) && Number(port) <= 65353 && Number(port) > 0
+                ? true
+                : 'The Port Must Be A Number And Between 1 And 65535'
+          },
+          {
+            type: 'select',
+            name: 'proto',
+            message: 'What Network Prototype Do You Want To Use?',
+            choices: [
+              { title: 'TCP', value: 'tcp' },
+              { title: 'UDP', value: 'udp' }
+            ]
+          }
+        ])
+      ];
 
   opts.env = opts.envs
     ? opts.envs.map((env) => ({
@@ -30,8 +54,6 @@ let playit = new PlayIt();
         value: env.split(':')[1]
       }))
     : [];
-
-  console.log(opts);
 
   for (const tunnel of opts.tunnels) {
     if (!['udp', 'tcp'].includes(tunnel.proto.toLowerCase()))
@@ -47,20 +69,16 @@ let playit = new PlayIt();
       throw new Error(
         'the port must be a valid integer, and between 1 and 65353'
       );
-
-    if (tunnel.port === undefined) return program.showHelpAfterError();
-    else if (tunnel.proto === undefined) tunnel.proto = 'tcp';
   }
 
   playit = await playit.create();
   playit.onError(console.error);
   playit.onWarning(console.warn);
 
-  for (const tunnel of opts.tunnels) {
+  for (const tunnel of opts.tunnels)
     console.log(
-      `http://${(await playit.createTunnel(tunnel)).url} : ${tunnel.port}:${
-        tunnel.proto
-      }`
+      `http://${(await playit.createTunnel(tunnel)).url} : ${
+        tunnel.port
+      }:${tunnel.proto.toUpperCase()}`
     );
-  }
 })();
