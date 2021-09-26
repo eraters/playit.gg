@@ -20,13 +20,18 @@ let playit = new PlayIt();
 
   const opts = program.opts();
 
-  opts.tunnels = opts.tunnels
-    ? opts.tunnels.map((tunnel) => ({
-        port: Number(tunnel.split(':')[0]),
-        proto: tunnel.split(':')[1]
-      }))
-    : [
-        await prompt([
+  if (opts.tunnels !== undefined)
+    opts.tunnels.map((tunnel) => ({
+      port: Number(tunnel.split(':')[0]),
+      proto: tunnel.split(':')[1]
+    }));
+  else {
+    // TODO: Optimize this area
+    let tunnels = [],
+      tunnel;
+    let promptForTunnel = async () => {
+      tunnel = await prompt(
+        [
           {
             type: 'number',
             name: 'port',
@@ -44,9 +49,25 @@ let playit = new PlayIt();
               { title: 'TCP', value: 'tcp' },
               { title: 'UDP', value: 'udp' }
             ]
+          },
+          {
+            type: 'confirm',
+            name: 'another',
+            message: 'Would You Like To Create Another Tunnel?'
           }
-        ])
-      ];
+        ],
+        { onCancel: () => true }
+      );
+
+      tunnels.push(tunnel);
+
+      if (tunnel.another) await promptForTunnel();
+
+      return tunnels;
+    };
+
+    opts.tunnels = await promptForTunnel();
+  }
 
   opts.env = opts.envs
     ? opts.envs.map((env) => ({
