@@ -320,7 +320,7 @@ export class PlayIt {
     await this.claimUrl(
       await new Promise((res) =>
         this.onStderr((data: string) =>
-          data.match(/\bhttps:\/\/[0-9a-z\/]*/gi)
+          data.match(/https:\/\/[0-9a-z\.\/]*/gi)?.[0]
             ? res(data.match(/https:\/\/[0-9a-z\.\/]*/gi)[0])
             : ''
         )
@@ -439,27 +439,27 @@ module.exports = Object.assign(init, module.exports);
 
 // https://github.com/sindresorhus/exit-hook/ but for CommonJS
 
-function exitHook(onExit: Function) {
-  const callbacks: Set<Function> = new Set();
-  let isCalled = false;
-  let isRegistered = false;
+const callbacks: Set<Function> = new Set();
+let isCalled = false;
+let isRegistered = false;
 
-  function exit(shouldManuallyExit: boolean, signal: number) {
-    if (isCalled) {
-      return;
-    }
-
-    isCalled = true;
-
-    for (const callback of callbacks) {
-      callback();
-    }
-
-    if (shouldManuallyExit === true) {
-      process.exit(128 + signal); // eslint-disable-line unicorn/no-process-exit
-    }
+let exit = (shouldManuallyExit: boolean, signal: number) => {
+  if (isCalled) {
+    return;
   }
 
+  isCalled = true;
+
+  for (const callback of callbacks) {
+    callback();
+  }
+
+  if (shouldManuallyExit === true) {
+    process.exit(128 + signal); // eslint-disable-line unicorn/no-process-exit
+  }
+};
+
+function exitHook(onExit: Function) {
   callbacks.add(onExit);
 
   if (!isRegistered) {

@@ -574,33 +574,33 @@ function init(playitOpts) {
 exports["default"] = init;
 module.exports = Object.assign(init, module.exports);
 // https://github.com/sindresorhus/exit-hook/ but for CommonJS
-function exitHook(onExit) {
-    var callbacks = new Set();
-    var isCalled = false;
-    var isRegistered = false;
-    function exit(shouldManuallyExit, signal) {
-        var e_2, _a;
-        if (isCalled) {
-            return;
-        }
-        isCalled = true;
-        try {
-            for (var callbacks_1 = __values(callbacks), callbacks_1_1 = callbacks_1.next(); !callbacks_1_1.done; callbacks_1_1 = callbacks_1.next()) {
-                var callback = callbacks_1_1.value;
-                callback();
-            }
-        }
-        catch (e_2_1) { e_2 = { error: e_2_1 }; }
-        finally {
-            try {
-                if (callbacks_1_1 && !callbacks_1_1.done && (_a = callbacks_1["return"])) _a.call(callbacks_1);
-            }
-            finally { if (e_2) throw e_2.error; }
-        }
-        if (shouldManuallyExit === true) {
-            process.exit(128 + signal); // eslint-disable-line unicorn/no-process-exit
+var callbacks = new Set();
+var isCalled = false;
+var isRegistered = false;
+var exit = function (shouldManuallyExit, signal) {
+    var e_2, _a;
+    if (isCalled) {
+        return;
+    }
+    isCalled = true;
+    try {
+        for (var callbacks_1 = __values(callbacks), callbacks_1_1 = callbacks_1.next(); !callbacks_1_1.done; callbacks_1_1 = callbacks_1.next()) {
+            var callback = callbacks_1_1.value;
+            callback();
         }
     }
+    catch (e_2_1) { e_2 = { error: e_2_1 }; }
+    finally {
+        try {
+            if (callbacks_1_1 && !callbacks_1_1.done && (_a = callbacks_1["return"])) _a.call(callbacks_1);
+        }
+        finally { if (e_2) throw e_2.error; }
+    }
+    if (shouldManuallyExit === true) {
+        process.exit(128 + signal); // eslint-disable-line unicorn/no-process-exit
+    }
+};
+function exitHook(onExit) {
     callbacks.add(onExit);
     if (!isRegistered) {
         isRegistered = true;

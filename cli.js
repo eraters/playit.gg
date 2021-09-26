@@ -29,7 +29,7 @@ let playit = new PlayIt();
     // TODO: Optimize this area
     let tunnels = [],
       tunnel;
-    let promptForTunnel = async () => {
+    const promptForTunnel = async () => {
       tunnel = await prompt(
         [
           {
