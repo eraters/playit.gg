@@ -1,9 +1,10 @@
 on:
   - push
+  - workflow_dispatch
 
 jobs:
   build:
-    if: endsWith(github.event.commits[0].message, '[release]')
+    if: ${{ endsWith(github.event.commits[0].message, '[release]') || github.event == 'workflow_dispatch' }}
     strategy:
       matrix:
         platform: [ubuntu-latest, windows-latest, macos-latest]
