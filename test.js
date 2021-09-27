@@ -8,6 +8,7 @@ const fetch = require('make-fetch-happen');
   const playit = await PlayIt();
 
   const tunnel = await playit.createTunnel({ proto: 'tcp', port: 8080 });
+  console.time('\nTunnel Active');
 
   // Ignore this, this just creates a webserver to test the tunnel
   createServer((_, res) => {
@@ -23,16 +24,10 @@ const fetch = require('make-fetch-happen');
   console.log(`http://${tunnel.url}`);
 
   await (async () => {
-    let result = false;
-
-    console.time('\nTunnel Active');
-
-    do {
-      try {
-        await fetch(`http://${tunnel.url}`);
-        result = true;
-        console.timeEnd('\nTunnel Active');
-      } catch {}
-    } while (!result);
+    while (true) {
+      console.timeEnd('\nTunnel Active');
+      await fetch(`http://${tunnel.url}`);
+      break;
+    }
   })();
 })();
