@@ -13,7 +13,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v1
       - name: Install Packages
-        run: npm install
+        run: npm ci
       - name: Test
         run: npm run test 30
       - name: Build For ${{ matrix.platform }}
@@ -34,7 +34,7 @@ jobs:
         run: echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_PUBLISH_TOKEN }}"  > ~/.npmrc
       - name: Publish To NPM
         run: |
-          npm install
+          npm ci
           npm publish || echo
       - name: Download Artifacts
         uses: actions/download-artifact@v2
