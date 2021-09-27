@@ -49,7 +49,7 @@ jobs:
           delete_release: true
           tag_name: ${{ steps.VER.outputs.VER }}
         env:
-          - GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Release
         uses: svenstaro/upload-release-action@v2
         with:
