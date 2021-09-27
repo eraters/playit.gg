@@ -285,9 +285,11 @@ export class PlayIt {
    * const playitBinary = await playit.download(); // Downloads PlayIt, And Returns The File Path
    */
   public async download(): Promise<string> {
-    let file = `${this.dir}/${require('nanoid').nanoid(20)}.${
+    let file = `${this.dir}/playit-${this.type}-${this.version}.${
       this.os === 'win' ? 'exe' : 'bin'
     }`;
+
+    if (await fs.pathExists(file)) return file;
 
     if (this.os === 'mac') {
       await Promise.all(

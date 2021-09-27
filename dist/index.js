@@ -440,15 +440,19 @@ var PlayIt = /** @class */ (function () {
             return __generator(this, function (_m) {
                 switch (_m.label) {
                     case 0:
-                        file = this.dir + "/" + require('nanoid').nanoid(20) + "." + (this.os === 'win' ? 'exe' : 'bin');
-                        if (!(this.os === 'mac')) return [3 /*break*/, 5];
+                        file = this.dir + "/playit-" + this.type + "-" + this.version + "." + (this.os === 'win' ? 'exe' : 'bin');
+                        return [4 /*yield*/, fs_extra_1["default"].pathExists(file)];
+                    case 1:
+                        if (_m.sent())
+                            return [2 /*return*/, file];
+                        if (!(this.os === 'mac')) return [3 /*break*/, 6];
                         _b = (_a = Promise).all;
                         _d = (_c = unzipper_1["default"].Open).buffer;
                         _f = (_e = Buffer).from;
                         return [4 /*yield*/, (0, make_fetch_happen_1["default"])(this.downloadUrls[this.os])];
-                    case 1: return [4 /*yield*/, (_m.sent()).arrayBuffer()];
-                    case 2: return [4 /*yield*/, _d.apply(_c, [_f.apply(_e, [_m.sent()])])];
-                    case 3: return [4 /*yield*/, _b.apply(_a, [(_m.sent()).files.map(function (zipFile) { return __awaiter(_this, void 0, void 0, function () {
+                    case 2: return [4 /*yield*/, (_m.sent()).arrayBuffer()];
+                    case 3: return [4 /*yield*/, _d.apply(_c, [_f.apply(_e, [_m.sent()])])];
+                    case 4: return [4 /*yield*/, _b.apply(_a, [(_m.sent()).files.map(function (zipFile) { return __awaiter(_this, void 0, void 0, function () {
                                 var _a, _b, _c, _d;
                                 return __generator(this, function (_e) {
                                     switch (_e.label) {
@@ -467,20 +471,20 @@ var PlayIt = /** @class */ (function () {
                                     }
                                 });
                             }); })])];
-                    case 4:
-                        _m.sent();
-                        return [3 /*break*/, 9];
                     case 5:
+                        _m.sent();
+                        return [3 /*break*/, 10];
+                    case 6:
                         _h = (_g = fs_extra_1["default"]).writeFile;
                         _j = [file];
                         _l = (_k = Buffer).from;
                         return [4 /*yield*/, (0, make_fetch_happen_1["default"])(this.downloadUrls[this.os])];
-                    case 6: return [4 /*yield*/, (_m.sent()).arrayBuffer()];
-                    case 7: return [4 /*yield*/, _h.apply(_g, _j.concat([_l.apply(_k, [_m.sent()])]))];
-                    case 8:
+                    case 7: return [4 /*yield*/, (_m.sent()).arrayBuffer()];
+                    case 8: return [4 /*yield*/, _h.apply(_g, _j.concat([_l.apply(_k, [_m.sent()])]))];
+                    case 9:
                         _m.sent();
-                        _m.label = 9;
-                    case 9: return [2 /*return*/, file];
+                        _m.label = 10;
+                    case 10: return [2 /*return*/, file];
                 }
             });
         });

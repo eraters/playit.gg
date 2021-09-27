@@ -1,17 +1,30 @@
 const { exec: pkg } = require('pkg');
 const { PlayIt } = require('../dist');
-const { icon } = require('changeexe');
+const { icon, versionInfo } = require('changeexe');
+const { resolve, basename } = require('path');
+const { need } = require('pkg-fetch');
+const { rename } = require('fs-extra');
 
 const { os, type, arch, version } = new PlayIt();
 
-__dirname = require('path').resolve(__dirname, '..');
+__dirname = resolve(__dirname, '..');
 
-const targets = [`${os}-${arch}`];
-const nodeOptions = [];
-const assets = [];
 const output = `${__dirname}/bin/playit-${type}-${version}`;
 
 (async () => {
+  const cachePath = await downloadCache(`node16-${os}-${arch}`);
+
+  if (os === 'win') {
+    await icon(cachePath, `${__dirname}/.ci/playit-icon.ico`);
+    await versionInfo(cachePath, {
+      ProductName: 'PlayIt.GG',
+      OriginalFilename: `${basename(output)}.exe`,
+      ProductVersion: `1,${version}`
+    });
+
+    await rename(cachePath, cachePath.replace(/fetched(?!.*fetched)/, 'built'));
+  }
+
   await pkg([
     __dirname,
     '--public-packages',
@@ -21,13 +34,11 @@ const output = `${__dirname}/bin/playit-${type}-${version}`;
     '--output',
     output,
     '--targets',
-    targets.map((target) => `node16-${target}`).join(','),
-    '--options',
-    nodeOptions.join(','),
-    '--assets',
-    assets.join(',')
+    `node16-${os}-${arch}`
   ]);
-
-  // TODO: Figure out why the hell this brakes the build
-  // if (os === 'win') icon(`${output}.exe`, `${__dirname}/.ci/playit-icon.ico`);
 })();
+
+async function downloadCache(pkgTarget) {
+  const [nodeRange, platform, arch] = pkgTarget.split('-');
+  return await need({ nodeRange, platform, arch });
+}

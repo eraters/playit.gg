@@ -1,6 +1,6 @@
 {
   "name": "playit.gg",
-  "version": "1.6.6-CI-1",
+  "version": "1.6.6-CI-2",
   "description": "An Unofficial JavaScript Wrapper For https://playit.gg",
   "private": false,
   "types": "dist/index.d.ts",
@@ -31,7 +31,6 @@
     "commander": "^8.2.0",
     "fs-extra": "^10.0.0",
     "make-fetch-happen": "^9.1.0",
-    "nanoid": "^3.1.25",
     "prompts": "^2.4.1",
     "unzipper": "^0.10.11"
   },
