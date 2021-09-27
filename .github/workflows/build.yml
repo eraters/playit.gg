@@ -43,6 +43,11 @@ jobs:
       - name: Get Release Name
         run: echo "::set-output name=VER::v$(node -p "require('./package.json').version")"
         id: VER
+      - name: Remove Previous Release
+        uses: dev-drprasad/delete-tag-and-release@v0.2.0
+        with:
+          delete_release: true
+          tag_name: ${{ steps.VER.outputs.VER }}
       - name: Release
         uses: svenstaro/upload-release-action@v2
         with:
