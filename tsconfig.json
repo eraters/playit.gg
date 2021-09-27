@@ -10,7 +10,8 @@
     "strict": true,
     "esModuleInterop": true,
     "strictNullChecks": false,
-    "downlevelIteration": true
+    "downlevelIteration": true,
+    "removeComments": true
   },
   "exclude": ["node_modules", "dist", "**/*.d.ts"],
   "include": ["*.ts"]

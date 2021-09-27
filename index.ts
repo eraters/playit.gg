@@ -98,7 +98,7 @@ export class PlayIt {
    * @example
    * await playit.disableTunnel(<Tunnel ID>);
    */
-  public async disableTunnel(id: number = isRequired('ID')): Promise<void> {
+  public async disableTunnel(id: number): Promise<void> {
     await this.fetch(`/account/tunnels/${id}/disable`);
   }
 
@@ -109,7 +109,7 @@ export class PlayIt {
    * await playit.disableTunnel(<Tunnel ID>); // Disables The Tunnel
    * await playit.enableTunnel(<Same Tunnel ID>); // Enables The Tunnel Again
    */
-  public async enableTunnel(id: number = isRequired('ID')): Promise<void> {
+  public async enableTunnel(id: number): Promise<void> {
     await this.fetch(`/account/tunnels/${id}/enable`);
   }
 
@@ -120,10 +120,8 @@ export class PlayIt {
    * const tunnel = await playit.createTunnel({ port: <Port>, proto: <Network Protocall> });
    * console.log(tunnel.url);
    */
-  public async createTunnel(
-    tunnelOpts: tunnelOpts = isRequired('Tunnel Options')
-  ): Promise<tunnel> {
-    let { proto = 'TCP', port = isRequired('Port') } = tunnelOpts;
+  public async createTunnel(tunnelOpts: tunnelOpts): Promise<tunnel> {
+    let { proto = 'TCP', port } = tunnelOpts;
 
     // Create The Tunnel, And Get The Id
     const tunnelId: number = (
@@ -168,7 +166,7 @@ export class PlayIt {
     return otherData;
   }
 
-  private async claimUrl(url: string = isRequired('URL')): Promise<void> {
+  private async claimUrl(url: string): Promise<void> {
     await this.fetch(url);
   }
 
@@ -373,7 +371,7 @@ export class PlayIt {
   }
 
   private async fetch(
-    url: string = isRequired('URL'),
+    url: string,
     data: fetch.FetchOptions = {}
   ): Promise<any> {
     if (url.startsWith('https://') || url.startsWith('http://'))
@@ -392,11 +390,6 @@ export class PlayIt {
         headers: { authorization: `agent ${this.agent_key}` }
       });
   }
-}
-
-function isRequired(argumentName: string): any {
-  // If A Required Argument Isn't Provided, Throw An Error
-  throw new TypeError(`${argumentName} is a required argument.`);
 }
 
 export default async function init(playitOpts: any = {}) {
