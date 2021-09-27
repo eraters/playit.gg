@@ -24,10 +24,12 @@ const fetch = require('make-fetch-happen');
   console.log(`http://${tunnel.url}`);
 
   await (async () => {
-    while (true) {
-      console.timeEnd('\nTunnel Active');
-      await fetch(`http://${tunnel.url}`);
-      break;
-    }
+    try {
+      while (true) {
+        console.timeEnd('\nTunnel Active');
+        await fetch(`http://${tunnel.url}`);
+        break;
+      }
+    } catch {}
   })();
 })();

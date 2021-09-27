@@ -12,7 +12,7 @@
   "scripts": {
     "build": "node .ci/build.js",
     "prepare": "tsc",
-    "test": "tsc && node test.js",
+    "test": "tsc && node --trace-warnings --unhandled-rejections=strict test.js",
     "prettier": "prettier --write ."
   },
   "bin": {
