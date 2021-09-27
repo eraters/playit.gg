@@ -1,8 +1,16 @@
 import { spawn, ChildProcessWithoutNullStreams } from 'child_process';
-import fs from 'fs-extra';
+import {
+  mkdirpSync,
+  createWriteStream,
+  pathExists,
+  rm,
+  chmod,
+  readFile,
+  writeFile
+} from 'fs-extra';
 import fetch from 'make-fetch-happen';
-import nodeOS from 'os';
-import Zip from 'unzipper';
+import { tmpdir, homedir } from 'os';
+import { Open as zip } from 'unzipper';
 
 /**  @class */
 export class PlayIt {
@@ -17,8 +25,8 @@ export class PlayIt {
   })();
 
   dir: string = (() => {
-    const dir = `${nodeOS.tmpdir()}/playit`;
-    fs.mkdirpSync(dir);
+    const dir = `${tmpdir()}/playit`;
+    mkdirpSync(dir);
     return dir;
   })();
 
@@ -45,8 +53,8 @@ export class PlayIt {
     this.os === 'win'
       ? `${process.env.AppData}/playit/config.json`
       : this.os === 'mac'
-      ? `${nodeOS.homedir()}/Library/Application Support/playit/config.json`
-      : `${nodeOS.homedir()}/.config/playit/config.json`;
+      ? `${homedir()}/Library/Application Support/playit/config.json`
+      : `${homedir()}/.config/playit/config.json`;
 
   downloadUrls: binaries = {
     win: `https://playit.gg/downloads/playit-win_64-${this.version}.exe`,
@@ -182,7 +190,7 @@ export class PlayIt {
 
     this.binary = await this.download();
 
-    const dotenvStream = fs.createWriteStream(`${this.dir}/.env`, {
+    const dotenvStream = createWriteStream(`${this.dir}/.env`, {
       flags: 'w+'
     });
 
@@ -195,9 +203,9 @@ export class PlayIt {
 
     dotenvStream.end();
 
-    if (await fs.pathExists(this.configFile)) await fs.rm(this.configFile);
+    if (await pathExists(this.configFile)) await rm(this.configFile);
 
-    await fs.chmod(this.binary, 0o777);
+    await chmod(this.binary, 0o555);
 
     // Spawn The PlayIt Binary
     this.playit = spawn(this.binary, {
@@ -251,15 +259,11 @@ export class PlayIt {
 
     this.parseOutput();
 
-    await new Promise((res) => {
-      while (!fs.pathExistsSync(this.configFile));
-      res(null);
-    });
+    await (async () => {
+      while (!(await pathExists(this.configFile)));
+    })();
 
-    Object.assign(
-      this,
-      JSON.parse(await fs.readFile(this.configFile, 'utf-8'))
-    );
+    Object.assign(this, JSON.parse(await readFile(this.configFile, 'utf-8')));
 
     return this;
   }
@@ -286,12 +290,12 @@ export class PlayIt {
       this.os === 'win' ? 'exe' : 'bin'
     }`;
 
-    if (await fs.pathExists(file)) return file;
+    if (await pathExists(file)) return file;
 
     if (this.os === 'mac') {
       await Promise.all(
         (
-          await Zip.Open.buffer(
+          await zip.buffer(
             Buffer.from(
               await (await fetch(this.downloadUrls[this.os])).arrayBuffer()
             )
@@ -300,11 +304,11 @@ export class PlayIt {
           async (zipFile) =>
             zipFile.path.includes('playit') &&
             zipFile.type === 'File' &&
-            (await fs.writeFile(file, await zipFile.buffer()))
+            (await writeFile(file, await zipFile.buffer()))
         )
       );
     } else {
-      await fs.writeFile(
+      await writeFile(
         file,
         Buffer.from(
           await (await fetch(this.downloadUrls[this.os])).arrayBuffer()
