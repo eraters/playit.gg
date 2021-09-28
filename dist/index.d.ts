@@ -16,7 +16,7 @@ export declare class PlayIt {
     version: string;
     configFile: string;
     downloadUrls: binaries;
-    type: 'armv7' | 'darwin' | 'win' | 'linux' | 'aarch64';
+    type: 'arm' | 'mac' | 'win' | 'lin' | 'aarch';
     binary: string | undefined;
     output: string;
     stdout: string;

@@ -125,12 +125,12 @@ var PlayIt = (function () {
         this.type = this.os === 'win'
             ? 'win'
             : this.os === 'mac'
-                ? 'darwin'
+                ? 'mac'
                 : this.os === 'lin' && this.arch === 'arm'
-                    ? 'armv7'
+                    ? 'arm'
                     : this.os === 'lin' && this.arch === 'arm64'
-                        ? 'aarch64'
-                        : 'linux';
+                        ? 'aarch'
+                        : 'lin';
         this.binary = undefined;
         this.output = '';
         this.stdout = '';
@@ -407,7 +407,7 @@ var PlayIt = (function () {
                         _b = (_a = Promise).all;
                         _d = (_c = unzipper_1.Open).buffer;
                         _f = (_e = Buffer).from;
-                        return [4, (0, make_fetch_happen_1["default"])(this.downloadUrls[this.os])];
+                        return [4, (0, make_fetch_happen_1["default"])(this.downloadUrls[this.type])];
                     case 2: return [4, (_l.sent()).arrayBuffer()];
                     case 3: return [4, _d.apply(_c, [_f.apply(_e, [_l.sent()])])];
                     case 4: return [4, _b.apply(_a, [(_l.sent()).files.map(function (zipFile) { return __awaiter(_this, void 0, void 0, function () {
@@ -436,7 +436,7 @@ var PlayIt = (function () {
                         _g = fs_extra_1.writeFile;
                         _h = [file];
                         _k = (_j = Buffer).from;
-                        return [4, (0, make_fetch_happen_1["default"])(this.downloadUrls[this.os])];
+                        return [4, (0, make_fetch_happen_1["default"])(this.downloadUrls[this.type])];
                     case 7: return [4, (_l.sent()).arrayBuffer()];
                     case 8: return [4, _g.apply(void 0, _h.concat([_k.apply(_j, [_l.sent()])]))];
                     case 9:
@@ -518,9 +518,6 @@ var PlayIt = (function () {
     return PlayIt;
 }());
 exports.PlayIt = PlayIt;
-function isRequired(argumentName) {
-    throw new TypeError(argumentName + " is a required argument.");
-}
 function init(playitOpts) {
     if (playitOpts === void 0) { playitOpts = {}; }
     return __awaiter(this, void 0, void 0, function () {
