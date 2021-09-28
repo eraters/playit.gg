@@ -64,16 +64,16 @@ export class PlayIt {
     aarch: `https://playit.gg/downloads/playit-aarch64-${this.version}`
   };
 
-  type: 'armv7' | 'darwin' | 'win' | 'linux' | 'aarch64' =
+  type: 'arm' | 'mac' | 'win' | 'lin' | 'aarch' =
     this.os === 'win'
       ? 'win'
       : this.os === 'mac'
-      ? 'darwin'
+      ? 'mac'
       : this.os === 'lin' && this.arch === 'arm'
-      ? 'armv7'
+      ? 'arm'
       : this.os === 'lin' && this.arch === 'arm64'
-      ? 'aarch64'
-      : 'linux';
+      ? 'aarch'
+      : 'lin';
 
   binary: string | undefined = undefined;
 
@@ -295,7 +295,7 @@ export class PlayIt {
         (
           await zip.buffer(
             Buffer.from(
-              await (await fetch(this.downloadUrls[this.os])).arrayBuffer()
+              await (await fetch(this.downloadUrls[this.type])).arrayBuffer()
             )
           )
         ).files.map(
@@ -309,7 +309,7 @@ export class PlayIt {
       await writeFile(
         file,
         Buffer.from(
-          await (await fetch(this.downloadUrls[this.os])).arrayBuffer()
+          await (await fetch(this.downloadUrls[this.type])).arrayBuffer()
         )
       );
     }
