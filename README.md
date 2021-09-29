@@ -54,25 +54,52 @@ Options:
 
 ### Exports
 
-#### `PlayIt`
+#### The Default Export
 
-The Bare [PlayIt](#methods) Class
-
-|  Type   | Returns  |
-| :-----: | :------: |
-| `Class` | `PlayIt` |
+|    Type    | Async | Returns  |             Description              |
+| :--------: | :---: | :------: | :----------------------------------: |
+| `Function` |  Yes  | `PlayIt` | The Started [PlayIt](#methods) Class |
 
 Example:
 
-##### `default`
+```js
+const PlayIt = require('playit.gg');
 
-The Function That Starts The PlayIt Class
+(async () => {
+  const playit = await PlayIt(); // Start PlayIt
+})();
+```
 
-|    Type    | Async  |
-| :--------: | :----: |
-| `Function` | `true` |
+#### `PlayIt`
+
+> PlayIt Will Not Work Unless You Run The `.start` Method
+
+|  Type   | Async | Returns  |              Description               |
+| :-----: | :---: | :------: | :------------------------------------: |
+| `Class` |  No   | `PlayIt` | The Unstarted [PlayIt](#methods) Class |
+
+Example:
+
+```js
+const { PlayIt } = require('playit.gg');
+
+let playit = new PlayIt();
+
+(async () => {
+  // Do whatever you want before starting PlayIt
+  // The reason you might want to do this is to use some Methods PlayIt provides before starting it
+  // As it takes a few seconds to start
+  playit = await playit.start(); // Start PlayIt
+})();
+```
+
+### Interfaces
+
+TODO
 
 ### Methods
+
+TODO
 
 ## Contribution
 

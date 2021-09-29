@@ -33,7 +33,7 @@ export declare class PlayIt {
     enableTunnel(id: number): Promise<void>;
     createTunnel(tunnelOpts: tunnelOpts): Promise<tunnel>;
     private claimUrl;
-    create(playitOpts?: any): Promise<PlayIt>;
+    start(playitOpts?: any): Promise<PlayIt>;
     stop(): void;
     download(): Promise<string>;
     private parseOutput;
@@ -68,5 +68,11 @@ export interface connection {
     ip: string;
     tunnel: tunnel;
     type: 'tcp' | 'udp';
+}
+export interface playitEnv {
+    PREFERRED_TUNNEL?: 'dal4' | 'sol4' | 'syd4' | 'mum4' | 'sf4' | 'fnk4' | 'bng4' | 'sng4' | 'tor4' | 'ny4' | 'uk4' | 'saw4' | 'turk4' | 'san4' | 'pet4' | 'bur4' | 'new4' | 'isr4' | 'tko4' | 'syd5' | 'sng5' | 'hel4' | 'fal4';
+    PREFERRED_THRESHOLD?: number;
+    NO_BROWSER?: true;
+    NO_SPECIAL_LAN?: boolean;
 }
 export declare type os = 'win' | 'mac' | 'lin';

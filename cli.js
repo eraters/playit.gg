@@ -92,7 +92,7 @@ let playit = new PlayIt();
       );
   }
 
-  playit = await playit.create();
+  playit = await playit.start();
   playit.onError(console.error);
   playit.onWarning(console.warn);
 

@@ -240,7 +240,7 @@ var PlayIt = (function () {
             });
         });
     };
-    PlayIt.prototype.create = function (playitOpts) {
+    PlayIt.prototype.start = function (playitOpts) {
         if (playitOpts === void 0) { playitOpts = {}; }
         return __awaiter(this, void 0, void 0, function () {
             var outputCallbacks, stderrCallbacks, stdoutCallbacks, errorCallbacks, warningCallbacks, _a, dotenvStream, _loop_1, _b, _c, _d, opt, value, e_1_1, _e, _f, _g, _h, _j;
@@ -249,6 +249,8 @@ var PlayIt = (function () {
             return __generator(this, function (_l) {
                 switch (_l.label) {
                     case 0:
+                        if (this.started)
+                            return [2, this];
                         this.started = true;
                         playitOpts.NO_BROWSER = true;
                         outputCallbacks = [], stderrCallbacks = [], stdoutCallbacks = [], errorCallbacks = [], warningCallbacks = [];
@@ -523,7 +525,7 @@ function init(playitOpts) {
     return __awaiter(this, void 0, void 0, function () {
         return __generator(this, function (_a) {
             switch (_a.label) {
-                case 0: return [4, new PlayIt().create(playitOpts)];
+                case 0: return [4, new PlayIt().start(playitOpts)];
                 case 1: return [2, _a.sent()];
             }
         });

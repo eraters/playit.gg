@@ -177,7 +177,9 @@ export class PlayIt {
    * import { PlayIt } from 'playit.gg';
    * const playit = await new PlayIt.create(<Options For Playit>);
    */
-  public async create(playitOpts: any = {}): Promise<PlayIt> {
+  public async start(playitOpts: any = {}): Promise<PlayIt> {
+    if (this.started) return this;
+
     this.started = true;
     playitOpts.NO_BROWSER = true;
     let outputCallbacks: Function[] = [],
@@ -393,7 +395,7 @@ export class PlayIt {
 }
 
 export default async function init(playitOpts: any = {}) {
-  return await new PlayIt().create(playitOpts);
+  return await new PlayIt().start(playitOpts);
 }
 
 export interface tunnelOpts {
@@ -427,6 +429,39 @@ export interface connection {
   ip: string;
   tunnel: tunnel;
   type: 'tcp' | 'udp';
+}
+
+export interface playitEnv {
+  PREFERRED_TUNNEL?:
+    | 'dal4'
+    | 'sol4'
+    | 'syd4'
+    | 'mum4'
+    | 'sf4'
+    | 'fnk4'
+    | 'bng4'
+    | 'sng4'
+    | 'tor4'
+    | 'ny4'
+    | 'uk4'
+    | 'saw4'
+    | 'turk4'
+    | 'san4'
+    | 'pet4'
+    | 'bur4'
+    | 'new4'
+    | 'isr4'
+    | 'tko4'
+    | 'syd5'
+    | 'sng5'
+    | 'hel4'
+    | 'fal4';
+
+  PREFERRED_THRESHOLD?: number;
+
+  NO_BROWSER?: true;
+
+  NO_SPECIAL_LAN?: boolean;
 }
 
 export type os = 'win' | 'mac' | 'lin';
