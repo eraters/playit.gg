@@ -14,8 +14,14 @@ import { Open as zip } from 'unzipper';
 
 /**  @class */
 export class PlayIt {
+  /**
+   * @description Whether PlayIt Has Been Stopped
+   */
   destroyed: Boolean = false;
 
+  /**
+   * @description The Architexture Of The Current System
+   */
   arch: 'x64' | 'arm' | 'arm64' = (() => {
     // Check If Architexture is x64 Or Arm, If It Isn't, Throw An Error
     if (!['x64', 'arm', 'arm64'].includes(process.arch))
@@ -24,22 +30,51 @@ export class PlayIt {
     return process.arch as 'x64' | 'arm' | 'arm64';
   })();
 
+  /**
+   * @description The Directory That PlayIt Is Running In
+   */
   dir: string = (() => {
     const dir = `${tmpdir()}/playit`;
     mkdirpSync(dir);
     return dir;
   })();
 
+  /**
+   * @description Tunnels Created
+   */
   tunnels: tunnel[] = [];
+  /**
+   * @description The Key Of The Agent
+   */
   agent_key: string = '';
+  /**
+   * @description Whether PlayIt Has Been Started
+   */
   started: Boolean = false;
+  /**
+   * @description The PlayIt Child Process
+   */
   playit: ChildProcessWithoutNullStreams | undefined = undefined;
-  preferred_tunnel: string = '';
+  /**
+   * @description The Tunnel PlayIt Is Using
+   */
+  tunnel: string = '';
+  /**
+   * @description The Packets PlayIt Has Used
+   */
   used_packets: number = 0;
+  /**
+   * @description The Packets PlayIt Has Not Used
+   */
   free_packets: number = 0;
+  /**
+   * @description The Connections, **THIS IS A WIP**
+   */
   connections: connection[] = [];
 
-  // Get Os
+  /**
+   * @description The Operating System Of The Current System
+   */
   os: os =
     process.platform === 'win32'
       ? 'win'
@@ -47,8 +82,14 @@ export class PlayIt {
       ? 'mac'
       : 'lin';
 
+  /**
+   * @description The Version Of PlayIt Being Used
+   */
   version: string = '0.4.6';
 
+  /**
+   * @description The Configuration File Of PlayIt
+   */
   configFile: string =
     this.os === 'win'
       ? `${process.env.AppData}/playit/config.json`
@@ -56,15 +97,21 @@ export class PlayIt {
       ? `${homedir()}/Library/Application Support/playit/config.json`
       : `${homedir()}/.config/playit/config.json`;
 
+  /**
+   * @description The Download URLs For PlayIt
+   */
   downloadUrls: binaries = {
     win: `https://playit.gg/downloads/playit-win_64-${this.version}.exe`,
     lin: `https://playit.gg/downloads/playit-linux_64-${this.version}`,
     mac: `https://playit.gg/downloads/playit-darwin_64-${this.version}.zip`,
     arm: `https://playit.gg/downloads/playit-armv7-${this.version}`,
-    aarch: `https://playit.gg/downloads/playit-aarch64-${this.version}`
+    arm64: `https://playit.gg/downloads/playit-aarch64-${this.version}`
   };
 
-  type: 'arm' | 'mac' | 'win' | 'lin' | 'aarch' =
+  /**
+   * @description The Downloaded Type Of PlayIt
+   */
+  type: 'arm' | 'mac' | 'win' | 'lin' | 'arm64' =
     this.os === 'win'
       ? 'win'
       : this.os === 'mac'
@@ -72,21 +119,63 @@ export class PlayIt {
       : this.os === 'lin' && this.arch === 'arm'
       ? 'arm'
       : this.os === 'lin' && this.arch === 'arm64'
-      ? 'aarch'
+      ? 'arm64'
       : 'lin';
 
+  /**
+   * @description The Path To The Downloaded Binary
+   */
   binary: string | undefined = undefined;
 
-  output: string = '';
-  stdout: string = '';
-  stderr: string = '';
-  errors: string = '';
-  warnings: string = '';
+  /**
+   * @description The Output Of PlayIt
+   */
+  output: string[] = [];
+  /**
+   * @description The Stdout Ouput Of PlayIt
+   */
+  stdout: string[] = [];
+  /**
+   * @description The Stderr Ouput Of PlayIt
+   */
+  stderr: string[] = [];
+  /**
+   * @description The Errors Of PlayIt
+   */
+  errors: string[] = [];
+  /**
+   * @description The Warnings Of PlayIt
+   */
+  warnings: string[] = [];
+  /**
+   * @description An Output Callback For PlayIt
+   * @param
+   */
   onOutput: Function | undefined = undefined;
-  onStdout: Function | undefined = undefined;
-  onStderr: Function | undefined = undefined;
-  onError: Function | undefined = undefined;
-  onWarning: Function | undefined = undefined;
+  /**
+   * @param {Function} callback - The Callback To Call When PlayIt Outputs Something In Stdout
+   * @description The Stderr Callback For PlayIt
+   * @returns {void}
+   */
+  onStdout: (callback: Function) => void | undefined = undefined;
+  /**
+   * @param {Function} callback - The Callback To Call When PlayIt Outputs Something In Stderr
+   * @description The Stderr Callback For PlayIt
+   * @returns {void}
+   */
+  onStderr: (callback: Function) => void | undefined = undefined;
+  /**
+   * @param {Function} callback - The Callback To Call When PlayIt Outputs An Error
+   * @description The Stderr Callback For PlayIt
+   * @returns {void}
+   */
+  onError: (callback: Function) => void | undefined = undefined;
+  /**
+   * @param {Function} callback - The Callback To Call When PlayIt Outputs A Warning
+   * @description The Stderr Callback For PlayIt
+   * @returns {void}
+   */
+  onWarning: (callback: Function) => void | undefined = undefined;
 
   constructor() {
     process.chdir(this.dir);
@@ -213,47 +302,47 @@ export class PlayIt {
     });
 
     this.playit.stdout.on('data', (data: Buffer) => {
-      this.output += `${data}\n`;
-      this.stdout += `${data}\n`;
+      this.output.push(`${data}\n`);
+      this.stdout.push(`${data}\n`);
       outputCallbacks.map((callback) => callback(data.toString()));
       stdoutCallbacks.map((callback) => callback(data.toString()));
     });
     this.playit.stderr.on('data', (data: Buffer) => {
-      this.output += `${data}\n`;
-      this.stderr += `${data}\n`;
+      this.output.push(`${data}\n`);
+      this.stderr.push(`${data}\n`);
       outputCallbacks.map((callback) => callback(data.toString()));
       stderrCallbacks.map((callback) => callback(data.toString()));
       if (data.toString().includes('ERRO')) {
-        this.errors += `${data}\n`;
+        this.errors.push(`${data}\n`);
         errorCallbacks.map((callback) => callback(data.toString()));
       } else if (data.toString().includes('WARN')) {
-        this.warnings += `${data}\n`;
+        this.warnings.push(`${data}\n`);
         warningCallbacks.map((callback) => callback(data.toString()));
       }
     });
 
     this.onOutput = (callback: Function = (output: string) => output) => {
-      callback(this.output);
+      callback(this.output.join('\n'));
       outputCallbacks.push(callback);
     };
 
-    this.onStdout = (callback: Function = (output: string) => output) => {
-      callback(this.stdout);
+    this.onStdout = (callback: Function) => {
+      callback(this.stdout.join('\n'));
       stdoutCallbacks.push(callback);
     };
 
     this.onStderr = (callback: Function = (output: string) => output) => {
-      callback(this.stderr);
+      callback(this.stderr.join('\n'));
       stderrCallbacks.push(callback);
     };
 
     this.onError = (callback: Function = (output: string) => output) => {
-      callback(this.errors);
+      callback(this.errors.join('\n'));
       errorCallbacks.push(callback);
     };
 
     this.onWarning = (callback: Function = (output: string) => output) => {
-      callback(this.warnings);
+      callback(this.warnings.join('\n'));
       warningCallbacks.push(callback);
     };
 
@@ -280,12 +369,7 @@ export class PlayIt {
     this.playit.kill('SIGINT');
   }
 
-  /**
-   * @description Downloads PlayIt To A Temp Folder
-   * @example
-   * const playitBinary = await playit.download(); // Downloads PlayIt, And Returns The File Path
-   */
-  public async download(): Promise<string> {
+  private async download(): Promise<string> {
     let file = `${this.dir}/playit-${this.type}-${this.version}.${
       this.os === 'win' ? 'exe' : 'bin'
     }`;
@@ -422,7 +506,7 @@ export interface binaries {
   lin: string;
   mac: string;
   arm: string;
-  aarch: string;
+  arm64: string;
 }
 
 export interface connection {

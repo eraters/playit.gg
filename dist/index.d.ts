@@ -2,33 +2,123 @@
 import { ChildProcessWithoutNullStreams } from 'child_process';
 /**  @class */
 export declare class PlayIt {
+    /**
+     * @description Whether PlayIt Has Been Stopped
+     */
     destroyed: Boolean;
+    /**
+     * @description The Architexture Of The Current System
+     */
     arch: 'x64' | 'arm' | 'arm64';
+    /**
+     * @description The Directory That PlayIt Is Running In
+     */
     dir: string;
+    /**
+     * @description Tunnels Created
+     */
     tunnels: tunnel[];
+    /**
+     * @description The Key Of The Agent
+     */
     agent_key: string;
+    /**
+     * @description Whether PlayIt Has Been Started
+     */
     started: Boolean;
+    /**
+     * @description The PlayIt Child Process
+     */
     playit: ChildProcessWithoutNullStreams | undefined;
-    preferred_tunnel: string;
+    /**
+     * @description The Tunnel PlayIt Is Using
+     */
+    tunnel: string;
+    /**
+     * @description The Packets PlayIt Has Used
+     */
     used_packets: number;
+    /**
+     * @description The Packets PlayIt Has Not Used
+     */
     free_packets: number;
+    /**
+     * @description The Connections, **THIS IS A WIP**
+     */
     connections: connection[];
+    /**
+     * @description The Operating System Of The Current System
+     */
     os: os;
+    /**
+     * @description The Version Of PlayIt Being Used
+     */
     version: string;
+    /**
+     * @description The Configuration File Of PlayIt
+     */
     configFile: string;
+    /**
+     * @description The Download URLs For PlayIt
+     */
     downloadUrls: binaries;
-    type: 'arm' | 'mac' | 'win' | 'lin' | 'aarch';
+    /**
+     * @description The Downloaded Type Of PlayIt
+     */
+    type: 'arm' | 'mac' | 'win' | 'lin' | 'arm64';
+    /**
+     * @description The Path To The Downloaded Binary
+     */
     binary: string | undefined;
-    output: string;
-    stdout: string;
-    stderr: string;
-    errors: string;
-    warnings: string;
+    /**
+     * @description The Output Of PlayIt
+     */
+    output: string[];
+    /**
+     * @description The Stdout Ouput Of PlayIt
+     */
+    stdout: string[];
+    /**
+     * @description The Stderr Ouput Of PlayIt
+     */
+    stderr: string[];
+    /**
+     * @description The Errors Of PlayIt
+     */
+    errors: string[];
+    /**
+     * @description The Warnings Of PlayIt
+     */
+    warnings: string[];
+    /**
+     * @description An Output Callback For PlayIt
+     * @param
+     */
     onOutput: Function | undefined;
-    onStdout: Function | undefined;
-    onStderr: Function | undefined;
-    onError: Function | undefined;
-    onWarning: Function | undefined;
+    /**
+     * @param {Function} callback - The Callback To Call When PlayIt Outputs Something In Stdout
+     * @description The Stderr Callback For PlayIt
+     * @returns {void}
+     */
+    onStdout: (callback: Function) => void | undefined;
+    /**
+     * @param {Function} callback - The Callback To Call When PlayIt Outputs Something In Stderr
+     * @description The Stderr Callback For PlayIt
+     * @returns {void}
+     */
+    onStderr: (callback: Function) => void | undefined;
+    /**
+     * @param {Function} callback - The Callback To Call When PlayIt Outputs An Error
+     * @description The Stderr Callback For PlayIt
+     * @returns {void}
+     */
+    onError: (callback: Function) => void | undefined;
+    /**
+     * @param {Function} callback - The Callback To Call When PlayIt Outputs A Warning
+     * @description The Stderr Callback For PlayIt
+     * @returns {void}
+     */
+    onWarning: (callback: Function) => void | undefined;
     constructor();
     /**
      * @param {number} id - The Tunnel ID
@@ -68,12 +158,7 @@ export declare class PlayIt {
      * playit.stop(); // Stops PlayIt, Class Cannot Be Used After Run
      */
     stop(): void;
-    /**
-     * @description Downloads PlayIt To A Temp Folder
-     * @example
-     * const playitBinary = await playit.download(); // Downloads PlayIt, And Returns The File Path
-     */
-    download(): Promise<string>;
+    private download;
     private parseOutput;
     private fetch;
 }
@@ -100,7 +185,7 @@ export interface binaries {
     lin: string;
     mac: string;
     arm: string;
-    aarch: string;
+    arm64: string;
 }
 export interface connection {
     ip: string;

@@ -86,45 +86,92 @@ var unzipper_1 = require("unzipper");
 /**  @class */
 var PlayIt = /** @class */ (function () {
     function PlayIt() {
+        /**
+         * @description Whether PlayIt Has Been Stopped
+         */
         this.destroyed = false;
+        /**
+         * @description The Architexture Of The Current System
+         */
         this.arch = (function () {
             // Check If Architexture is x64 Or Arm, If It Isn't, Throw An Error
             if (!['x64', 'arm', 'arm64'].includes(process.arch))
                 throw new Error("Unsupported Architecture, " + process.arch + "!");
             return process.arch;
         })();
+        /**
+         * @description The Directory That PlayIt Is Running In
+         */
         this.dir = (function () {
             var dir = (0, os_1.tmpdir)() + "/playit";
             (0, fs_extra_1.mkdirpSync)(dir);
             return dir;
         })();
+        /**
+         * @description Tunnels Created
+         */
         this.tunnels = [];
+        /**
+         * @description The Key Of The Agent
+         */
         this.agent_key = '';
+        /**
+         * @description Whether PlayIt Has Been Started
+         */
         this.started = false;
+        /**
+         * @description The PlayIt Child Process
+         */
         this.playit = undefined;
-        this.preferred_tunnel = '';
+        /**
+         * @description The Tunnel PlayIt Is Using
+         */
+        this.tunnel = '';
+        /**
+         * @description The Packets PlayIt Has Used
+         */
         this.used_packets = 0;
+        /**
+         * @description The Packets PlayIt Has Not Used
+         */
         this.free_packets = 0;
+        /**
+         * @description The Connections, **THIS IS A WIP**
+         */
         this.connections = [];
-        // Get Os
+        /**
+         * @description The Operating System Of The Current System
+         */
         this.os = process.platform === 'win32'
             ? 'win'
             : process.platform === 'darwin'
                 ? 'mac'
                 : 'lin';
+        /**
+         * @description The Version Of PlayIt Being Used
+         */
         this.version = '0.4.6';
+        /**
+         * @description The Configuration File Of PlayIt
+         */
         this.configFile = this.os === 'win'
             ? process.env.AppData + "/playit/config.json"
             : this.os === 'mac'
                 ? (0, os_1.homedir)() + "/Library/Application Support/playit/config.json"
                 : (0, os_1.homedir)() + "/.config/playit/config.json";
+        /**
+         * @description The Download URLs For PlayIt
+         */
         this.downloadUrls = {
             win: "https://playit.gg/downloads/playit-win_64-" + this.version + ".exe",
             lin: "https://playit.gg/downloads/playit-linux_64-" + this.version,
             mac: "https://playit.gg/downloads/playit-darwin_64-" + this.version + ".zip",
             arm: "https://playit.gg/downloads/playit-armv7-" + this.version,
-            aarch: "https://playit.gg/downloads/playit-aarch64-" + this.version
+            arm64: "https://playit.gg/downloads/playit-aarch64-" + this.version
         };
+        /**
+         * @description The Downloaded Type Of PlayIt
+         */
         this.type = this.os === 'win'
             ? 'win'
             : this.os === 'mac'
@@ -132,18 +179,60 @@ var PlayIt = /** @class */ (function () {
                 : this.os === 'lin' && this.arch === 'arm'
                     ? 'arm'
                     : this.os === 'lin' && this.arch === 'arm64'
-                        ? 'aarch'
+                        ? 'arm64'
                         : 'lin';
+        /**
+         * @description The Path To The Downloaded Binary
+         */
         this.binary = undefined;
-        this.output = '';
-        this.stdout = '';
-        this.stderr = '';
-        this.errors = '';
-        this.warnings = '';
+        /**
+         * @description The Output Of PlayIt
+         */
+        this.output = [];
+        /**
+         * @description The Stdout Ouput Of PlayIt
+         */
+        this.stdout = [];
+        /**
+         * @description The Stderr Ouput Of PlayIt
+         */
+        this.stderr = [];
+        /**
+         * @description The Errors Of PlayIt
+         */
+        this.errors = [];
+        /**
+         * @description The Warnings Of PlayIt
+         */
+        this.warnings = [];
+        /**
+         * @description An Output Callback For PlayIt
+         * @param
+         */
         this.onOutput = undefined;
+        /**
+         * @param {Function} callback - The Callback To Call When PlayIt Outputs Something In Stdout
+         * @description The Stderr Callback For PlayIt
+         * @returns {void}
+         */
         this.onStdout = undefined;
+        /**
+         * @param {Function} callback - The Callback To Call When PlayIt Outputs Something In Stderr
+         * @description The Stderr Callback For PlayIt
+         * @returns {void}
+         */
         this.onStderr = undefined;
+        /**
+         * @param {Function} callback - The Callback To Call When PlayIt Outputs An Error
+         * @description The Stderr Callback For PlayIt
+         * @returns {void}
+         */
         this.onError = undefined;
+        /**
+         * @param {Function} callback - The Callback To Call When PlayIt Outputs A Warning
+         * @description The Stderr Callback For PlayIt
+         * @returns {void}
+         */
         this.onWarning = undefined;
         process.chdir(this.dir);
     }
@@ -349,48 +438,47 @@ var PlayIt = /** @class */ (function () {
                             cwd: this.dir
                         });
                         this.playit.stdout.on('data', function (data) {
-                            _this.output += data + "\n";
-                            _this.stdout += data + "\n";
+                            _this.output.push(data + "\n");
+                            _this.stdout.push(data + "\n");
                             outputCallbacks.map(function (callback) { return callback(data.toString()); });
                             stdoutCallbacks.map(function (callback) { return callback(data.toString()); });
                         });
                         this.playit.stderr.on('data', function (data) {
-                            _this.output += data + "\n";
-                            _this.stderr += data + "\n";
+                            _this.output.push(data + "\n");
+                            _this.stderr.push(data + "\n");
                             outputCallbacks.map(function (callback) { return callback(data.toString()); });
                             stderrCallbacks.map(function (callback) { return callback(data.toString()); });
                             if (data.toString().includes('ERRO')) {
-                                _this.errors += data + "\n";
+                                _this.errors.push(data + "\n");
                                 errorCallbacks.map(function (callback) { return callback(data.toString()); });
                             }
                             else if (data.toString().includes('WARN')) {
-                                _this.warnings += data + "\n";
+                                _this.warnings.push(data + "\n");
                                 warningCallbacks.map(function (callback) { return callback(data.toString()); });
                             }
                         });
                         this.onOutput = function (callback) {
                             if (callback === void 0) { callback = function (output) { return output; }; }
-                            callback(_this.output);
+                            callback(_this.output.join('\n'));
                             outputCallbacks.push(callback);
                         };
                         this.onStdout = function (callback) {
-                            if (callback === void 0) { callback = function (output) { return output; }; }
-                            callback(_this.stdout);
+                            callback(_this.stdout.join('\n'));
                             stdoutCallbacks.push(callback);
                         };
                         this.onStderr = function (callback) {
                             if (callback === void 0) { callback = function (output) { return output; }; }
-                            callback(_this.stderr);
+                            callback(_this.stderr.join('\n'));
                             stderrCallbacks.push(callback);
                         };
                         this.onError = function (callback) {
                             if (callback === void 0) { callback = function (output) { return output; }; }
-                            callback(_this.errors);
+                            callback(_this.errors.join('\n'));
                             errorCallbacks.push(callback);
                         };
                         this.onWarning = function (callback) {
                             if (callback === void 0) { callback = function (output) { return output; }; }
-                            callback(_this.warnings);
+                            callback(_this.warnings.join('\n'));
                             warningCallbacks.push(callback);
                         };
                         this.parseOutput();
@@ -431,11 +519,6 @@ var PlayIt = /** @class */ (function () {
         // Kill The PlayIt Binary
         this.playit.kill('SIGINT');
     };
-    /**
-     * @description Downloads PlayIt To A Temp Folder
-     * @example
-     * const playitBinary = await playit.download(); // Downloads PlayIt, And Returns The File Path
-     */
     PlayIt.prototype.download = function () {
         return __awaiter(this, void 0, void 0, function () {
             var file, _a, _b, _c, _d, _e, _f, _g, _h, _j, _k;
