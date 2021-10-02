@@ -83,10 +83,12 @@ var fs_extra_1 = require("fs-extra");
 var make_fetch_happen_1 = __importDefault(require("make-fetch-happen"));
 var os_1 = require("os");
 var unzipper_1 = require("unzipper");
-var PlayIt = (function () {
+/**  @class */
+var PlayIt = /** @class */ (function () {
     function PlayIt() {
         this.destroyed = false;
         this.arch = (function () {
+            // Check If Architexture is x64 Or Arm, If It Isn't, Throw An Error
             if (!['x64', 'arm', 'arm64'].includes(process.arch))
                 throw new Error("Unsupported Architecture, " + process.arch + "!");
             return process.arch;
@@ -104,6 +106,7 @@ var PlayIt = (function () {
         this.used_packets = 0;
         this.free_packets = 0;
         this.connections = [];
+        // Get Os
         this.os = process.platform === 'win32'
             ? 'win'
             : process.platform === 'darwin'
@@ -144,30 +147,50 @@ var PlayIt = (function () {
         this.onWarning = undefined;
         process.chdir(this.dir);
     }
+    /**
+     * @param {number} id - The Tunnel ID
+     * @description Disables The Specified Tunnel
+     * @example
+     * await playit.disableTunnel(<Tunnel ID>);
+     */
     PlayIt.prototype.disableTunnel = function (id) {
         return __awaiter(this, void 0, void 0, function () {
             return __generator(this, function (_a) {
                 switch (_a.label) {
-                    case 0: return [4, this.fetch("/account/tunnels/" + id + "/disable")];
+                    case 0: return [4 /*yield*/, this.fetch("/account/tunnels/" + id + "/disable")];
                     case 1:
                         _a.sent();
-                        return [2];
+                        return [2 /*return*/];
                 }
             });
         });
     };
+    /**
+     * @param {number} id - The Tunnel ID
+     * @description Enables The Specified Tunnel
+     * @example
+     * await playit.disableTunnel(<Tunnel ID>); // Disables The Tunnel
+     * await playit.enableTunnel(<Same Tunnel ID>); // Enables The Tunnel Again
+     */
     PlayIt.prototype.enableTunnel = function (id) {
         return __awaiter(this, void 0, void 0, function () {
             return __generator(this, function (_a) {
                 switch (_a.label) {
-                    case 0: return [4, this.fetch("/account/tunnels/" + id + "/enable")];
+                    case 0: return [4 /*yield*/, this.fetch("/account/tunnels/" + id + "/enable")];
                     case 1:
                         _a.sent();
-                        return [2];
+                        return [2 /*return*/];
                 }
             });
         });
     };
+    /**
+     * @param {tunnelOpts} tunnelOpts - Options For The Tunnel
+     * @description Creates A Tunnel With The Specified Port And Protocall
+     * @example
+     * const tunnel = await playit.createTunnel({ port: <Port>, proto: <Network Protocall> });
+     * console.log(tunnel.url);
+     */
     PlayIt.prototype.createTunnel = function (tunnelOpts) {
         return __awaiter(this, void 0, void 0, function () {
             var _a, proto, port, tunnelId, _b, _c, _d, _e, otherData;
@@ -190,32 +213,33 @@ var PlayIt = (function () {
                             local_ip: '127.0.0.1',
                             local_proto: proto
                         };
-                        return [4, this.fetch('/account/agents')];
-                    case 1: return [4, (_h.sent()).json()];
-                    case 2: return [4, _b.apply(this, _c.concat([(_f.body = _e.apply(_d, [(_g.agent_id = (_h.sent()).agents.find(function (agent) { return agent.key === _this.agent_key; }).id,
+                        return [4 /*yield*/, this.fetch('/account/agents')];
+                    case 1: return [4 /*yield*/, (_h.sent()).json()];
+                    case 2: return [4 /*yield*/, _b.apply(this, _c.concat([(_f.body = _e.apply(_d, [(_g.agent_id = (_h.sent()).agents.find(function (agent) { return agent.key === _this.agent_key; }).id,
                                     _g.domain_id = null,
                                     _g)]),
                                 _f)]))];
-                    case 3: return [4, (_h.sent()).json()];
+                    case 3: return [4 /*yield*/, (_h.sent()).json()];
                     case 4:
                         tunnelId = (_h.sent()).id;
-                        return [4, (function () { return __awaiter(_this, void 0, void 0, function () {
+                        return [4 /*yield*/, (function () { return __awaiter(_this, void 0, void 0, function () {
                                 var otherData;
                                 return __generator(this, function (_a) {
                                     switch (_a.label) {
-                                        case 0: return [4, this.fetch('/account/tunnels')];
-                                        case 1: return [4, (_a.sent()).json()];
+                                        case 0: return [4 /*yield*/, this.fetch('/account/tunnels')];
+                                        case 1: return [4 /*yield*/, (_a.sent()).json()];
                                         case 2:
+                                            // Get More Data About The Tunnel
                                             otherData = (_a.sent()).tunnels.find(function (tunnel) { return tunnel.id === tunnelId; });
-                                            return [4, new Promise(function (res) { return setTimeout(res, 5000); })];
+                                            return [4 /*yield*/, new Promise(function (res) { return setTimeout(res, 5000); })];
                                         case 3:
                                             _a.sent();
                                             _a.label = 4;
                                         case 4:
                                             if (otherData.domain_id === null ||
-                                                otherData.connect_address === null) return [3, 0];
+                                                otherData.connect_address === null) return [3 /*break*/, 0];
                                             _a.label = 5;
-                                        case 5: return [2, otherData];
+                                        case 5: return [2 /*return*/, otherData];
                                     }
                                 });
                             }); })()];
@@ -223,7 +247,7 @@ var PlayIt = (function () {
                         otherData = _h.sent();
                         otherData.url = otherData.connect_address;
                         this.tunnels.push(otherData);
-                        return [2, otherData];
+                        return [2 /*return*/, otherData];
                 }
             });
         });
@@ -232,14 +256,21 @@ var PlayIt = (function () {
         return __awaiter(this, void 0, void 0, function () {
             return __generator(this, function (_a) {
                 switch (_a.label) {
-                    case 0: return [4, this.fetch(url)];
+                    case 0: return [4 /*yield*/, this.fetch(url)];
                     case 1:
                         _a.sent();
-                        return [2];
+                        return [2 /*return*/];
                 }
             });
         });
     };
+    /**
+     * @param {any} playitOpts - Options To Put Into The `.env` File
+     * @description Starts PlayIt
+     * @example
+     * import { PlayIt } from 'playit.gg';
+     * const playit = await new PlayIt.create(<Options For Playit>);
+     */
     PlayIt.prototype.start = function (playitOpts) {
         if (playitOpts === void 0) { playitOpts = {}; }
         return __awaiter(this, void 0, void 0, function () {
@@ -250,12 +281,12 @@ var PlayIt = (function () {
                 switch (_l.label) {
                     case 0:
                         if (this.started)
-                            return [2, this];
+                            return [2 /*return*/, this];
                         this.started = true;
                         playitOpts.NO_BROWSER = true;
                         outputCallbacks = [], stderrCallbacks = [], stdoutCallbacks = [], errorCallbacks = [], warningCallbacks = [];
                         _a = this;
-                        return [4, this.download()];
+                        return [4 /*yield*/, this.download()];
                     case 1:
                         _a.binary = _l.sent();
                         dotenvStream = (0, fs_extra_1.createWriteStream)(this.dir + "/.env", {
@@ -264,14 +295,14 @@ var PlayIt = (function () {
                         _loop_1 = function (opt, value) {
                             return __generator(this, function (_m) {
                                 switch (_m.label) {
-                                    case 0: return [4, new Promise(function (res, rej) {
+                                    case 0: return [4 /*yield*/, new Promise(function (res, rej) {
                                             return dotenvStream.write(opt + "=" + value + "\n", function (err) {
                                                 return err ? rej(err) : res(null);
                                             });
                                         })];
                                     case 1:
                                         _m.sent();
-                                        return [2];
+                                        return [2 /*return*/];
                                 }
                             });
                         };
@@ -281,38 +312,39 @@ var PlayIt = (function () {
                         _b = __values(Object.entries(playitOpts)), _c = _b.next();
                         _l.label = 3;
                     case 3:
-                        if (!!_c.done) return [3, 6];
+                        if (!!_c.done) return [3 /*break*/, 6];
                         _d = __read(_c.value, 2), opt = _d[0], value = _d[1];
-                        return [5, _loop_1(opt, value)];
+                        return [5 /*yield**/, _loop_1(opt, value)];
                     case 4:
                         _l.sent();
                         _l.label = 5;
                     case 5:
                         _c = _b.next();
-                        return [3, 3];
-                    case 6: return [3, 9];
+                        return [3 /*break*/, 3];
+                    case 6: return [3 /*break*/, 9];
                     case 7:
                         e_1_1 = _l.sent();
                         e_1 = { error: e_1_1 };
-                        return [3, 9];
+                        return [3 /*break*/, 9];
                     case 8:
                         try {
                             if (_c && !_c.done && (_k = _b["return"])) _k.call(_b);
                         }
                         finally { if (e_1) throw e_1.error; }
-                        return [7];
+                        return [7 /*endfinally*/];
                     case 9:
                         dotenvStream.end();
-                        return [4, (0, fs_extra_1.pathExists)(this.configFile)];
+                        return [4 /*yield*/, (0, fs_extra_1.pathExists)(this.configFile)];
                     case 10:
-                        if (!_l.sent()) return [3, 12];
-                        return [4, (0, fs_extra_1.rm)(this.configFile)];
+                        if (!_l.sent()) return [3 /*break*/, 12];
+                        return [4 /*yield*/, (0, fs_extra_1.rm)(this.configFile)];
                     case 11:
                         _l.sent();
                         _l.label = 12;
-                    case 12: return [4, (0, fs_extra_1.chmod)(this.binary, 365)];
+                    case 12: return [4 /*yield*/, (0, fs_extra_1.chmod)(this.binary, 365)];
                     case 13:
                         _l.sent();
+                        // Spawn The PlayIt Binary
                         this.playit = (0, child_process_1.spawn)(this.binary, {
                             cwd: this.dir
                         });
@@ -362,15 +394,15 @@ var PlayIt = (function () {
                             warningCallbacks.push(callback);
                         };
                         this.parseOutput();
-                        return [4, (function () { return __awaiter(_this, void 0, void 0, function () {
+                        return [4 /*yield*/, (function () { return __awaiter(_this, void 0, void 0, function () {
                                 return __generator(this, function (_a) {
                                     switch (_a.label) {
-                                        case 0: return [4, (0, fs_extra_1.pathExists)(this.configFile)];
+                                        case 0: return [4 /*yield*/, (0, fs_extra_1.pathExists)(this.configFile)];
                                         case 1:
-                                            if (!!(_a.sent())) return [3, 2];
+                                            if (!!(_a.sent())) return [3 /*break*/, 2];
                                             ;
-                                            return [3, 0];
-                                        case 2: return [2];
+                                            return [3 /*break*/, 0];
+                                        case 2: return [2 /*return*/];
                                     }
                                 });
                             }); })()];
@@ -379,20 +411,31 @@ var PlayIt = (function () {
                         _f = (_e = Object).assign;
                         _g = [this];
                         _j = (_h = JSON).parse;
-                        return [4, (0, fs_extra_1.readFile)(this.configFile, 'utf-8')];
+                        return [4 /*yield*/, (0, fs_extra_1.readFile)(this.configFile, 'utf-8')];
                     case 15:
                         _f.apply(_e, _g.concat([_j.apply(_h, [_l.sent()])]));
-                        return [2, this];
+                        return [2 /*return*/, this];
                 }
             });
         });
     };
+    /**
+     * @description Stops PlayIt
+     * @example
+     * playit.stop(); // Stops PlayIt, Class Cannot Be Used After Run
+     */
     PlayIt.prototype.stop = function () {
         if (this.destroyed)
             return;
         this.destroyed = true;
+        // Kill The PlayIt Binary
         this.playit.kill('SIGINT');
     };
+    /**
+     * @description Downloads PlayIt To A Temp Folder
+     * @example
+     * const playitBinary = await playit.download(); // Downloads PlayIt, And Returns The File Path
+     */
     PlayIt.prototype.download = function () {
         return __awaiter(this, void 0, void 0, function () {
             var file, _a, _b, _c, _d, _e, _f, _g, _h, _j, _k;
@@ -401,50 +444,50 @@ var PlayIt = (function () {
                 switch (_l.label) {
                     case 0:
                         file = this.dir + "/playit-" + this.type + "-" + this.version + "." + (this.os === 'win' ? 'exe' : 'bin');
-                        return [4, (0, fs_extra_1.pathExists)(file)];
+                        return [4 /*yield*/, (0, fs_extra_1.pathExists)(file)];
                     case 1:
                         if (_l.sent())
-                            return [2, file];
-                        if (!(this.os === 'mac')) return [3, 6];
+                            return [2 /*return*/, file];
+                        if (!(this.os === 'mac')) return [3 /*break*/, 6];
                         _b = (_a = Promise).all;
                         _d = (_c = unzipper_1.Open).buffer;
                         _f = (_e = Buffer).from;
-                        return [4, (0, make_fetch_happen_1["default"])(this.downloadUrls[this.type])];
-                    case 2: return [4, (_l.sent()).arrayBuffer()];
-                    case 3: return [4, _d.apply(_c, [_f.apply(_e, [_l.sent()])])];
-                    case 4: return [4, _b.apply(_a, [(_l.sent()).files.map(function (zipFile) { return __awaiter(_this, void 0, void 0, function () {
+                        return [4 /*yield*/, (0, make_fetch_happen_1["default"])(this.downloadUrls[this.type])];
+                    case 2: return [4 /*yield*/, (_l.sent()).arrayBuffer()];
+                    case 3: return [4 /*yield*/, _d.apply(_c, [_f.apply(_e, [_l.sent()])])];
+                    case 4: return [4 /*yield*/, _b.apply(_a, [(_l.sent()).files.map(function (zipFile) { return __awaiter(_this, void 0, void 0, function () {
                                 var _a, _b, _c;
                                 return __generator(this, function (_d) {
                                     switch (_d.label) {
                                         case 0:
                                             _a = zipFile.path.includes('playit') &&
                                                 zipFile.type === 'File';
-                                            if (!_a) return [3, 3];
+                                            if (!_a) return [3 /*break*/, 3];
                                             _b = fs_extra_1.writeFile;
                                             _c = [file];
-                                            return [4, zipFile.buffer()];
-                                        case 1: return [4, _b.apply(void 0, _c.concat([_d.sent()]))];
+                                            return [4 /*yield*/, zipFile.buffer()];
+                                        case 1: return [4 /*yield*/, _b.apply(void 0, _c.concat([_d.sent()]))];
                                         case 2:
                                             _a = (_d.sent());
                                             _d.label = 3;
-                                        case 3: return [2, _a];
+                                        case 3: return [2 /*return*/, _a];
                                     }
                                 });
                             }); })])];
                     case 5:
                         _l.sent();
-                        return [3, 10];
+                        return [3 /*break*/, 10];
                     case 6:
                         _g = fs_extra_1.writeFile;
                         _h = [file];
                         _k = (_j = Buffer).from;
-                        return [4, (0, make_fetch_happen_1["default"])(this.downloadUrls[this.type])];
-                    case 7: return [4, (_l.sent()).arrayBuffer()];
-                    case 8: return [4, _g.apply(void 0, _h.concat([_k.apply(_j, [_l.sent()])]))];
+                        return [4 /*yield*/, (0, make_fetch_happen_1["default"])(this.downloadUrls[this.type])];
+                    case 7: return [4 /*yield*/, (_l.sent()).arrayBuffer()];
+                    case 8: return [4 /*yield*/, _g.apply(void 0, _h.concat([_k.apply(_j, [_l.sent()])]))];
                     case 9:
                         _l.sent();
                         _l.label = 10;
-                    case 10: return [2, file];
+                    case 10: return [2 /*return*/, file];
                 }
             });
         });
@@ -457,7 +500,7 @@ var PlayIt = (function () {
                 switch (_b.label) {
                     case 0:
                         _a = this.claimUrl;
-                        return [4, new Promise(function (res) {
+                        return [4 /*yield*/, new Promise(function (res) {
                                 return _this.onStderr(function (data) {
                                     var _a;
                                     return ((_a = data.match(/https:\/\/[0-9a-z\.\/]*/gi)) === null || _a === void 0 ? void 0 : _a[0])
@@ -465,7 +508,7 @@ var PlayIt = (function () {
                                         : '';
                                 });
                             })];
-                    case 1: return [4, _a.apply(this, [_b.sent()])];
+                    case 1: return [4 /*yield*/, _a.apply(this, [_b.sent()])];
                     case 2:
                         _b.sent();
                         this.onStderr(function (output) {
@@ -493,7 +536,7 @@ var PlayIt = (function () {
                                 });
                             }
                         });
-                        return [2];
+                        return [2 /*return*/];
                 }
             });
         });
@@ -504,15 +547,15 @@ var PlayIt = (function () {
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
-                        if (!(url.startsWith('https://') || url.startsWith('http://'))) return [3, 2];
-                        return [4, (0, make_fetch_happen_1["default"])(url, __assign(__assign({}, data), { headers: { authorization: "agent " + this.agent_key } }))];
-                    case 1: return [2, _a.sent()];
+                        if (!(url.startsWith('https://') || url.startsWith('http://'))) return [3 /*break*/, 2];
+                        return [4 /*yield*/, (0, make_fetch_happen_1["default"])(url, __assign(__assign({}, data), { headers: { authorization: "agent " + this.agent_key } }))];
+                    case 1: return [2 /*return*/, _a.sent()];
                     case 2:
-                        if (!url.startsWith('/')) return [3, 4];
-                        return [4, (0, make_fetch_happen_1["default"])("https://api.playit.gg" + url, __assign(__assign({}, data), { headers: { authorization: "agent " + this.agent_key } }))];
-                    case 3: return [2, _a.sent()];
-                    case 4: return [4, (0, make_fetch_happen_1["default"])("https://api.playit.gg/" + url, __assign(__assign({}, data), { headers: { authorization: "agent " + this.agent_key } }))];
-                    case 5: return [2, _a.sent()];
+                        if (!url.startsWith('/')) return [3 /*break*/, 4];
+                        return [4 /*yield*/, (0, make_fetch_happen_1["default"])("https://api.playit.gg" + url, __assign(__assign({}, data), { headers: { authorization: "agent " + this.agent_key } }))];
+                    case 3: return [2 /*return*/, _a.sent()];
+                    case 4: return [4 /*yield*/, (0, make_fetch_happen_1["default"])("https://api.playit.gg/" + url, __assign(__assign({}, data), { headers: { authorization: "agent " + this.agent_key } }))];
+                    case 5: return [2 /*return*/, _a.sent()];
                 }
             });
         });
@@ -525,8 +568,8 @@ function init(playitOpts) {
     return __awaiter(this, void 0, void 0, function () {
         return __generator(this, function (_a) {
             switch (_a.label) {
-                case 0: return [4, new PlayIt().start(playitOpts)];
-                case 1: return [2, _a.sent()];
+                case 0: return [4 /*yield*/, new PlayIt().start(playitOpts)];
+                case 1: return [2 /*return*/, _a.sent()];
             }
         });
     });

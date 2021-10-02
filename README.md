@@ -93,16 +93,10 @@ let playit = new PlayIt();
 })();
 ```
 
-### Interfaces
-
-TODO
-
 ### Methods
 
 TODO
 
 ## Contribution
 
-[![Open in Gitpod](https://gitpod.io/button/open-in-gitpod.svg)](https://gitpod.io/#https://github.com/TheBotlyNoob/playit.gg)
-
-More Features Are Soon To Come, And PRs Are Welcome!
+PRs Are Welcome!

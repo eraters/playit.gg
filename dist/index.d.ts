@@ -1,5 +1,6 @@
 /// <reference types="node" />
 import { ChildProcessWithoutNullStreams } from 'child_process';
+/**  @class */
 export declare class PlayIt {
     destroyed: Boolean;
     arch: 'x64' | 'arm' | 'arm64';
@@ -29,12 +30,49 @@ export declare class PlayIt {
     onError: Function | undefined;
     onWarning: Function | undefined;
     constructor();
+    /**
+     * @param {number} id - The Tunnel ID
+     * @description Disables The Specified Tunnel
+     * @example
+     * await playit.disableTunnel(<Tunnel ID>);
+     */
     disableTunnel(id: number): Promise<void>;
+    /**
+     * @param {number} id - The Tunnel ID
+     * @description Enables The Specified Tunnel
+     * @example
+     * await playit.disableTunnel(<Tunnel ID>); // Disables The Tunnel
+     * await playit.enableTunnel(<Same Tunnel ID>); // Enables The Tunnel Again
+     */
     enableTunnel(id: number): Promise<void>;
+    /**
+     * @param {tunnelOpts} tunnelOpts - Options For The Tunnel
+     * @description Creates A Tunnel With The Specified Port And Protocall
+     * @example
+     * const tunnel = await playit.createTunnel({ port: <Port>, proto: <Network Protocall> });
+     * console.log(tunnel.url);
+     */
     createTunnel(tunnelOpts: tunnelOpts): Promise<tunnel>;
     private claimUrl;
+    /**
+     * @param {any} playitOpts - Options To Put Into The `.env` File
+     * @description Starts PlayIt
+     * @example
+     * import { PlayIt } from 'playit.gg';
+     * const playit = await new PlayIt.create(<Options For Playit>);
+     */
     start(playitOpts?: any): Promise<PlayIt>;
+    /**
+     * @description Stops PlayIt
+     * @example
+     * playit.stop(); // Stops PlayIt, Class Cannot Be Used After Run
+     */
     stop(): void;
+    /**
+     * @description Downloads PlayIt To A Temp Folder
+     * @example
+     * const playitBinary = await playit.download(); // Downloads PlayIt, And Returns The File Path
+     */
     download(): Promise<string>;
     private parseOutput;
     private fetch;
